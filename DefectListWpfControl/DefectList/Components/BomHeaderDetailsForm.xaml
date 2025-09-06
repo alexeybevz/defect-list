@@ -1,0 +1,153 @@
+﻿<UserControl x:Class="DefectListWpfControl.DefectList.Components.BomHeaderDetailsForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Components"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin"
+                    Value="2" />
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError"
+                         Value="True">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).[0].ErrorContent}" />
+                    <Setter Property="Foreground"
+                            Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="Margin"
+                    Value="2" />
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Margin"
+                    Value="2" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Margin"
+                    Value="2" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width = "Auto"/>
+            <ColumnDefinition Width = "200*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Заказ" />
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Orders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Договор" />
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Contract, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Дата открытия договора" />
+        <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding ContractDateOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Серийный номер" />
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SerialNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Серийный номер после ремонта" />
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SerialNumberAfterRepair, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Ремонтное изделие" />
+        <Grid Grid.Row="5" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" Text="{Binding RootItem.Izdel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" />
+            <Button Grid.Column="1" Content="..." Style="{StaticResource SecondaryButton}" Command="{Binding OpenChoiceRootItemFormCommand}" />
+        </Grid>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Комментарий" />
+        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="Состав на дату" />
+        <DatePicker Grid.Row="7" Grid.Column="1" SelectedDate="{Binding DateOfSpecif, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="Дата составления (для отчетов)" />
+        <DatePicker Grid.Row="8" Grid.Column="1" SelectedDate="{Binding DateOfPreparation, Mode=TwoWay}" />
+
+        <TextBlock Grid.Row="9" Grid.Column="0" Name="HeaderTypeLabel" Text="Тип ДВ" />
+        <ComboBox
+            Grid.Row="9"
+            Grid.Column="1"
+            HorizontalAlignment="Left"
+            Width="150"
+            ItemsSource="{Binding PossibleHeaderTypes, Mode=OneWay}"
+            Text="{Binding HeaderType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsEditable="False"/>
+
+        <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Margin="20" Orientation="Vertical">
+            <Button Content="Сохранить" Command="{Binding SubmitCommand}" IsEnabled="{Binding CanSubmit, UpdateSourceTrigger=PropertyChanged }" Style="{StaticResource PrimaryButton}"/>
+            <Grid Margin="5">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasErrorMessage}"
+                                         Value="True">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessage}" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

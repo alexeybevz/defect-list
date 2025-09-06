@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EF1807D2-4F9A-4656-9999-BB7FA651CBED}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DefectListBusinessLogic</RootNamespace>
+    <AssemblyName>DefectListBusinessLogic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.87.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.87.1\lib\net40\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\CrystalDecisions.CrystalReports.Engine\13.0.3500.0__692fbea5521e1304\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\ReporterBusinessLogic\bin\Debug\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\CollapseBomItemNodeCommand.cs" />
+    <Compile Include="Commands\CreateBomHeaderCommand.cs" />
+    <Compile Include="Commands\CreateBomItemCommand.cs" />
+    <Compile Include="Commands\CreateBomItemDocCommand.cs" />
+    <Compile Include="Commands\CreateBomItemLogCommand.cs" />
+    <Compile Include="Commands\CreateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\CreateLogActionCommand.cs" />
+    <Compile Include="Commands\CreateMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\CreateRootItemCommand.cs" />
+    <Compile Include="Commands\DeleteBomHeaderCommand.cs" />
+    <Compile Include="Commands\DeleteBomItemCommand.cs" />
+    <Compile Include="Commands\DeleteDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\DeleteRootItemCommand.cs" />
+    <Compile Include="Commands\ExpandBomItemNodeCommand.cs" />
+    <Compile Include="Commands\LoadBomItemsToBomHeaderCommand.cs" />
+    <Compile Include="Commands\SaveBomItemCommand.cs" />
+    <Compile Include="Commands\SubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\UnSubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\UpdateBomHeaderCommand.cs" />
+    <Compile Include="Commands\UpdateBomItemIdInMapToRouteChartCommand.cs" />
+    <Compile Include="Commands\UpdateBomItemNameCommand.cs" />
+    <Compile Include="Commands\UpdateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\UpdateStateBomHeaderCommand.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Fakes\FakeAsupBomContextFactory.cs" />
+    <Compile Include="Fakes\FakeGetAllIsExpensiveClassifierQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllOgmetMatlDtoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllPlanOperationDtoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllProductDtoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllRouteChartsTrackInfoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllTehprocHeaderDtoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllWpDtoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllAuxiliaryMaterialDtoQuery.cs" />
+    <Compile Include="Fakes\FakeRouteMapFactory.cs" />
+    <Compile Include="Queries\GetAllBomHeadersQuery.cs" />
+    <Compile Include="Queries\GetAllBomHeaderSubscribersQuery.cs" />
+    <Compile Include="Queries\GetAllBomItemLogsQuery.cs" />
+    <Compile Include="Queries\GetAllBomItemsByBomHeaderQuery.cs" />
+    <Compile Include="Queries\GetAllBomItemsFilterToReportQuery.cs" />
+    <Compile Include="Queries\GetAllBomItemsWithSerialNumbersQuery.cs" />
+    <Compile Include="Queries\GetAllDecisionsQuery.cs" />
+    <Compile Include="Queries\GetAllDefectToDecisionMapsQuery.cs" />
+    <Compile Include="Queries\GetAllGroupDefectsQuery.cs" />
+    <Compile Include="Queries\GetAllLogActionsQuery.cs" />
+    <Compile Include="Queries\GetAllMapsBomItemToRouteChartsQuery.cs" />
+    <Compile Include="Queries\GetAllRootItemsQuery.cs" />
+    <Compile Include="Queries\GetAllStateDetalsQuery.cs" />
+    <Compile Include="Report\AuxiliaryMaterialsReport.cs" />
+    <Compile Include="Report\ChangesFinalDecisionReport.cs" />
+    <Compile Include="Report\DataSetReport.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSetReport.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DefectListAllItemsReport.cs" />
+    <Compile Include="Report\DefectListItemsChangesReport.cs" />
+    <Compile Include="Report\DefectListItemsReclamationRptBuilder.cs" />
+    <Compile Include="Report\DefectListItemsRptBuilder.cs" />
+    <Compile Include="Report\DefectListItemsRptParmBuilder.cs" />
+    <Compile Include="Report\DefectListPurchaseItemsReport.cs" />
+    <Compile Include="Report\DefectListScrapItemsReport.cs" />
+    <Compile Include="Report\GetItemInfoByAllProductsReport.cs" />
+    <Compile Include="Report\SummaryByOrdersReport.cs" />
+    <Compile Include="Services\BomItemsCloner.cs" />
+    <Compile Include="Services\BomItemsEditor.cs" />
+    <Compile Include="Services\BomItemsLoader.cs" />
+    <Compile Include="Services\BomItemsValidator.cs" />
+    <Compile Include="Services\GetBomViewService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Report\DataSetReport.xsc">
+      <DependentUpon>DataSetReport.xsd</DependentUpon>
+    </None>
+    <None Include="Report\DataSetReport.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetReport.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Report\DataSetReport.xss">
+      <DependentUpon>DataSetReport.xsd</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DefectListDomain\DefectListDomain.csproj">
+      <Project>{2db21209-dff6-43e3-93d0-b3b84dbf3bb4}</Project>
+      <Name>DefectListDomain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReporterBusinessLogic\ReporterBusinessLogic.csproj">
+      <Project>{bfe2c817-16ec-4bc3-9db3-9f80f88c9ddf}</Project>
+      <Name>ReporterBusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReporterDomain\ReporterDomain.csproj">
+      <Project>{426e3487-47cb-44e3-9fdf-da8a0691a951}</Project>
+      <Name>ReporterDomain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

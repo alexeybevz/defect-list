@@ -1,0 +1,174 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.ChoiceProductWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Views"
+        xmlns:components="clr-namespace:DefectListWpfControl.DefectList.Components"
+        mc:Ignorable="d"
+        Title="Выбор номенклатуры" Height="500" Width="500" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize"
+                    Value="14" />
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="12" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Фильтр:" VerticalAlignment="Center"/>
+                <TextBox Name="FilterString" Margin="5" Grid.Column="1" Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <TextBlock Text="Номенклатура АСУП" HorizontalAlignment="Center" FontWeight="Bold" Padding="5" />
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Border BorderBrush="{StaticResource BorderPrimary}"
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Padding="20"
+                        SnapsToDevicePixels="True">
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLoading}"
+                                                 Value="True">
+                                        <Setter Property="Visibility"
+                                                Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+
+                        <components:DataLoadingSpinner DataContext="Загрузка списка номенклатуры из АСУП ..." />
+                    </StackPanel>
+                </Border>
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="False">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasErrorMessage}"
+                                                 Value="True">
+                                        <Setter Property="Visibility"
+                                                Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessage}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasErrorMessage}"
+                                                 Value="False">
+                                        <Setter Property="Visibility"
+                                                Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Border BorderBrush="{StaticResource BorderPrimary}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="5"
+                                SnapsToDevicePixels="True">
+                            <ListBox ItemsSource="{Binding ProductsView}"
+                                     SelectedItem="{Binding SelectedProduct}"
+                                     SelectionMode="Single"
+                                     FontSize="14"
+                                     BorderThickness="0"
+                                     Name="ProductListBox">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Product.Name}" HorizontalAlignment="Stretch" Width="Auto">
+                                            <TextBlock.InputBindings>
+                                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ProductDoubleClickCommand}" />
+                                            </TextBlock.InputBindings>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <TextBlock FontSize="12" TextAlignment="Center" HorizontalAlignment="Left" Text="{Binding SelectedProductText}" TextWrapping="WrapWithOverflow" Padding="5" />
+            </Grid>
+
+            <Grid Grid.Row="4" Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    Content="Выбрать"
+                    Width="100"
+                    Style="{StaticResource PrimaryButton}"
+                    IsEnabled="{Binding CanSubmit}"
+                    Command="{Binding ChoiceProductCommand}"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

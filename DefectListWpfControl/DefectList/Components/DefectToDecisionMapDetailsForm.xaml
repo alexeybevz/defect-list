@@ -1,0 +1,124 @@
+﻿<UserControl x:Class="DefectListWpfControl.DefectList.Components.DefectToDecisionMapDetailsForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin"
+                    Value="2" />
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError"
+                         Value="True">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).[0].ErrorContent}" />
+                    <Setter Property="Foreground"
+                            Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Margin"
+                    Value="2" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Margin"
+                    Value="2" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width = "Auto"/>
+            <ColumnDefinition Width = "200*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Дефект" />
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Defect, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Решение" />
+        <ComboBox
+            Grid.Row="1"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            ItemsSource="{Binding Decisions, Mode=OneWay}"
+            SelectedItem="{Binding Decision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+            IsEditable="False"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Разрешено комбинировать" />
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsAllowCombine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="1 0 0 0" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Статус ДСЕ" />
+        <ComboBox
+            Grid.Row="3"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            ItemsSource="{Binding DetalStates, Mode=OneWay}"
+            SelectedValue="{Binding StateDetalsId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedValuePath="Id"
+            IsEditable="False"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Группа дефектов" />
+        <ComboBox
+            Grid.Row="4"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            ItemsSource="{Binding DefectGroups, Mode=OneWay}"
+            SelectedValue="{Binding GroupDefectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedValuePath="Id"
+            IsEditable="False"/>
+
+        <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Margin="20" Orientation="Vertical">
+            <Button Content="Сохранить" Command="{Binding SubmitCommand}" IsEnabled="{Binding CanSubmit, UpdateSourceTrigger=PropertyChanged }" Style="{StaticResource PrimaryButton}"/>
+            <Grid Margin="5">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasErrorMessage}"
+                                         Value="True">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessage}" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

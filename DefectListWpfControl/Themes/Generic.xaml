@@ -1,0 +1,264 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:DefectListWpfControl.Themes"
+                    xmlns:fa="http://schemas.fontawesome.io/icons/"
+                    xmlns:viewModelImplement="clr-namespace:DefectListWpfControl.ViewModelImplement"
+                    xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons">
+    <commons:SearchValueConverter x:Key="SearchValueConverter" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <viewModelImplement:WindowBooleanToVisibilityConverter x:Key="WindowBooleanToVisibilityConverter" />
+
+    <Style x:Key="PrimaryButton"
+           TargetType="Button">
+        <Setter Property="Foreground"
+                Value="White" />
+        <Setter Property="Background"
+                Value="#547AFF" />
+        <Setter Property="Padding"
+                Value="20 8" />
+        <Setter Property="Cursor"
+                Value="Hand" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="TextBlock.TextAlignment"
+                Value="Center" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Margin="{TemplateBinding Margin}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3">
+                        <ContentPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                            To="#2a3d82"
+                                            Duration="0:0:0.1" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                            To="#547AFF"
+                                            Duration="0:0:0.1" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+
+            <Trigger Property="IsEnabled"
+                     Value="False">
+                <Setter Property="Opacity"
+                        Value="0.7" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SecondaryButton"
+           TargetType="Button"
+           BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Foreground"
+                Value="Black" />
+        <Setter Property="Background"
+                Value="#E1E1E1" />
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                            To="#c2c2c2"
+                                            Duration="0:0:0.1" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                            To="#E1E1E1"
+                                            Duration="0:0:0.1" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ErrorMessage"
+           TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground"
+                Value="Red" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="TextWrapping"
+                Value="Wrap" />
+        <Setter Property="TextAlignment"
+                Value="Center" />
+    </Style>
+
+    <SolidColorBrush x:Key="BorderPrimary"
+                     Color="#1c1c1c" />
+
+    <Style x:Key="PageHeader"
+           TargetType="TextBlock">
+        <Setter Property="FontSize"
+                Value="18" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+    </Style>
+
+    <Style x:Key="PrimaryTextBox"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="Black" />
+        <Setter Property="BorderBrush"
+                Value="DarkGray" />
+        <Setter Property="BorderThickness"
+                Value="1" />
+        <Setter Property="Padding"
+                Value="5" />
+    </Style>
+
+    <Style x:Key="BomItemCellStyle"
+           TargetType="{x:Type DataGridCell}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsFilled}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="#E8E8E8" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsRequiredSubmit}"
+                         Value="1">
+                <Setter Property="Background"
+                        Value="#B5B5B5" />
+            </DataTrigger>
+            <Trigger Property="DataGridCell.IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#87CEFF" />
+                <Setter Property="BorderBrush"
+                        Value="#87CEFF" />
+            </Trigger>
+            <Trigger Property="DataGridCell.IsFocused"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#1E90FF" />
+                <Setter Property="BorderBrush"
+                        Value="#1E90FF" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BomItemSearchedDetalCellStyle"
+           TargetType="{x:Type DataGridCell}"
+           BasedOn="{StaticResource BomItemCellStyle}">
+        <Setter Property="commons:DataGridTextSearch.IsTextMatch">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource SearchValueConverter}">
+                    <Binding Path="Detal" />
+                    <Binding RelativeSource="{RelativeSource Self}"
+                             Path="(commons:DataGridTextSearch.SearchValue)" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="commons:DataGridTextSearch.IsTextMatch"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="Orange" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BomItemStructureNumberCellStyle"
+           TargetType="{x:Type DataGridCell}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsOnlyReplace}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="#ffb9b9" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsOnlyRestore}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="#fcff8c" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsRestoreAndReplace}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="#ffc58c" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsAcceptive}"
+                         Value="True">
+                <Setter Property="Background"
+                        Value="#b6ffd4" />
+            </DataTrigger>
+            <Trigger Property="DataGridCell.IsSelected"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#87CEFF" />
+                <Setter Property="BorderBrush"
+                        Value="#87CEFF" />
+            </Trigger>
+            <Trigger Property="DataGridCell.IsFocused"
+                     Value="True">
+                <Setter Property="Background"
+                        Value="#1E90FF" />
+                <Setter Property="BorderBrush"
+                        Value="#1E90FF" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="DataLoadingSpinner"
+           TargetType="fa:ImageAwesome">
+        <Setter Property="Icon"
+                Value="CircleOutlineNotch" />
+        <Setter Property="Spin"
+                Value="True" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="Width"
+                Value="40" />
+        <Setter Property="Margin"
+                Value="5" />
+        <Setter Property="Foreground"
+                Value="#FF3C3C3C" />
+    </Style>
+
+    <Style x:Key="DataLoadingText"
+           TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="TextAlignment"
+                Value="Center" />
+    </Style>
+</ResourceDictionary>

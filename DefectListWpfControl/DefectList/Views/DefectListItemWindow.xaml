@@ -1,0 +1,513 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.DefectListItemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons"
+        xmlns:components="clr-namespace:DefectListWpfControl.DefectList.Components"
+        xmlns:b="clr-namespace:DefectListWpfControl.ViewModelImplement"
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Height="900" Width="909" WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        d:DataContext="{d:DesignInstance d:Type=viewModels:DefectListItemViewModel, IsDesignTimeCreatable=True}">
+    <Window.Resources>
+        <Style x:Key="UzelsBoldAndUnderlineStyle" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding UzelFlag}" Value="1" >
+                    <Setter Property="TextBlock.FontWeight" Value="Bold"/>
+                    <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={RelativeSource Self},
+                    Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                    <Setter Property="Foreground" Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="RoundedButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0"
+                                CornerRadius="5"
+                                HorizontalAlignment="Stretch"
+                                Padding="10 5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Content="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MinWidth="100" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Menu Height="25" VerticalAlignment="Top" Background="#efefef">
+                        <MenuItem Header="Действие">
+                            <MenuItem Header="Обновить все" Command="{Binding LoadBomItemsCommand}"/>
+                            <MenuItem Header="Обновить текущую строку" Command="{Binding LoadBomItemCommand}" />
+                            <Separator Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <MenuItem Header="Заполнить ДСЕ с РКД &quot;обязательная замена&quot;" Command="{Binding FillBomItemsWithRequiredReplaceCommand}" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <MenuItem Header="Заполнить оконч. решение из ПМ Контроль" Command="{Binding FillFinalDecisionBasedOnPmControlCommand}" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <MenuItem Header="Создание МК на выбранные строки" Command="{Binding OpenCreateRouteChartsFormCommand}" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </MenuItem>
+                        <MenuItem Header="Отчеты" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <MenuItem Header="Ведомость (pdf)" Command="{Binding ExportDefectListWithFinalDecisionToPdfCommand}" />
+                            <MenuItem Header="Первичная ведомость (pdf)" Command="{Binding ExportDefectListWithInitialDecisionToPdfCommand}" />
+                            <MenuItem Header="Ведомость (excel)" Command="{Binding ExportDefectListToExcelCommand}" />
+                            <MenuItem Header="Ведомость (рекламация)" Command="{Binding ExportDefectListReclamationToPdfCommand}" />
+                            <MenuItem Header="Отчет ПКИ для ОМТС" Command="{Binding PurchaseItemsReportCommand}" />
+                            <MenuItem Header="Отчет о браке" Command="{Binding ScrapItemsReportCommand}" />
+                            <MenuItem Header="Журнал изменений" Command="{Binding DefectListItemsChangesReportCommand}" />
+                            <MenuItem Header="Плановый расход вспом. матер. (прямые расходы)" Command="{Binding AdditionalMaterialsReportCommand}" />
+                        </MenuItem>
+                    </Menu>
+                </Grid>
+                <Grid Grid.Row="2" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width = "Auto"/>
+                        <ColumnDefinition Width = "200*"/>
+                        <ColumnDefinition Width = "100*" MaxWidth="200"/>
+                        <ColumnDefinition Width = "Auto"/>
+                        <ColumnDefinition Width = "Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Name="FilterLabel" Content="Фильтр" />
+                    <TextBox Grid.Column="1" Name="FilterTextBox" Text="{Binding FilterString, UpdateSourceTrigger=Default}"
+                             b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"
+                             ToolTip="Для применения фильтра нажмите клавишу ENTER"
+                             VerticalContentAlignment="Center"/>
+                    <ComboBox
+                        Grid.Column="2"
+                        Name="FilteredColumnsComboBox"
+                        Margin="2"
+                        ItemsSource="{Binding FilteredColumns, Mode=OneWay}"
+                        Text="{Binding SelectedFilteredColumn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnExceptions=True}" />
+                    <Button
+                        Grid.Column="3"
+                        Padding="16.5 6"
+                        Margin="5 0 0 0"
+                        Command="{Binding FilterBomItemCommand}"
+                        Content="Фильтр"
+                        ToolTip="Альтернатива: нажать клавишу ENTER"
+                        Style="{StaticResource SecondaryButton}"/>
+                    <Button
+                        Grid.Column="4"
+                        Padding="10 6"
+                        Margin="5 0 0 0"
+                        Command="{Binding ClearFilterBomItemCommand}"
+                        Content="Х"
+                        ToolTip="Очистка критерия фильтрации"
+                        Style="{StaticResource SecondaryButton}"/>
+                </Grid>
+                <Grid Grid.Row="1" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width = "Auto"/>
+                        <ColumnDefinition Width = "200*"/>
+                        <ColumnDefinition Width = "Auto"/>
+                        <ColumnDefinition Width = "Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Name="SearchLabel" Content="Поиск  " />
+                    <ComboBox Grid.Column="1"
+                              Name="SearchTextBox"
+                              ItemsSource="{Binding Detals, Mode=OneWay}"
+                              Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="ComboBox.Text"
+                              ToolTip="При поиске происходит разузлование всех сборок, в которые входит выбранное ДСЕ"
+                              VerticalContentAlignment="Center">
+                        <ComboBox.InputBindings>
+                            <KeyBinding
+                                Command="{Binding SearchBomItemCommand}"
+                                Key="Enter"/>
+                        </ComboBox.InputBindings>
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="DropDownClosed">
+                                <behaviors:InvokeCommandAction
+                                    Command="{Binding SearchBomItemCommand}"/>
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                    </ComboBox>
+                    <Button
+                        Grid.Column="2"
+                        Margin="5 0 0 0"
+                        Padding="20 6"
+                        Command="{Binding SearchBomItemCommand}"
+                        Content="Найти"
+                        ToolTip="Альтернатива: нажать клавишу ENTER"
+                        Style="{StaticResource SecondaryButton}"/>
+                    <Button
+                        Grid.Column="3"
+                        Padding="10 6"
+                        Margin="5 0 0 0"
+                        Command="{Binding ClearSearchBomItemCommand}"
+                        Content="Х"
+                        ToolTip="Очистка критерия поиска"
+                        Style="{StaticResource SecondaryButton}"/>
+                </Grid>
+                <Grid Grid.Row="3" Margin="10 0 10 5">
+                    <components:BomItemsFilterByDetalTypComponent DataContext="{Binding BomItemsFilterByDetalTypViewModel}"/>
+                </Grid>
+                <FrameworkElement x:Name="dummyElement" Visibility="Collapsed"/>
+                <Grid Grid.Row="4" Margin="10 0 10 0">
+                    <Border BorderBrush="#ccc"
+                            BorderThickness="1"
+                            CornerRadius="0"
+                            Padding="20"
+                            SnapsToDevicePixels="True">
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}"
+                                                     Value="True">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <components:DataLoadingSpinner DataContext="Загрузка состава ремонтного изделия ..." />
+                        </StackPanel>
+                    </Border>
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLoading}"
+                                                 Value="False">
+                                        <Setter Property="Visibility"
+                                                Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasErrorLoadingMessage}"
+                                                     Value="True">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+
+                            <TextBlock Text="{Binding LoadingErrorMessage}" Style="{StaticResource ErrorMessage}" />
+                        </Grid>
+
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility"
+                                             Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasErrorLoadingMessage}"
+                                                     Value="False">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Height="20">
+                                <ProgressBar Name="StateProgressBar" Value="{Binding FillPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" b:ProgressBarHelper.StopAnimationOnCompletion="True"/>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding FillText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Grid>
+
+                            <DataGrid Grid.Row="1"
+                                x:Name="dataGridBomItems"
+                                commons:DataGridTextSearch.SearchValue="{Binding ElementName=SearchTextBox, Path=Text, UpdateSourceTrigger=PropertyChanged}"
+                                ItemsSource="{Binding BomItemsView}"
+                                SelectedItem="{Binding SelectedBomItemViewModel, Mode=TwoWay}"
+                                IsSynchronizedWithCurrentItem="True"
+                                CanUserAddRows="False"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="False"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow"
+                                CopyingRowClipboardContent="dataGridBomItems_CopyingRowClipboardContent"
+                                BorderBrush="#ccc"
+                                CellStyle="{StaticResource BomItemCellStyle}">
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <ContextMenu.Items>
+                                            <MenuItem Header="Поставить/Снять галочки для выбора ДСЕ&#x0a;(без ограничений)" Command="{Binding SelectBomItemsCommand}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Поставить/Снять галочки для выбора ДСЕ&#x0a;(с учетом существующих изменений)" Command="{Binding SelectNotFilledBomItemsCommand}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Добавить ДСЕ в сб.ед." Command="{Binding OpenAddBomItemFormCommand}"/>
+                                            <MenuItem Header="Заменить ДСЕ" Command="{Binding OpenReplaceBomItemFormCommand}"/>
+                                            <MenuItem Header="Заменить только обозначение ДСЕ" Command="{Binding OpenReplaceNameBomItemFormCommand}"/>
+                                            <MenuItem Header="Удалить ДСЕ" Command="{Binding DeleteBomItemCommand}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Распечатать ДСЕ с окончательным решением (pdf)" Command="{Binding ExportAssemblyWithFinalDecisionToPdfCommand}"/>
+                                            <MenuItem Header="Распечатать ДСЕ с первичным решением (pdf)" Command="{Binding ExportAssemblyWithInitialDecisionToPdfCommand}"/>
+                                            <MenuItem Header="Распечатать ДСЕ в виде рекламации (pdf)" Command="{Binding ExportAssemblyReclamationToPdfCommand}"/>
+                                            <MenuItem Header="Применить поиск по текущей ДСЕ" Command="{Binding ApplySearchOnSelectedBomItemCommand}"/>
+                                            <MenuItem Header="Отобразить ДСЕ для предъявления ВП" Command="{Binding FilterIsRequiredBomItemCommand}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Развернуть текущее ДСЕ на все уровни" Command="{Binding ExpandBomItemToAllLevelsCommand}"/>
+                                        </ContextMenu.Items>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="" Visibility="{Binding DataContext.IsCanEditBomAction, Source={x:Reference dummyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Button Height="20" Content="-" Command="{Binding DataContext.CollapseBomItemCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                    <Button Height="20" Content="+" Command="{Binding DataContext.ExpandBomItemCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsExpanded}" Value="False">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Visibility="{Binding DataContext.IsCanExecuteAction, Source={x:Reference dummyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="Выбрать" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Структура" Binding="{Binding StructureNumber}" Width="100" ElementStyle="{StaticResource UzelsBoldAndUnderlineStyle}" IsReadOnly="True" CellStyle="{StaticResource BomItemStructureNumberCellStyle}" />
+                                    <DataGridTextColumn Header="Обозначение" Binding="{Binding Detal}" Width="150" ElementStyle="{StaticResource UzelsBoldAndUnderlineStyle}" IsReadOnly="True" CellStyle="{StaticResource BomItemSearchedDetalCellStyle}" />
+                                    <DataGridTextColumn Header="Наименование" Binding="{Binding DetalIma}" Width="150" ElementStyle="{StaticResource UzelsBoldAndUnderlineStyle}" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Тип" Binding="{Binding DetalTyp}" Width="40" ElementStyle="{StaticResource UzelsBoldAndUnderlineStyle}" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Кол-во (производств-е)" Binding="{Binding QtyMnf}" Width="40" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Ед.изм." Binding="{Binding DetalUm}" Width="50" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Ремонт" Binding="{Binding QtyRestore}" Width="50" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Замена" Binding="{Binding QtyReplace}" Width="50" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Установленный дефект" Binding="{Binding Defect}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Решение по устранению" Binding="{Binding Decision}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Окончательное решение по устранению" Binding="{Binding FinalDecision}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Применяемый тех. процесс" Binding="{Binding TechnologicalProcessUsed}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Примечание (дефект)" Binding="{Binding CommentDef}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Заводской номер" Binding="{Binding SerialNumber}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Требуется предъявить ВП" Binding="{Binding IsRequiredSubmitText}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Предъявлено ВП" Binding="{Binding IsSubmittedText}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Послед. изменение за ..." Binding="{Binding UpdatedByName}" Width="150" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Дата послед. изменения" Binding="{Binding RecordDate, StringFormat=\{0:dd.MM.yyyy HH:mm:ss\}}" Width="150" IsReadOnly="True"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="5" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Content="Только замена"
+                        Margin="0 0 5 0"
+                        Background="#ffb9b9"
+                        Style="{StaticResource RoundedButton}"/>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Content="Только ремонт"
+                        Margin="0 0 5 0"
+                        Background="#fcff8c"
+                        Style="{StaticResource RoundedButton}"/>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Content="Ремонт и замена"
+                        Margin="0 0 5 0"
+                        Background="#ffc58c"
+                        Style="{StaticResource RoundedButton}"/>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Content="Годная"
+                        Background="#b6ffd4"
+                        Style="{StaticResource RoundedButton}"/>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="0 5 5 0"
+                        Content="Заполнены дефект и перв.решение"
+                        Background="#E8E8E8"
+                        Style="{StaticResource RoundedButton}"/>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="2"
+                        Margin="0 5 0 0"
+                        Content="ДСЕ требуется предъявить ВП"
+                        Background="#B5B5B5"
+                        Style="{StaticResource RoundedButton}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Teal" ToolTip="Зажмите ЛКМ, двигайте влево или вправо"/>
+        <Grid Grid.Row="0" Grid.Column="2">
+            <TextBlock Text="Для отображения детальной информации о дефектации ДСЕ, пожалуйста,&#x0a;нажмите на ДСЕ в таблице с составом ремонтного изделия"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"
+                       FontWeight="SemiBold">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility"
+                                Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedBomItemViewModel}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsLoading}"
+                                         Value="True">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <TabControl x:Name="tabControl" Margin="10" Background="WhiteSmoke">
+                <TabControl.Style>
+                    <Style TargetType="TabControl">
+                        <Setter Property="Visibility"
+                                Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedBomItemViewModel}"
+                                         Value="{x:Null}">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsLoading}"
+                                         Value="True">
+                                <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Style>
+                <TabItem Header="Перечень дефектов">
+                    <ScrollViewer>
+                        <components:BomItemReadWriteFieldsViewModel DataContext="{Binding SelectedBomItemViewModel}" />
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="Изменения" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="23*"/>
+                            <ColumnDefinition Width="376*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dataGridBomItemLog" ItemsSource="{Binding BomItemLogs}" IsSynchronizedWithCurrentItem="True" SelectionMode="Single" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" Grid.ColumnSpan="2" CopyingRowClipboardContent="DataGridBomItemLog_OnCopyingRowClipboardContent">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Номер документа" Binding="{Binding BomItemDocId}" Width="60"/>
+                                <DataGridTextColumn Header="Кол-во (ремонт)" Binding="{Binding QtyRestore}" Width="40"/>
+                                <DataGridTextColumn Header="Кол-во (замена)" Binding="{Binding QtyReplace}" Width="40"/>
+                                <DataGridTextColumn Header="Установленный дефект" Binding="{Binding Defect}" Width="150"/>
+                                <DataGridTextColumn Header="Решение по устранению" Binding="{Binding Decision}" Width="150"/>
+                                <DataGridTextColumn Header="Окончательное решение по устранению" Binding="{Binding FinalDecision}" Width="150"/>
+                                <DataGridTextColumn Header="Применяемый тех. процесс" Binding="{Binding TechnologicalProcessUsed}" Width="150"/>
+                                <DataGridTextColumn Header="Требуется предъявить ВП" Binding="{Binding IsRequiredSubmitText}" Width="150"/>
+                                <DataGridTextColumn Header="Предъявлено ВП" Binding="{Binding IsSubmittedText}" Width="150"/>
+                                <DataGridTextColumn Header="Примечание (дефект)" Binding="{Binding CommentDef}" Width="150"/>
+                                <DataGridTextColumn Header="Заводской номер" Binding="{Binding SerialNumber}" Width="150"/>
+                                <DataGridTextColumn Header="Мероприятия по изучению" Binding="{Binding ResearchAction}" Width="150"/>
+                                <DataGridTextColumn Header="Результаты изучения" Binding="{Binding ResearchResult}" Width="150"/>
+                                <DataGridTextColumn Header="Создано" Binding="{Binding CreatedByName}" Width="150"/>
+                                <DataGridTextColumn Header="Дата создания" Binding="{Binding CreateDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Маршрутные карты" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Margin="10">
+                        <DataGrid x:Name="dataGridMapBomItemToRouteCharts" ItemsSource="{Binding MapBomItemToRouteCharts}" IsSynchronizedWithCurrentItem="True" SelectionMode="Single" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" Grid.ColumnSpan="2" CopyingRowClipboardContent="DataGridMapBomItemToRouteCharts_OnCopyingRowClipboardContent">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Обозначение ДСЕ" Binding="{Binding Detal}" Width="150"/>
+                                <DataGridTextColumn Header="Маршрутная карта" Binding="{Binding RouteChart_Number}" Width="150"/>
+                                <DataGridTextColumn Header="Запущенное кол-во" Binding="{Binding QtyLaunched}" Width="150"/>
+                                <DataGridTextColumn Header="Создано" Binding="{Binding CreatedByName}" Width="150"/>
+                                <DataGridTextColumn Header="Дата создания" Binding="{Binding CreateDate, StringFormat=\{0:dd.MM.yyyy\}}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

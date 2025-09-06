@@ -1,0 +1,119 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.MapDefectToDecisionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:components="clr-namespace:DefectListWpfControl.DefectList.Components"
+        mc:Ignorable="d"
+        Title="Сопоставление дефектов и решения" Height="500" Width="900" WindowStartupLocation="CenterScreen" d:DataContext="{d:DesignInstance d:Type=viewModels:DefectToDecisionMapsViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Menu Height="25" VerticalAlignment="Top" Background="#efefef">
+                <MenuItem Header="Действие">
+                    <MenuItem Header="Создать" Command="{Binding OpenAddDefectToDecisionMapCommand}"/>
+                    <MenuItem Header="Редактировать" Command="{Binding OpenEditDefectToDecisionMapCommand}"/>
+                    <MenuItem Header="Удалить" Command="{Binding DeleteDefectToDecisionMapCommand}"/>
+                    <MenuItem Header="Обновить всё" Command="{Binding LoadDefectToDecisionMapsCommand}"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Border BorderBrush="#ccc"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="20"
+                    SnapsToDevicePixels="True">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="True">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <components:DataLoadingSpinner DataContext="Загрузка связок дефект-решение ..." />
+                </StackPanel>
+            </Border>
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLoading}"
+                                         Value="False">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrorMessage}"
+                                             Value="True">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessage}" />
+                </Grid>
+
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrorMessage}"
+                                             Value="False">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <DataGrid
+                            ItemsSource="{Binding DefectToDecisionMapsView, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedItem="{Binding SelectedDefectToDecisionMapViewModel}"
+                            IsSynchronizedWithCurrentItem="True"
+                            CanUserAddRows="False"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            SelectionMode="Single"
+                            SelectionUnit="FullRow"
+                            ColumnWidth="*">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Дефект" Binding="{Binding Defect}" />
+                            <DataGridTextColumn Header="Решение" Binding="{Binding Decision}" />
+                            <DataGridCheckBoxColumn Header="Разрешено комбинировать" Binding="{Binding IsAllowCombine}" />
+                            <DataGridTextColumn Header="Состояние ДСЕ" Binding="{Binding StateDetals.StateDetalsName}" />
+                            <DataGridTextColumn Header="Группа дефектов" Binding="{Binding GroupDefect.GroupDefectName}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

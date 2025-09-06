@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2DB21209-DFF6-43E3-93D0-B3B84DBF3BB4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DefectListDomain</RootNamespace>
+    <AssemblyName>DefectListDomain</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\CrystalDecisions.CrystalReports.Engine\13.0.3500.0__692fbea5521e1304\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\CrystalDecisions.ReportSource\13.0.3500.0__692fbea5521e1304\CrystalDecisions.ReportSource.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\CrystalDecisions.Shared\13.0.3500.0__692fbea5521e1304\CrystalDecisions.Shared.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\ICollapseBomItemNodeCommand.cs" />
+    <Compile Include="Commands\ICreateBomHeaderCommand.cs" />
+    <Compile Include="Commands\ICreateBomItemCommand.cs" />
+    <Compile Include="Commands\ICreateBomItemDocCommand.cs" />
+    <Compile Include="Commands\ICreateBomItemLogCommand.cs" />
+    <Compile Include="Commands\ICreateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\ICreateLogActionCommand.cs" />
+    <Compile Include="Commands\ICreateMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\ICreateRootItemCommand.cs" />
+    <Compile Include="Commands\IDeleteBomHeaderCommand.cs" />
+    <Compile Include="Commands\IDeleteBomItemCommand.cs" />
+    <Compile Include="Commands\IDeleteDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\IDeleteRootItemCommand.cs" />
+    <Compile Include="Commands\IExpandBomItemNodeCommand.cs" />
+    <Compile Include="Commands\ILoadBomItemsToBomHeaderCommand.cs" />
+    <Compile Include="Commands\ISaveBomItemCommand.cs" />
+    <Compile Include="Commands\ISubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\IUnSubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\IUpdateBomHeaderCommand.cs" />
+    <Compile Include="Commands\IUpdateBomItemIdInMapToRouteChartCommand.cs" />
+    <Compile Include="Commands\IUpdateBomItemNameCommand.cs" />
+    <Compile Include="Commands\IUpdateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\IUpdateStateBomHeaderCommand.cs" />
+    <Compile Include="Dtos\AsupBomComponentDto.cs" />
+    <Compile Include="Dtos\AuxiliaryMaterialDto.cs" />
+    <Compile Include="Dtos\OgmetMatlDto.cs" />
+    <Compile Include="Dtos\PlanOperationDto.cs" />
+    <Compile Include="Dtos\ProductDto.cs" />
+    <Compile Include="Dtos\ProductModeDto.cs" />
+    <Compile Include="Dtos\RouteMapIntegrationTaskDto.cs" />
+    <Compile Include="Dtos\TehprocHeaderDto.cs" />
+    <Compile Include="Dtos\WpDto.cs" />
+    <Compile Include="EventArgs\ErrorEventArgs.cs" />
+    <Compile Include="ExternalData\IAsupBomContextFactory.cs" />
+    <Compile Include="ExternalData\IGetAllIsExpensiveClassifierQuery.cs" />
+    <Compile Include="ExternalData\IGetAllOgmetMatlDtoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllPlanOperationDtoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllProductDtoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllRouteChartsTrackInfoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllTehprocHeaderDtoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllWpDtoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllAuxiliaryMaterialDtoQuery.cs" />
+    <Compile Include="ExternalData\IRouteMapFactory.cs" />
+    <Compile Include="Models\ActionType.cs" />
+    <Compile Include="Models\BomHeader.cs" />
+    <Compile Include="Models\BomHeaderState.cs" />
+    <Compile Include="Models\BomHeaderSubscriber.cs" />
+    <Compile Include="Models\BomItem.cs" />
+    <Compile Include="Models\BomItemLog.cs" />
+    <Compile Include="Models\BomItemLogAction.cs" />
+    <Compile Include="Models\FinalDecisionChanging.cs" />
+    <Compile Include="Models\GroupDefect.cs" />
+    <Compile Include="Models\LogActionType.cs" />
+    <Compile Include="Models\LogRecord.cs" />
+    <Compile Include="Models\MapBomItemToRouteChart.cs" />
+    <Compile Include="Models\MapDefectToDecision.cs" />
+    <Compile Include="Models\RootItem.cs" />
+    <Compile Include="Models\RouteChartTrackInfo.cs" />
+    <Compile Include="Models\SerialEntry.cs" />
+    <Compile Include="Models\StateDetals.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\IGetAllBomHeadersQuery.cs" />
+    <Compile Include="Queries\IGetAllBomHeaderSubscribersQuery.cs" />
+    <Compile Include="Queries\IGetAllBomItemLogsQuery.cs" />
+    <Compile Include="Queries\IGetAllBomItemsByBomHeaderQuery.cs" />
+    <Compile Include="Queries\IGetAllBomItemsFilterToReportQuery.cs" />
+    <Compile Include="Queries\IGetAllBomItemsWithSerialNumbersQuery.cs" />
+    <Compile Include="Queries\IGetAllDecisionsQuery.cs" />
+    <Compile Include="Queries\IGetAllDefectToDecisionMapsQuery.cs" />
+    <Compile Include="Queries\IGetAllGroupDefectsQuery.cs" />
+    <Compile Include="Queries\IGetAllLogActionsQuery.cs" />
+    <Compile Include="Queries\IGetAllMapsBomItemToRouteChartsQuery.cs" />
+    <Compile Include="Queries\IGetAllRootItemsQuery.cs" />
+    <Compile Include="Queries\IGetAllStateDetalsQuery.cs" />
+    <Compile Include="ReportParameters\DefectListItemsRptParm.cs" />
+    <Compile Include="Reports\DefectListItems.cs">
+      <DependentUpon>DefectListItems.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\DefectListItemsReclamation.cs">
+      <DependentUpon>DefectListItemsReclamation.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Services\IBomItemsCloner.cs" />
+    <Compile Include="Services\IBomItemsEditor.cs" />
+    <Compile Include="Services\IBomItemsLoader.cs" />
+    <Compile Include="Services\IBomItemsValidator.cs" />
+    <Compile Include="Services\IGetBomViewService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\DefectListItems.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>DefectListItems.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\DefectListItemsReclamation.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>DefectListItemsReclamation.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,69 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.SelectItemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        mc:Ignorable="d"
+        Title="Ввод значений параметров" Height="220" Width="450" WindowStartupLocation="CenterScreen" d:DataContext="{d:DesignInstance d:Type=viewModels:SelectItemViewModel}">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize"
+                    Value="14" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+            <RowDefinition Height = "Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 10">
+            <TextBlock Text="Введите значения параметров" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width = "Auto"/>
+                <ColumnDefinition Width = "200*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height = "Auto" />
+                <RowDefinition Height = "Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="ДСЕ" VerticalAlignment="Center" Margin="0 0 5 0" />
+
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width = "*"/>
+                    <ColumnDefinition Width = "Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding Detal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Grid.Column="1" Margin="3 0 0 0" Content="..." ToolTip="Выбрать ДСЕ из списка" Command="{Binding OpenChoiceProductWindowCommand}" Style="{StaticResource SecondaryButton}"/>
+            </Grid>
+
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 5 5 0" Text="Кол-во на ед." VerticalAlignment="Center" Visibility="{Binding IsVisibleQty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Width="40" HorizontalAlignment="Left" Margin="0 5 0 0" Text="{Binding QtyMnfString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsVisibleQty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0 10">
+            <Button Content="Подтвердить" Command="{Binding ConfirmCommand}" Style="{StaticResource PrimaryButton}" IsEnabled="{Binding CanSubmit}" />
+        </Grid>
+    </Grid>
+</Window>

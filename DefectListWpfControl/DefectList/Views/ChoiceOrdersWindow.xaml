@@ -1,0 +1,47 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.ChoiceOrdersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        mc:Ignorable="d"
+        Title="Выбор заказов" Height="500" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" d:DataContext="{d:DesignInstance d:Type=viewModels:ChoiceOrdersViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Фильтр:"/>
+            <TextBox Name="FilterStringTextBox" Margin="5" Grid.Column="1" Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Loaded="FilterStringTextBox_Loaded" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <Label Content="Заказы" HorizontalAlignment="Center" FontWeight="Bold" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <CheckBox Content="Выбрать все" IsChecked="{Binding IsSelectAll, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="4 0 0 0"/>
+        </Grid>
+        <Grid Grid.Row="3">
+            <ListBox ItemsSource="{Binding Orders}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding IsSelected}" Width="20"/>
+                            <TextBlock Text="{Binding}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="4" Margin="3">
+            <Button Content="Далее" Command="{Binding ConfirmSelectionCommand}"/>
+        </Grid>
+    </Grid>
+</Window>

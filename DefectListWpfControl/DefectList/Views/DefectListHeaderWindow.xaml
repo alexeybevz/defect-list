@@ -1,0 +1,367 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.DefectListHeaderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:b="clr-namespace:DefectListWpfControl.ViewModelImplement"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:components="clr-namespace:DefectListWpfControl.DefectList.Components"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        mc:Ignorable="d"
+        Title="Дефектовочные ведомости" Height="500" Width="900" WindowState="Maximized" WindowStartupLocation="CenterScreen" d:DataContext="{d:DesignInstance d:Type=viewModels:DefectListHeaderViewModel}">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}" x:Key="LinkButtonStyle">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="CornflowerBlue"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}" x:Key="LinkTextBlockStyle">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+        <Grid Row="0">
+            <Menu Height="25" VerticalAlignment="Top" Background="#efefef">
+                <MenuItem Header="Действие" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <MenuItem Header="Создать новую ДВ" Command="{Binding OpenAddBomHeaderFormCommand}"/>
+                    <MenuItem Header="Создать новую ДВ на основе выделенной" Command="{Binding OpenAddBomHeaderFormBasedOnSelectedItemCommand}"/>
+                    <MenuItem Header="Редактировать выделенную ДВ" Command="{Binding OpenEditBomHeaderFormCommand}"/>
+                    <MenuItem Header="Удалить выделенную ДВ" Command="{Binding DeleteBomHeaderCommand}"/>
+                    <MenuItem Header="Обновить всё" Command="{Binding LoadBomHeadersCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Загрузить состав в дефектовочную ведомость" Command="{Binding LoadBomItemsToBomHeaderCommand}"/>
+                    <MenuItem Header="Перевести ДВ из состояния Закрыто в Утверждено" Command="{Binding ApproveBomHeaderCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Отчеты" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <MenuItem Header="Сводный отчет по ведомостям (excel)" Command="{Binding SummaryByOrdersReportCommand}"/>
+                    <MenuItem Header="Журнал изменения окончательного решения (excel)" Command="{Binding ChangesFinalDecisionReportCommand}"/>
+                    <MenuItem Header="Анализ номенклатуры (excel)" Command="{Binding GetItemInfoByAllProductsReportCommand}"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Label Content="Чтобы начать заполнять дефектовочную ведомость, дважды кликните по строке с соответствующим заказом." Padding="10" HorizontalAlignment="Center" FontSize="14" FontWeight="DemiBold" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height = "Auto" />
+                <RowDefinition Height = "Auto" />
+                <RowDefinition Height = "Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width = "Auto"/>
+                <ColumnDefinition Width = "300"/>
+                <ColumnDefinition Width = "Auto" />
+                <ColumnDefinition Width = "Auto" />
+                <ColumnDefinition Width = "Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.ColumnSpan="5" Grid.Column="0" Margin="2 0 0 0"  Content="{Binding FilterModeName, Mode=TwoWay}" Foreground="DimGray"/>
+            <Label Grid.Row="1" Grid.Column="0" Name="FilterLabel" Margin="2 0 0 2" Content="Фильтр" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="FilterTextBox" Margin="2" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
+                     b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"
+                     ToolTip="Фильтр работает по столбцам: Заказ, Серийный номер, Обозначение изделия, Комментарий"/>
+            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource LinkButtonStyle}" Margin="3 0 0 3" Command="{Binding FilterSettingsCommand}">
+                <TextBlock Text="Настройки фильтра" Style="{StaticResource LinkTextBlockStyle}" />
+            </Button>
+            <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding ShowedRowsString}" Margin="6 0 0 0" Foreground="DarkGreen"/>
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                Width="20"
+                Height="23"
+                Margin="5 0 0 0"
+                Command="{Binding ClearBomHeadersFilterCommand}"
+                Content="Х"
+                ToolTip="Очистка критерия фильтрации"/>
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Cursor="Hand"
+                Margin="25 0 0 0"
+                IsChecked="{Binding ShowCompletedHeadersViewModel.IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                Cursor="Hand"
+                Padding="5"
+                Text="{Binding ShowCompletedHeadersViewModel.Text}">
+                <TextBlock.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding ShowCompletedHeadersViewModel.ClickCommand}" />
+                </TextBlock.InputBindings>
+            </TextBlock>
+        </Grid>
+        <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
+        <Grid Grid.Row="3">
+            <Border BorderBrush="#ccc"
+                    BorderThickness="1"
+                    CornerRadius="0"
+                    Padding="20"
+                    SnapsToDevicePixels="True">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                                 Value="True">
+                                    <Setter Property="Visibility"
+                                                Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <components:DataLoadingSpinner DataContext="Загрузка дефектовочных ведомостей ..." />
+                </StackPanel>
+            </Border>
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility"
+                                    Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="False">
+                                <Setter Property="Visibility"
+                                            Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrorMessage}"
+                                                 Value="True">
+                                    <Setter Property="Visibility"
+                                                Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorMessage}" />
+                </Grid>
+
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility"
+                                        Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasErrorMessage}"
+                                                 Value="False">
+                                    <Setter Property="Visibility"
+                                                Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <DataGrid x:Name="DefectListHeadersDataGrid"
+                              ItemsSource="{Binding BomHeadersView}"
+                              SelectedItem="{Binding SelectedBomHeaderViewModel}"
+                              IsSynchronizedWithCurrentItem="True"
+                              CanUserAddRows="False"
+                              BorderBrush="#ccc"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              CopyingRowClipboardContent="DefectListHeadersDataGrid_CopyingRowClipboardContent">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding BomId}" Width="60"/>
+                            <DataGridTextColumn Header="Заказ" Binding="{Binding Orders}" Width="150"/>
+                            <DataGridTextColumn Header="Тип ДВ" Binding="{Binding HeaderType}" Width="80"/>
+                            <DataGridTextColumn Header="Серийный номер" Binding="{Binding SerialNumber}" Width="150"/>
+                            <DataGridTextColumn Header="Обозначение изделия" Binding="{Binding RootItem.Izdel}" Width="150"/>
+                            <DataGridTextColumn Header="Количество" Binding="{Binding IzdelQty}" Width="150"/>
+                            <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="150"/>
+                            <DataGridTemplateColumn Header="Степень заполнения">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <ProgressBar Name="StateProgressBar" Value="{Binding StateInfo.FillPercentage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" b:ProgressBarHelper.StopAnimationOnCompletion="True"/>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding StateInfo.FillPercentageText, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Состояние" Binding="{Binding StateInfo.ApprovalState}" Width="150"/>
+                            <DataGridTemplateColumn Header="Действие" Visibility="{Binding DataContext.IsCanExecuteSuperUserProperty, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Height="20" Padding="5 0 5 0" Content="Утвердить" Command="{Binding ApproveCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StateInfo.IsWaitApproved}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Height="20" Margin="0 0 10 0" Padding="5 0 5 0" Content="Закрыть" Command="{Binding SetClosedStateCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StateInfo.IsApproved}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Height="20" Padding="5 0 5 0" Content="В работе" Command="{Binding SetWorkInProgressStateCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding StateInfo.IsApproved}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Серийный номер после ремонта" Binding="{Binding SerialNumberAfterRepair}" Width="150"/>
+                            <DataGridTextColumn Header="Договор" Binding="{Binding Contract}" Width="150"/>
+                            <DataGridTemplateColumn Header="Дата открытия договора">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{Binding ContractDateOpen, StringFormat=\{0:dd.MM.yyyy\}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ContractDateOpen}" Value="{x:Static sys:DateTime.MinValue}">
+                                                                <Setter Property="Text" Value=""/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Уведомление об изменениях" Visibility="{Binding Path=DataContext.IsVisibleAction, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsUserSubscribeOnBomHeader}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Hyperlink Command="{Binding UnSubscribeUserOnBomHeaderCommand}">
+                                                    <Hyperlink.Style>
+                                                        <Style TargetType="Hyperlink">
+                                                            <Setter Property="Foreground" Value="#FFFF7400"/>
+                                                            <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                                                            <Style.Triggers>
+                                                               <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Foreground" Value="LightSalmon"/>
+                                                                    <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Hyperlink.Style>
+                                                    Отписаться
+                                                    <fa:ImageAwesome Icon="BellSlashOutline"
+                                                                     Height="12"
+                                                                     Width="12"
+                                                                     Foreground="#FFFF7400"/>
+                                                </Hyperlink>
+                                            </TextBlock>
+                                            <TextBlock HorizontalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsUserSubscribeOnBomHeader}" Value="False">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Hyperlink Command="{Binding SubscribeUserOnBomHeaderCommand}">
+                                                    <Hyperlink.Style>
+                                                        <Style TargetType="Hyperlink">
+                                                            <Setter Property="Foreground" Value="#FFFF7400"/>
+                                                            <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                                                            <Style.Triggers>
+                                                               <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Foreground" Value="LightSalmon"/>
+                                                                    <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Hyperlink.Style>
+                                                    Подписаться
+                                                    <fa:ImageAwesome Icon="BellOutline"
+                                                                     Height="12"
+                                                                     Width="12"
+                                                                     Foreground="#FFFF7400" />
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Создал" Binding="{Binding CreatedByName}" Width="150"/>
+                            <DataGridTextColumn Header="Дата создания" Binding="{Binding CreateDate, StringFormat=\{0:dd.MM.yyyy HH:mm\}}" Width="150"/>
+                            <DataGridTextColumn Header="Изменил" Binding="{Binding UpdatedByName}" Width="150"/>
+                            <DataGridTextColumn Header="Дата изменения" Binding="{Binding RecordDate, StringFormat=\{0:dd.MM.yyyy HH:mm\}}" Width="150" />
+                        </DataGrid.Columns>
+                        <DataGrid.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ExecuteDoubleClickOnBomHeaderCommand}" CommandParameter="{Binding SelectedBomHeaderViewModel}" />
+                        </DataGrid.InputBindings>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

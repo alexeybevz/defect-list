@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B01F4AF3-6E30-491D-9314-406A1E0A559E}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DefectListWpfControl</RootNamespace>
+    <AssemblyName>DefectListWpfControl</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.3500.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\CrystalDecisions.CrystalReports.Engine\13.0.3500.0__692fbea5521e1304\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.39\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject, Version=3.3.6.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.6\lib\net45\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DefectList\Commands\BomHeaderCommands\AddBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\DeleteBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\DoubleClickBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\EditBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\ExecuteDoubleClickOnBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\LoadBomHeadersCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\LoadBomHeaderSubscribesCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\LoadBomItemsToBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenAddBomHeaderFormBasedOnSelectedItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenAddBomHeaderFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenChoiceRootItemFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenEditBomHeaderFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenFilterSettingsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\SubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\UnSubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\UpdateStateBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\UpdateStateFromClosedToApprovedBomHeaderCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\ApplySearchOnSelectedBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\ClearFilterBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\ClearSearchBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\CollapseBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\CreateRouteChartCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\CreateRouteChartsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\DeleteBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\ExpandBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\FillBomItemsWithRequiredReplaceCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\FillFinalDecisionBasedOnPmControlCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\FilterBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\FilterIsRequiredBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\LoadBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\LoadBomItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenAddBomItemFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenCreateRouteChartsFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenMapDefectToDecisionEditFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenReplaceBomItemFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenReplaceNameBomItemFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveCommandBase.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsAndMoveNextCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnAssemblyCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnAssemblyWithNotFilledRowsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnSelectedBomItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SearchBomItemCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SelectBomItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SetFinalDecisionCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SetRepairDecisionCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SetReplaceDecisionCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SetRestoreReplaceQtyCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SetTechnologicalProcessUsedCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\AddDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\DeleteDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\EditDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\LoadDefectToDecisionMapsCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\OpenAddDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\OpenEditDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\LoadProductsCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\AdditionalMaterialsReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ChangesFinalDecisionReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\DefectListItemsChangesReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListReclamationToPdfCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListToExcelCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListToPdfCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\GetItemInfoByAllProductsReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\PurchaseItemsReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ScrapItemsReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\SummaryByOrdersReportCommand.cs" />
+    <Compile Include="DefectList\Commands\RootItemCommands\AddRootItemCommand.cs" />
+    <Compile Include="DefectList\Commands\RootItemCommands\ChoiceRootItemCommand.cs" />
+    <Compile Include="DefectList\Commands\RootItemCommands\ChoiceRootItemInitialCommand.cs" />
+    <Compile Include="DefectList\Commands\RootItemCommands\DeleteRootItemCommand.cs" />
+    <Compile Include="DefectList\Commands\RootItemCommands\LoadRootItemsCommand.cs" />
+    <Compile Include="DefectList\Commons\BomItemFieldPermissionToIsReadOnlyConverter.cs" />
+    <Compile Include="DefectList\Commons\BomItemFieldPermissionToVisibilityConverter.cs" />
+    <Compile Include="DefectList\Commons\DataGridTextSearch.cs" />
+    <Compile Include="DefectList\Commons\FloatNumberValueConverter.cs" />
+    <Compile Include="DefectList\Commons\IsRequiredSubmitValueConverter.cs" />
+    <Compile Include="DefectList\Commons\IsSubmittedValueConverter.cs" />
+    <Compile Include="DefectList\Commons\SearchValueConverter.cs" />
+    <Compile Include="DefectList\Components\BomHeaderDetailsForm.xaml.cs">
+      <DependentUpon>BomHeaderDetailsForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Components\BomItemReadWriteFieldsViewModel.xaml.cs">
+      <DependentUpon>BomItemReadWriteFieldsViewModel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Components\BomItemsFilterByDetalTypComponent.xaml.cs">
+      <DependentUpon>BomItemsFilterByDetalTypComponent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Components\DataLoadingSpinner.xaml.cs">
+      <DependentUpon>DataLoadingSpinner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Components\DefectToDecisionMapDetailsForm.xaml.cs">
+      <DependentUpon>DefectToDecisionMapDetailsForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Stores\BomHeadersStore.cs" />
+    <Compile Include="DefectList\Stores\BomHeaderSubscribersStore.cs" />
+    <Compile Include="DefectList\Stores\BomItemFieldPermissionToRoleStore.cs" />
+    <Compile Include="DefectList\Stores\BomItemsConstantsStore.cs" />
+    <Compile Include="DefectList\Stores\BomItemsFiltersStore.cs" />
+    <Compile Include="DefectList\Stores\BomItemsStore.cs" />
+    <Compile Include="DefectList\Stores\DefectToDecisionMapsStore.cs" />
+    <Compile Include="DefectList\Stores\OpenedBomHeadersStore.cs" />
+    <Compile Include="DefectList\Stores\PermissionsStore.cs" />
+    <Compile Include="DefectList\Stores\ProductsStore.cs" />
+    <Compile Include="DefectList\Stores\RootItemsStore.cs" />
+    <Compile Include="DefectList\Stores\SelectedBomHeaderStore.cs" />
+    <Compile Include="DefectList\Stores\SelectedBomItemStore.cs" />
+    <Compile Include="DefectList\Stores\SelectedDefectToDecisionMapStore.cs" />
+    <Compile Include="DefectList\Stores\TehprocHeadersStore.cs" />
+    <Compile Include="DefectList\ViewModels\AddBomHeaderViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\AddDefectToDecisionMapViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\AddRootItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\BomHeaderDetailsFormViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\BomHeaderViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\BomItemsFilterByDetalTypViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\BomItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ChoiceOrdersViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ChoiceProductViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ChoiceRootItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ConsolidateBomItemsViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ConsolidateBomItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectListHeaderFilterModeViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectListHeaderViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectListItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectToDecisionMapCheckBoxViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectToDecisionMapDetailsFormViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectToDecisionMapsViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\DefectToDecisionMapViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\EditBomHeaderViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\EditDefectToDecisionMapViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ProductItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\RootItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\SelectItemViewModel.cs" />
+    <Compile Include="DefectList\Views\AddBomHeaderView.xaml.cs">
+      <DependentUpon>AddBomHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\AddDefectToDecisionMapView.xaml.cs">
+      <DependentUpon>AddDefectToDecisionMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\AddRootItemWindow.xaml.cs">
+      <DependentUpon>AddRootItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\ChoiceOrdersWindow.xaml.cs">
+      <DependentUpon>ChoiceOrdersWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\ChoiceProductWindow.xaml.cs">
+      <DependentUpon>ChoiceProductWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\ChoiceRootItemWindow.xaml.cs">
+      <DependentUpon>ChoiceRootItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\ConsolidateBomItemsWindow.xaml.cs">
+      <DependentUpon>ConsolidateBomItemsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\DefectListHeaderFilterModeWindow.xaml.cs">
+      <DependentUpon>DefectListHeaderFilterModeWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\DefectListHeaderWindow.xaml.cs">
+      <DependentUpon>DefectListHeaderWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\DefectListItemWindow.xaml.cs">
+      <DependentUpon>DefectListItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\EditBomHeaderView.xaml.cs">
+      <DependentUpon>EditBomHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\EditDefectToDecisionMapView.xaml.cs">
+      <DependentUpon>EditDefectToDecisionMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\MapDefectToDecisionWindow.xaml.cs">
+      <DependentUpon>MapDefectToDecisionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\SelectItemWindow.xaml.cs">
+      <DependentUpon>SelectItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelpersWindow\ChoiceDateWindow.xaml.cs">
+      <DependentUpon>ChoiceDateWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectListIocKernel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="ViewModelImplement\AsyncCommandBase.cs" />
+    <Compile Include="ViewModelImplement\CancelAsyncCommand.cs" />
+    <Compile Include="ViewModelImplement\CheckBoxViewModel.cs" />
+    <Compile Include="ViewModelImplement\CommandBase.cs" />
+    <Compile Include="ViewModelImplement\DelegateCommand.cs" />
+    <Compile Include="ViewModelImplement\InputBindingsManager.cs" />
+    <Compile Include="ViewModelImplement\ObservableObject.cs" />
+    <Compile Include="ViewModelImplement\ProgressBarHelper.cs" />
+    <Compile Include="ViewModelImplement\ViewModel.cs" />
+    <Compile Include="ViewModelImplement\WindowBooleanToVisibilityConverter.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DefectList\Components\BomHeaderDetailsForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Components\BomItemReadWriteFieldsViewModel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Components\BomItemsFilterByDetalTypComponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Components\DataLoadingSpinner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Components\DefectToDecisionMapDetailsForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\AddBomHeaderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\AddDefectToDecisionMapView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\AddRootItemWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\ChoiceOrdersWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\ChoiceProductWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\ChoiceRootItemWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\ConsolidateBomItemsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\DefectListHeaderFilterModeWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\DefectListHeaderWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\DefectListItemWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\EditBomHeaderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\EditDefectToDecisionMapView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\MapDefectToDecisionWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\SelectItemWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="HelpersWindow\ChoiceDateWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DefectListBusinessLogic\DefectListBusinessLogic.csproj">
+      <Project>{EF1807D2-4F9A-4656-9999-BB7FA651CBED}</Project>
+      <Name>DefectListBusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DefectListDomain\DefectListDomain.csproj">
+      <Project>{2DB21209-DFF6-43E3-93D0-B3B84DBF3BB4}</Project>
+      <Name>DefectListDomain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReporterDomain\ReporterDomain.csproj">
+      <Project>{426e3487-47cb-44e3-9fdf-da8a0691a951}</Project>
+      <Name>ReporterDomain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

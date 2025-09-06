@@ -1,0 +1,77 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.ConsolidateBomItemsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Views"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons"
+        mc:Ignorable="d"
+        Title="Создание МК" Height="500" Width="900" WindowStartupLocation="CenterScreen" WindowState="Maximized" d:DataContext="{d:DesignInstance d:Type=viewModels:ConsolidateBomItemsViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
+        <DataGrid
+            x:Name="ConsolidatedBomItemsDataGrid"
+            Grid.Row="0"
+            ItemsSource="{Binding Rows}"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            HorizontalScrollBarVisibility="Auto"
+            CopyingRowClipboardContent="DataGrid_CopyingRowClipboardContent">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="60">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Выбрать" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Созданная МК" Binding="{Binding CreatedRouteMap, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Обозначение" Binding="{Binding Detal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                <DataGridTextColumn Header="Наименование" Binding="{Binding DetalIma, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                <DataGridTextColumn Header="Тип" Binding="{Binding DetalTyp, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Решение" Binding="{Binding NormalizeDecision, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Кол-во (план)" Binding="{Binding QtyMnf, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Кол-во (запущено)" Binding="{Binding QtyLaunched, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Кол-во для запуска" Binding="{Binding QtyForLaunch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Обозначение для запуска МК в АСУП" Binding="{Binding TargetDetal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" IsReadOnly="{Binding DataContext.IsReadOnlyComponent, Source={x:Reference ProxyElement}}"/>
+                <DataGridTextColumn Header="Наличие обозначения для запуска МК в АСУП" Binding="{Binding IsExistsTargetDetalName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTemplateColumn Header="Запуск на подразделение в Контроле" Visibility="{Binding DataContext.IsEnabledComponent, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.Depts, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                      SelectedValuePath="Key"
+                                      DisplayMemberPath="Value"
+                                      SelectedItem="{Binding TargetWp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValue="{Binding TargetWpId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding TargetWp.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Запуск на подразделение в Контроле"
+                                    Binding="{Binding TargetWp.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="150"
+                                    Visibility="{Binding DataContext.IsReadOnlyComponent, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Закрыта от ввода работ" Binding="{Binding IsWorkNeedName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Row="1" Style="{StaticResource PrimaryButton}" Width="120" Margin="0 5" FontSize="14" Content="Создать" Command="{Binding CreateRouteChartsCommand}"/>
+    </Grid>
+</Window>
