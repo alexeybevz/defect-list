@@ -1,13 +1,10 @@
-USE [master]
-GO
-
-IF DB_ID(N'DefectListTest') IS NULL
+IF DB_ID(N'$(DB_NAME)') IS NULL
 BEGIN
-    CREATE DATABASE [DefectListTest];
+    CREATE DATABASE [$(DB_NAME)];
 END
 GO
 
-USE [DefectListTest]
+USE [$(DB_NAME)];
 GO
 
 -- dbo.BomItemDoc определение

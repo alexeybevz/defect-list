@@ -1,0 +1,19 @@
+services:
+  sqlserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sql-defect-list-test
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:-Developer}  # Developer по умолчанию
+      SA_PASSWORD: ${SA_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - ${HOST_SQL_PORT:-1433}:1433
+    # (опционально) Healthcheck, чтобы понимать, что БД встала
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-C", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
