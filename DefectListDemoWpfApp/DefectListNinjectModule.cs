@@ -71,8 +71,8 @@ namespace DefectListDemoWpfApp
             Bind<ICreateDefectToDecisionMapCommand>().To<CreateDefectToDecisionMapCommand>().InTransientScope();
             Bind<IUpdateDefectToDecisionMapCommand>().To<UpdateDefectToDecisionMapCommand>().InTransientScope();
             Bind<IDeleteDefectToDecisionMapCommand>().To<DeleteDefectToDecisionMapCommand>().InTransientScope();
-            Bind<DefectToDecisionMapsStore>().ToSelf().InSingletonScope();
-            Bind<SelectedDefectToDecisionMapStore>().ToSelf().InSingletonScope();
+            Bind<DefectToDecisionMapsStore>().ToSelf().InTransientScope();
+            Bind<SelectedDefectToDecisionMapStore>().ToSelf().InTransientScope();
 
             Bind<IGetAllMapsBomItemToRouteChartsQuery>().To<GetAllMapsBomItemToRouteChartsQuery>().InTransientScope();
             Bind<ICreateMapBomItemToRouteChartCommand>().To<CreateMapBomItemToRouteChartCommand>().InTransientScope();

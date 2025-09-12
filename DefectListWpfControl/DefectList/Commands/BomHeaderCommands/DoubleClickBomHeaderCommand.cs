@@ -25,7 +25,11 @@ namespace DefectListWpfControl.DefectList.Commands.BomHeaderCommands
                 return;
 
             if (bomHeader.TotalRowsCount == 0)
+            {
+                MessageBox.Show($"Не загружен состав ремонтного изделия по заказу '{bomHeader.Orders}'. \n\n" +
+                                "Для загрузки состава в меню нажмите 'Действие' -> 'Загрузить состав в дефектовочную ведомость'.", "", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
+            }
 
             try
             {

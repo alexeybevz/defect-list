@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using DefectListBusinessLogic.Services;
 using DefectListDomain.ExternalData;
 using DefectListDomain.Models;
 using DefectListWpfControl.ViewModelImplement;
+using ReporterBusinessLogic;
 
 namespace DefectListWpfControl.DefectList.ViewModels
 {

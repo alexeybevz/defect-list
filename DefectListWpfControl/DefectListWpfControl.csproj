@@ -392,6 +392,10 @@
       <Project>{2DB21209-DFF6-43E3-93D0-B3B84DBF3BB4}</Project>
       <Name>DefectListDomain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReporterBusinessLogic\ReporterBusinessLogic.csproj">
+      <Project>{BFE2C817-16EC-4BC3-9DB3-9F80F88C9DDF}</Project>
+      <Name>ReporterBusinessLogic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReporterDomain\ReporterDomain.csproj">
       <Project>{426e3487-47cb-44e3-9fdf-da8a0691a951}</Project>
       <Name>ReporterDomain</Name>

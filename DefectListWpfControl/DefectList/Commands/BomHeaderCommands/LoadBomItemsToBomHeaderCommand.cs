@@ -61,8 +61,8 @@ namespace DefectListWpfControl.DefectList.Commands.BomHeaderCommands
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    MessageBox.Show($"Произошла ошибка при загрузке состава изделия {bomHeader.RootItem.Izdel} в дефектовочную ведомость № {bomHeader.BomId}:\n\n" +
+                                    e.Message);
                 }
                 finally
                 {

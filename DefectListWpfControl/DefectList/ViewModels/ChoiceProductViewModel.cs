@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
-using DefectListBusinessLogic.Services;
 using DefectListDomain.Dtos;
 using DefectListWpfControl.DefectList.Commands;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.ViewModelImplement;
+using ReporterBusinessLogic;
 
 namespace DefectListWpfControl.DefectList.ViewModels
 {

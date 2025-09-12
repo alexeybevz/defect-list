@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Windows;
 using DefectListBusinessLogic.Report;
-using DefectListBusinessLogic.Services;
 using ReporterDomain.Services.CreateReportService;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.DefectList.Views;
 using DefectListWpfControl.ViewModelImplement;
+using ReporterBusinessLogic;
 
 namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 {

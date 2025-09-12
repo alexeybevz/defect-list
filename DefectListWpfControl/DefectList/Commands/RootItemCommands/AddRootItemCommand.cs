@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DefectListBusinessLogic.Services;
 using DefectListDomain.Models;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.ViewModelImplement;
+using ReporterBusinessLogic;
 
 namespace DefectListWpfControl.DefectList.Commands.RootItemCommands
 {

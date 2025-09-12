@@ -179,7 +179,7 @@ namespace DefectListBusinessLogic.Report
         private IEnumerable<MtrlP> GetData(IReadOnlyCollection<BomItem> bomItemsView)
         {
             var bomItems = bomItemsView
-                            .Where(x => x.FinalDecision == "заменить" && x.ProductID.HasValue && x.Code_LSF82.HasValue)
+                            .Where(x => (x.FinalDecision == "заменить" || x.FinalDecision == "скомплектовать") && x.ProductID.HasValue && x.Code_LSF82.HasValue)
                             .GroupBy(x => new { x.ProductID, x.Code_LSF82 })
                             .Select(x => new { x.Key.ProductID, x.Key.Code_LSF82, SumQtyReplace = (decimal)x.Sum(s => s.QtyReplace) })
                             .ToList();

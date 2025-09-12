@@ -104,7 +104,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
 
             RootItemDoubleClickCommand = new DelegateCommand(obj =>
             {
-                RootItemSelected?.Invoke(SelectedRootItemViewModel.RootItem);
+                if (SelectedRootItemViewModel != null)
+                    RootItemSelected?.Invoke(SelectedRootItemViewModel.RootItem);
             });
             ChoiceRootItemCommand = RootItemDoubleClickCommand;
             
