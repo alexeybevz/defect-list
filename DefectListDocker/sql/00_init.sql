@@ -433,6 +433,8 @@ INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, Creat
 INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, CreatedBy, RecordDate, UpdatedBy) VALUES(3, N'BomItemDelete', getdate(), N'admin', getdate(), N'admin');
 INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, CreatedBy, RecordDate, UpdatedBy) VALUES(4, N'BomHeaderChanged', getdate(), N'admin', getdate(), N'admin');
 INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, CreatedBy, RecordDate, UpdatedBy) VALUES(5, N'BomItemReplaceName', getdate(), N'admin', getdate(), N'admin');
+INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, CreatedBy, RecordDate, UpdatedBy) VALUES(6, N'BomItemReplaceQty', getdate(), N'admin', getdate(), N'admin');
+INSERT INTO LogActionType (LogActionTypeId, LogActionTypeName, CreateDate, CreatedBy, RecordDate, UpdatedBy) VALUES(7, N'BomItemSplit', getdate(), N'admin', getdate(), N'admin');
 
 SET IDENTITY_INSERT LogActionType OFF
 
@@ -608,7 +610,7 @@ ALTER TABLE dbo.LogAction ADD  DEFAULT getdate() FOR CreateDate;
 --
 
 CREATE UNIQUE NONCLUSTERED INDEX IX_BomHeader_Orders ON BomHeader (Orders);
-CREATE UNIQUE NONCLUSTERED INDEX IX_BomHeader_SerialNumber ON BomHeader (SerialNumber);
+CREATE UNIQUE NONCLUSTERED INDEX IX_BomHeader_SerialNumber ON BomHeader (Contract, SerialNumber);
 CREATE UNIQUE NONCLUSTERED INDEX IX_RootItem_Izdel ON RootItem (Izdel);
 CREATE NONCLUSTERED INDEX IX_BomItem_SerialNumber ON BomItem (SerialNumber);
 

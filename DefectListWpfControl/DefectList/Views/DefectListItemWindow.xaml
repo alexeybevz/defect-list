@@ -279,6 +279,7 @@
                                             <MenuItem Header="Заменить ДСЕ" Command="{Binding OpenReplaceBomItemFormCommand}"/>
                                             <MenuItem Header="Заменить только обозначение ДСЕ" Command="{Binding OpenReplaceNameBomItemFormCommand}"/>
                                             <MenuItem Header="Удалить ДСЕ" Command="{Binding DeleteBomItemCommand}"/>
+                                            <MenuItem Header="Разделить количество" Command="{Binding OpenSplitBomItemFormCommand}" />
                                             <Separator/>
                                             <MenuItem Header="Распечатать ДСЕ с окончательным решением (pdf)" Command="{Binding ExportAssemblyWithFinalDecisionToPdfCommand}"/>
                                             <MenuItem Header="Распечатать ДСЕ с первичным решением (pdf)" Command="{Binding ExportAssemblyWithInitialDecisionToPdfCommand}"/>
@@ -476,6 +477,7 @@
                         <DataGrid x:Name="dataGridBomItemLog" ItemsSource="{Binding BomItemLogs}" IsSynchronizedWithCurrentItem="True" SelectionMode="Single" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" Grid.ColumnSpan="2" CopyingRowClipboardContent="DataGridBomItemLog_OnCopyingRowClipboardContent">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Номер документа" Binding="{Binding BomItemDocId}" Width="60"/>
+                                <DataGridTextColumn Header="Кол-во (произв-е)" Binding="{Binding QtyMnf}" Width="40"/>
                                 <DataGridTextColumn Header="Кол-во (ремонт)" Binding="{Binding QtyRestore}" Width="40"/>
                                 <DataGridTextColumn Header="Кол-во (замена)" Binding="{Binding QtyReplace}" Width="40"/>
                                 <DataGridTextColumn Header="Установленный дефект" Binding="{Binding Defect}" Width="150"/>

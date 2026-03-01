@@ -1,42 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
-using DefectListDomain.ExternalData;
+using System.Threading.Tasks;
 using DefectListDomain.Models;
 using DefectListWpfControl.ViewModelImplement;
-using ReporterBusinessLogic;
 
 namespace DefectListWpfControl.DefectList.ViewModels
 {
     public class ConsolidateBomItemViewModel : ViewModel
     {
-        private readonly IGetAllProductDtoQuery _getAllProductDtoQuery;
         private readonly IEnumerable<KeyValuePair<int, string>> _depts;
 
-        public ConsolidateBomItemViewModel(IGetAllProductDtoQuery getAllProductDtoQuery, IEnumerable<KeyValuePair<int, string>> depts)
+        public ConsolidateBomItemViewModel(IEnumerable<KeyValuePair<int, string>> depts)
         {
-            _getAllProductDtoQuery = getAllProductDtoQuery;
             _depts = depts;
-
-            TargetDetalUpdated += TargetDetalUpdatedAction;
         }
 
-        private async void TargetDetalUpdatedAction(string detal)
-        {
-            try
-            {
-                ProductId = (await _getAllProductDtoQuery.ExecuteByDetals(SpecifKeyCreator.CreateKey(detal)))?.Id ?? 0;
-                TargetDetals = SpecifKeyCreator.CreateKey(detal);
-                IsSelected = true;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Произошла ошибка при обращении к базе данных во время работы с полем 'Обозначение для запуска МК в АСУП'");
-            }
-        }
-
-        private readonly Action<string> TargetDetalUpdated;
+        public event Func<ConsolidateBomItemViewModel, string, Task> TargetDetalUpdated;
+        public event Action<ConsolidateBomItemViewModel, int> TargetWpIdUpdated;
 
         public string RowGuid { get; set; }
 
@@ -149,7 +130,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             {
                 _targetDetal = value;
                 NotifyPropertyChanged(nameof(TargetDetal));
-                TargetDetalUpdated?.Invoke(value);
+                TargetDetalUpdated?.Invoke(this, _targetDetal);
             }
         }
 
@@ -161,7 +142,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             {
                 _targetWpId = value;
                 NotifyPropertyChanged(nameof(TargetWpId));
-                TargetWp = _depts.FirstOrDefault(x => x.Key == value);
+                TargetWpIdUpdated?.Invoke(this, _targetWpId);
             }
         }
 
@@ -176,7 +157,16 @@ namespace DefectListWpfControl.DefectList.ViewModels
             }
         }
 
-        public string TargetWpName => _depts.FirstOrDefault(x => x.Key == TargetWpId).Value;
+        private string _targetWpName;
+        public string TargetWpName
+        {
+            get { return _targetWpName; }
+            set
+            {
+                _targetWpName = value;
+                NotifyPropertyChanged(nameof(TargetWpName));
+            }
+        }
 
         private string _normalizeDecision;
         public string NormalizeDecision

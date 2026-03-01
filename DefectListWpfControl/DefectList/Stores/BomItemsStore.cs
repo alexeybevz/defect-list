@@ -27,6 +27,7 @@ namespace DefectListWpfControl.DefectList.Stores
         public event Action BomItemsReplaced;
         public event Action BomItemsNameReplaced;
         public event Action BomItemsDeleted;
+        public event Action BomItemsSplitted;
 
         public BomItemsStore(
             IGetAllBomItemsByBomHeaderQuery getAllBomItemsByBomHeaderQuery,
@@ -118,6 +119,13 @@ namespace DefectListWpfControl.DefectList.Stores
             await _bomItemsEditor.Delete(bomHeader, deletedBomItem, deletedBomItems, userLogin);
 
             BomItemsDeleted?.Invoke();
+        }
+
+        public async void Split(BomHeader bomHeader, BomItem parentBomItem, BomItem bomItem, decimal currentBomItemQty, decimal newBomItemQty, string userLogin)
+        {
+            await _bomItemsEditor.Split(bomHeader, parentBomItem, bomItem, currentBomItemQty, newBomItemQty, userLogin);
+
+            BomItemsSplitted?.Invoke();
         }
 
         public async Task<IEnumerable<BomItem>> GetBomItemIsShowedView(int bomId)

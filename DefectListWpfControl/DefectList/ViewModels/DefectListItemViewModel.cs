@@ -290,6 +290,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public ICommand OpenAddBomItemFormCommand { get; }
         public ICommand OpenReplaceBomItemFormCommand { get; }
         public ICommand OpenReplaceNameBomItemFormCommand { get; }
+        public ICommand OpenSplitBomItemFormCommand { get; }
         public ICommand DeleteBomItemCommand { get; }
         public ICommand SelectBomItemsCommand { get; }
         public ICommand SelectNotFilledBomItemsCommand { get; }
@@ -374,6 +375,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             OpenAddBomItemFormCommand = new OpenAddBomItemFormCommand(this, _selectedBomItemStore, productsStore, _bomItemsStore);
             OpenReplaceBomItemFormCommand = new OpenReplaceBomItemFormCommand(this, _selectedBomItemStore, productsStore, _bomItemsStore);
             OpenReplaceNameBomItemFormCommand = new OpenReplaceNameBomItemFormCommand(this, _selectedBomItemStore, productsStore, _bomItemsStore);
+            OpenSplitBomItemFormCommand = new OpenSplitBomItemFormCommand(this, _selectedBomItemStore, _bomItemsStore);
             DeleteBomItemCommand = new DeleteBomItemCommand(this, _selectedBomItemStore, _bomItemsStore);
             SelectBomItemsCommand = new SelectBomItemsCommand(this, FilterByStructureNumber());
             SelectNotFilledBomItemsCommand = new SelectBomItemsCommand(this, FilterByStructureNumberWithNotFilledRows());
@@ -409,6 +411,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomItemsStore.BomItemsReplaced += BomItemsStoreOnBomItemsEdited;
             _bomItemsStore.BomItemsNameReplaced += BomItemsStoreOnBomItemsEdited;
             _bomItemsStore.BomItemsDeleted += BomItemsStoreOnBomItemsEdited;
+            _bomItemsStore.BomItemsSplitted += BomItemsStoreOnBomItemsEdited;
             _bomItemsView.CollectionChanged += BomItemsViewOnCollectionChanged;
             _selectedBomItemStore.SelectedBomItemChanged += SelectedBomItemStoreOnSelectedBomItemChanged;
         }
@@ -444,7 +447,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             return viewModel;
         }
 
-        protected override void Dispose()
+        protected override void ExecuteDispose()
         {
             _bomItemsStore.BomItemsLoaded -= BomItemsStoreOnBomItemsLoaded;
             _bomItemsStore.BomItemsLoadedById -= BomItemsStoreOnBomItemsLoadedById;
@@ -454,7 +457,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomItemsStore.BomItemsDeleted -= BomItemsStoreOnBomItemsEdited;
             _bomItemsView.CollectionChanged -= BomItemsViewOnCollectionChanged;
 
-            base.Dispose();
+            base.ExecuteDispose();
         }
 
         #endregion

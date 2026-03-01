@@ -15,7 +15,7 @@ namespace DefectListBusinessLogic.Fakes
             return new List<RouteMapIntegrationTaskDto>();
         }
 
-        public void RunMarKartaExeToHandleTasksOnCreate(string sessionGuid)
+        public void RunMarKartaExeToHandleTasksOnCreate(string sessionGuid, string login)
         {
         }
 

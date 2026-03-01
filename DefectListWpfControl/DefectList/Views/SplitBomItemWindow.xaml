@@ -1,0 +1,108 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.SplitBomItemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Views"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons"
+        mc:Ignorable="d"
+        Title="Разделение количества"
+        Height="270"
+        Width="450"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance d:Type=viewModels:SplitBomItemViewModel}">
+    <Window.Resources>
+        <commons:FloatNumberValueConverter x:Key="FloatNumberValueConverter" />
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground"
+                    Value="Black" />
+            <Setter Property="BorderBrush"
+                    Value="DarkGray" />
+            <Setter Property="BorderThickness"
+                    Value="1" />
+            <Setter Property="Padding"
+                    Value="5" />
+            <Setter Property="FontSize"
+                    Value="14" />
+            <Setter Property="Width"
+                    Value="100" />
+            <Setter Property="HorizontalAlignment"
+                    Value="Left" />
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize"
+                    Value="14" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Margin="0 0 0 10"
+                   Text="Укажите распределение количества"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+
+        <Grid Grid.Row="1"
+              Margin="0 10 0 0"
+              HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Margin="5"
+                       VerticalAlignment="Center"
+                       Text="Распределяемое количество" />
+            <TextBox Grid.Row="0"
+                     Grid.Column="1"
+                     Margin="5"
+                     IsEnabled="False"
+                     Text="{Binding RawInitialQty}" />
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5"
+                       VerticalAlignment="Center"
+                       Text="Количество на текущей строке" />
+            <TextBox Grid.Row="1"
+                     Grid.Column="1"
+                     Margin="5"
+                     Text="{Binding RawCurrentBomItemQty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PreviewTextInput="NumberValidationTextBox"/>
+
+            <TextBlock Grid.Row="2"
+                       Grid.Column="0"
+                       Margin="5"
+                       VerticalAlignment="Center"
+                       Text="Количество на новой строке" />
+            <TextBox Grid.Row="2"
+                     Grid.Column="1"
+                     Margin="5"
+                     Text="{Binding RawNewBomItemQty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PreviewTextInput="NumberValidationTextBox"/>
+        </Grid>
+
+        <Button Grid.Row="2"
+                Content="Подтвердить"
+                Margin="0 5 0 0"
+                Command="{Binding ExecuteCommand}"
+                Style="{StaticResource PrimaryButton}"
+                IsEnabled="{Binding CanSubmit}" />
+    </Grid>
+</Window>

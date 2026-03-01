@@ -10,12 +10,14 @@ namespace DefectListWpfControl.DefectList.Commands.BomHeaderCommands
     public class OpenFilterSettingsCommand : CommandBase
     {
         private readonly DefectListHeaderViewModel _defectListHeaderViewModel;
+        private readonly BomHeadersStore _bomHeadersStore;
         private readonly DefectListHeaderFilterModeWindow _filterModeWindow;
 
         public OpenFilterSettingsCommand(DefectListHeaderViewModel defectListHeaderViewModel, BomHeadersStore bomHeadersStore)
         {
             _defectListHeaderViewModel = defectListHeaderViewModel;
-            
+            _bomHeadersStore = bomHeadersStore;
+
             _filterModeWindow = new DefectListHeaderFilterModeWindow(new DefectListHeaderFilterModeViewModel(defectListHeaderViewModel, bomHeadersStore));
 
             bomHeadersStore.BomHeadersLoaded += SubscribeOnFilterEvent;
@@ -47,6 +49,13 @@ namespace DefectListWpfControl.DefectList.Commands.BomHeaderCommands
         {
             var vm = (DefectListHeaderFilterModeViewModel)_filterModeWindow.DataContext;
             SetFilter(vm);
+        }
+
+        protected override void ExecuteDispose()
+        {
+            _bomHeadersStore.BomHeadersLoaded -= SubscribeOnFilterEvent;
+
+            _filterModeWindow.ForceClose();
         }
     }
 }

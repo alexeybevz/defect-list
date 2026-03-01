@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -210,7 +211,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             return viewModel;
         }
 
-        protected override void Dispose()
+        protected override void ExecuteDispose()
         {
             _selectedBomHeaderStore.SelectedBomHeaderChanged -= SelectedBomHeaderStore_SelectedBomHeaderChanged;
             _openedBomHeadersStore.RequestOnLoadBomHeaders -= Request_LoadBomHeaders;
@@ -222,8 +223,9 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomHeadersStore.BomHeaderDeleted -= BomHeadersStore_BomHeaderDeleted;
             _bomHeadersView.CollectionChanged -= BomHeadersView_CollectionChanged;
             ShowCompletedHeadersViewModel.IsCheckedChanged -= RefreshCollectionView;
+            (FilterSettingsCommand as IDisposable)?.Dispose();
 
-            base.Dispose();
+            base.ExecuteDispose();
         }
 
         private void SelectedBomHeaderStore_SelectedBomHeaderChanged()

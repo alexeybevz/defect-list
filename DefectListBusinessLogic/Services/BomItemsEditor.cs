@@ -22,12 +22,14 @@ namespace DefectListBusinessLogic.Services
 
         private readonly IGetAllProductDtoQuery _getAllProductDtoQuery;
         private readonly IAsupBomContextFactory _asupBomContextFactory;
+        private readonly ISaveBomItemCommand _saveBomItemCommand;
         private readonly IBomItemsLoader _bomItemsLoader;
         private readonly IUpdateBomItemNameCommand _updateBomItemNameCommand;
         private readonly IDeleteBomItemCommand _deleteBomItemCommand;
         private readonly IExpandBomItemNodeCommand _expandBomItemNodeCommand;
         private readonly ICollapseBomItemNodeCommand _collapseBomItemNodeCommand;
         private readonly ICreateLogActionCommand _createLogActionCommand;
+        private readonly IUpdateBomItemQtyCommand _updateBomItemQtyCommand;
 
         public BomItemsEditor(
             IGetAllProductDtoQuery getAllProductDtoQuery,
@@ -37,23 +39,27 @@ namespace DefectListBusinessLogic.Services
             IExpandBomItemNodeCommand expandBomItemNodeCommand,
             ICollapseBomItemNodeCommand collapseBomItemNodeCommand,
             ICreateLogActionCommand createLogActionCommand,
-            IAsupBomContextFactory asupBomContextFactory)
+            IUpdateBomItemQtyCommand updateBomItemQtyCommand,
+            IAsupBomContextFactory asupBomContextFactory,
+            ISaveBomItemCommand saveBomItemCommand)
         {
             _getAllProductDtoQuery = getAllProductDtoQuery;
             _asupBomContextFactory = asupBomContextFactory;
+            _saveBomItemCommand = saveBomItemCommand;
             _bomItemsLoader = bomItemsLoader;
             _updateBomItemNameCommand = updateBomItemNameCommand;
             _deleteBomItemCommand = deleteBomItemCommand;
             _expandBomItemNodeCommand = expandBomItemNodeCommand;
             _collapseBomItemNodeCommand = collapseBomItemNodeCommand;
             _createLogActionCommand = createLogActionCommand;
+            _updateBomItemQtyCommand = updateBomItemQtyCommand;
         }
 
         #region Events
         public event EventHandler<ErrorEventArgs> OnError;
         #endregion
 
-        public async Task Add(BomHeader bomHeader, BomItem parentBomItem, BomItem addBomItem, string login)
+        public async Task<int> Add(BomHeader bomHeader, BomItem parentBomItem, BomItem addBomItem, string login)
         {
             if (bomHeader == null) throw new ArgumentNullException(nameof(bomHeader));
             if (parentBomItem == null) throw new ArgumentNullException(nameof(parentBomItem));
@@ -68,13 +74,13 @@ namespace DefectListBusinessLogic.Services
             if (parentBomItem.UzelFlag != 1)
             {
                 OnError?.Invoke(this, new ErrorEventArgs("Добавление ДСЕ возможно только в сборочную единицу. Операция отменена."));
-                return;
+                return -1;
             }
 
             if (parentBomItem.Detal == addBomItem.Detal)
             {
                 OnError?.Invoke(this, new ErrorEventArgs("Запрещено добавлять ДСЕ само в себя. Операция отменена."));
-                return;
+                return -1;
             }
 
             var parentQty = parentBomItem.QtyMnf;
@@ -85,7 +91,7 @@ namespace DefectListBusinessLogic.Services
             if (newBomItem == null)
             {
                 OnError?.Invoke(this, new ErrorEventArgs("ДСЕ для добавления в состав не обнаружена в конструкторской документации АСУП. Операция отменена."));
-                return;
+                return -1;
             }
 
             addBomItem.UzelFlag = (byte)(newBomItem.IsAssembly ? 1 : 0);
@@ -107,7 +113,7 @@ namespace DefectListBusinessLogic.Services
                     Detal_Code_LSF82 = newBomItem.CodeLsf82
                 };
 
-                await _bomItemsLoader.Execute(
+                var rootBomItemId = await _bomItemsLoader.Execute(
                     new List<BomItem>(),
                     new List<AsupBomComponentDto>() { insertedItem },
                     parentBomItem.BomId,
@@ -118,7 +124,7 @@ namespace DefectListBusinessLogic.Services
                 );
 
                 WriteLog(ActionType.Add);
-                return;
+                return rootBomItemId;
             }
 
             if (addBomItem.UzelFlag == 1)
@@ -128,10 +134,10 @@ namespace DefectListBusinessLogic.Services
                 if (!newBomItems.Any())
                 {
                     OnError?.Invoke(this, new ErrorEventArgs("Не обнаружено состава сборочной единицы для добавления в состав. Операция отменена."));
-                    return;
+                    return -1;
                 }
 
-                await _bomItemsLoader.Execute(
+                var rootBomItemId = await _bomItemsLoader.Execute(
                     new List<BomItem>(),
                     newBomItems,
                     parentBomItem.BomId,
@@ -142,7 +148,10 @@ namespace DefectListBusinessLogic.Services
                 );
 
                 WriteLog(ActionType.Add);
+                return rootBomItemId;
             }
+
+            return -1;
         }
 
         public async Task Replace(BomHeader bomHeader, BomItem oldBomItem, BomItem newBomItem, List<BomItem> bom, string login)
@@ -235,6 +244,50 @@ namespace DefectListBusinessLogic.Services
         public async Task Collapse(int assemblyBomItemId, List<BomItem> assemblyBom)
         {
             await _collapseBomItemNodeCommand.Execute(assemblyBomItemId, assemblyBom);
+        }
+
+        public async Task Split(BomHeader bomHeader, BomItem parentBomItem, BomItem bomItem, decimal currentBomItemQty, decimal newBomItemQty, string userLogin)
+        {
+            var initQtyMnf = bomItem.QtyMnf;
+            var initQtyMnfOnUnit = bomItem.QtyMnf / parentBomItem.QtyMnf;
+
+            var addQtyMnfOnUnit = (float)newBomItemQty / parentBomItem.QtyMnf;
+            bomItem.QtyMnf = addQtyMnfOnUnit;
+            var addedBomItemId = await Add(bomHeader, parentBomItem, bomItem, userLogin);
+
+            var updateQtyMnfOnUnit = (float)currentBomItemQty / parentBomItem.QtyMnf;
+            bomItem.QtyMnf = updateQtyMnfOnUnit;
+            await _updateBomItemQtyCommand.Execute(bomItem.Id, bomItem, userLogin);
+
+            if (Math.Abs(bomItem.QtyRestore - initQtyMnf) < 1e-10 && bomItem.QtyReplace == 0)
+            {
+                bomItem.QtyRestore = (float)currentBomItemQty;
+                _saveBomItemCommand.Execute(bomItem, userLogin);
+            }
+
+            if (Math.Abs(bomItem.QtyReplace - initQtyMnf) < 1e-10 && bomItem.QtyRestore == 0)
+            {
+                bomItem.QtyReplace = (float)currentBomItemQty;
+                _saveBomItemCommand.Execute(bomItem, userLogin);
+            }
+
+            var logActionType = _createLogActionCommand.LogActionTypes.FirstOrDefault(x => x.LogActionTypeName == _createLogActionCommand.LogActionTypesDictionary[ActionType.ReplaceQty]);
+            _createLogActionCommand.Execute(
+                logActionType,
+                bomHeader.BomId,
+                "BOM",
+                $@"ID ведомости {{{bomHeader.BomId}}}. Изменено количество (произв-е) на ед. по ДСЕ ID {{{bomItem.Id}}} с {{{initQtyMnfOnUnit}}} на {{{updateQtyMnfOnUnit}}}",
+                $@"ДВ {{{bomHeader.Orders}}} в узле {{{parentBomItem.Detal}}} изменено количество (произв-е) на ед. по ДСЕ {{{bomItem.Detal}}} с {{{initQtyMnfOnUnit}}} на {{{updateQtyMnfOnUnit}}}",
+                userLogin);
+
+            logActionType = _createLogActionCommand.LogActionTypes.FirstOrDefault(x => x.LogActionTypeName == _createLogActionCommand.LogActionTypesDictionary[ActionType.Split]);
+            _createLogActionCommand.Execute(
+                logActionType,
+                bomHeader.BomId,
+                "BOM",
+                $@"ID ведомости {{{bomHeader.BomId}}}. Разделение кол-ва (произв-е) на ед. по ID {{{bomItem.Id}}}: {{{initQtyMnfOnUnit}}} {{{bomItem.DetalUm}}} = {{{updateQtyMnfOnUnit}}} + {{{addQtyMnfOnUnit}}}",
+                $@"ДВ {{{bomHeader.Orders}}} в узле {{{bomItem.ParentDetal}}} выполнено разделение кол-ва (произв-е) на ед. по ДСЕ {{{bomItem.Detal}}}: {{{initQtyMnfOnUnit}}} {{{bomItem.DetalUm}}} = {{{updateQtyMnfOnUnit}}} + {{{addQtyMnfOnUnit}}}",
+                userLogin);
         }
 
         private async Task AssemblyUnitReplace()
@@ -347,7 +400,7 @@ namespace DefectListBusinessLogic.Services
                     _bomHeader.BomId,
                     "BOM",
                     $@"ID ведомости {{{_oldBomItem.BomId}}}. В родительский узел ID {{{_oldBomItem.Id}}} добавлено {{{_newBomItem.DetalTyp}}} {{{_newBomItem.Detal}}}",
-                    $@"ДВ {{{_bomHeader.Orders}}} в узле {{{_oldBomItem.ParentDetal}}} добавлена ДСЕ {{{_newBomItem.Detal}}}",
+                    $@"ДВ {{{_bomHeader.Orders}}} в узле {{{_oldBomItem.Detal}}} добавлена ДСЕ {{{_newBomItem.Detal}}}",
                     _login);
 
             if (actionType == ActionType.Replace)

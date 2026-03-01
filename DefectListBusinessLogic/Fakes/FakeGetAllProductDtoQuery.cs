@@ -49,7 +49,8 @@ namespace DefectListBusinessLogic.Fakes
                     ProductId = 0,
                     CodeLsf82 = 0,
                     CodeErp = "0",
-                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }}
+                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }},
+                    IsAssembly = true
                 },
                 new ProductDto()
                 {
@@ -62,7 +63,8 @@ namespace DefectListBusinessLogic.Fakes
                     ProductId = 1,
                     CodeLsf82 = 1,
                     CodeErp = "1",
-                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }}
+                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }},
+                    IsAssembly = true
                 },
                 new ProductDto()
                 {
@@ -75,7 +77,8 @@ namespace DefectListBusinessLogic.Fakes
                     ProductId = 2,
                     CodeLsf82 = 2,
                     CodeErp = "2",
-                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }}
+                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }},
+                    IsAssembly = true
                 },
                 new ProductDto()
                 {
@@ -123,6 +126,19 @@ namespace DefectListBusinessLogic.Fakes
                     ExtName = "ДСЕ3Р",
                     Type = "дет",
                     Um = "шт",
+                    Id = 6,
+                    ProductId = 6,
+                    CodeLsf82 = 6,
+                    CodeErp = "6",
+                    ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }}
+                },
+                new ProductDto()
+                {
+                    Detals = "ДСЕ6",
+                    Name = "ДСЕ6",
+                    ExtName = "ДСЕ6",
+                    Type = "матер",
+                    Um = "м",
                     Id = 6,
                     ProductId = 6,
                     CodeLsf82 = 6,

@@ -15,7 +15,7 @@ namespace DefectListDomain.Dtos
         public int ProductId { get; set; }
         public string Detals { get; set; }
         public string Detal { get; set; }
-        public float Qty { get; set; }
+        public decimal Qty { get; set; }
         public string PmcontrUserName { get; set; }
         public int Status { get; set; }
         public string Comment { get; set; }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using DefectListDomain.Commands;
+using DefectListDomain.Models;
 using DefectListDomain.Services;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
@@ -36,15 +37,43 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                     return;
 
                 var routeCharts = await _bomHeadersStore.GetRouteChartsTrackInfos(_bomItemViewModel.BomHeader.Orders);
-                var bomItems = _bomItemViewModel.BomItemsView.OfType<BomItemViewModel>().Where(x => x.Decision == "ремонт" && string.IsNullOrEmpty(x.FinalDecision)).ToList();
+
+                var bomItemsDict = _bomItemViewModel
+                    .BomItemsView
+                    .OfType<BomItemViewModel>()
+                    .Where(x => x.Decision == "ремонт" && string.IsNullOrEmpty(x.FinalDecision))
+                    .ToDictionary(k => k.Id, v => v);
+
+                var duplicates = bomItemsDict.Values
+                    .Where(x => x.MapBomItemToRouteCharts != null)
+                    .SelectMany(x => x.MapBomItemToRouteCharts)
+                    .GroupBy(x => x.RouteChart_Number)
+                    .Where(x => x.Count() > 1)
+                    .ToDictionary(x => x.Key, v => v.ToList());
+
+                var runsRouteMaps = bomItemsDict.Values
+                    .Where(x => x.MapBomItemToRouteCharts != null)
+                    .SelectMany(x => x.MapBomItemToRouteCharts)
+                    .Where(x => !duplicates.ContainsKey(x.RouteChart_Number)) // TODO: временное решение
+                    .ToDictionary(k => k.RouteChart_Number, v => v);
 
                 foreach (var rc in routeCharts)
                 {
-                    var isRepair = rc.Detals.Last() == 'Р';
+                    MapBomItemToRouteChart link;
+                    BomItemViewModel bomItem;
 
-                    var bomItem = isRepair
-                        ? bomItems.FirstOrDefault(x => x.Detals + 'Р' == rc.Detals)
-                        : bomItems.FirstOrDefault(x => x.Detals == rc.Detals);
+                    if (runsRouteMaps.TryGetValue(rc.RouteChart_Number, out link))
+                    {
+                        bomItemsDict.TryGetValue(link.BomItemId, out bomItem);
+                    }
+                    else
+                    {
+                        var isRepair = rc.Detals.Last() == 'Р';
+
+                        bomItem = isRepair
+                            ? bomItemsDict.Values.FirstOrDefault(x => x.Detals + 'Р' == rc.Detals)
+                            : bomItemsDict.Values.FirstOrDefault(x => x.Detals == rc.Detals);
+                    }
 
                     if (bomItem == null)
                         continue;

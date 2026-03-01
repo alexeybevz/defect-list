@@ -8,12 +8,13 @@ namespace DefectListDomain.Services
 {
     public interface IBomItemsEditor
     {
-        Task Add(BomHeader bomHeader, BomItem parentBomItem, BomItem addBomItem, string login);
+        Task<int> Add(BomHeader bomHeader, BomItem parentBomItem, BomItem addBomItem, string login);
         Task Replace(BomHeader bomHeader, BomItem oldBomItem, BomItem newBomItem, List<BomItem> bom, string login);
         Task ReplaceName(BomHeader bomHeader, BomItem oldBomItem, string newDetal, string login);
         Task Delete(BomHeader bomHeader, BomItem deletedBomItem, List<BomItem> deletedBomItems, string login);
         Task Expand(int assemblyBomItemId, string assemblyBomItemStructureNumber, List<BomItem> assemblyBom, bool isExpandAll = false);
         Task Collapse(int assemblyBomItemId, List<BomItem> assemblyBom);
+        Task Split(BomHeader bomHeader, BomItem parentBomItem, BomItem bomItem, decimal currentBomItemQty, decimal newBomItemQty, string userLogin);
 
         event EventHandler<ErrorEventArgs> OnError;
     }

@@ -122,6 +122,7 @@
     <Compile Include="DefectList\Commands\BomItemCommands\OpenMapDefectToDecisionEditFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\OpenReplaceBomItemFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\OpenReplaceNameBomItemFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\OpenSplitBomItemFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveCommandBase.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsAndMoveNextCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnAssemblyCommand.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="DefectList\Commands\BomItemCommands\SetReplaceDecisionCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SetRestoreReplaceQtyCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SetTechnologicalProcessUsedCommand.cs" />
+    <Compile Include="DefectList\Commands\ConsolidateBomItemsCommands\LoadConsolidateBomItemsCommand.cs" />
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\AddDefectToDecisionMapCommand.cs" />
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\DeleteDefectToDecisionMapCommand.cs" />
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\EditDefectToDecisionMapCommand.cs" />
@@ -217,6 +219,7 @@
     <Compile Include="DefectList\ViewModels\ProductItemViewModel.cs" />
     <Compile Include="DefectList\ViewModels\RootItemViewModel.cs" />
     <Compile Include="DefectList\ViewModels\SelectItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\SplitBomItemViewModel.cs" />
     <Compile Include="DefectList\Views\AddBomHeaderView.xaml.cs">
       <DependentUpon>AddBomHeaderView.xaml</DependentUpon>
     </Compile>
@@ -258,6 +261,9 @@
     </Compile>
     <Compile Include="DefectList\Views\SelectItemWindow.xaml.cs">
       <DependentUpon>SelectItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\SplitBomItemWindow.xaml.cs">
+      <DependentUpon>SplitBomItemWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="HelpersWindow\ChoiceDateWindow.xaml.cs">
       <DependentUpon>ChoiceDateWindow.xaml</DependentUpon>
@@ -373,6 +379,10 @@
     <Page Include="DefectList\Views\SelectItemWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\SplitBomItemWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="HelpersWindow\ChoiceDateWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

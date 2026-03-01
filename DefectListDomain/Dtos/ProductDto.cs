@@ -17,6 +17,7 @@ namespace DefectListDomain.Dtos
         public string MaterialLabel { get; set; }
         public string MaterialSubstitute { get; set; }
         public bool IsIntegralPart { get; set; }
+        public bool WithoutDrawing { get; set; }
         public bool IsAssembly { get; set; }
         public List<ProductModeDto> ProductModes { get; set; }
     }

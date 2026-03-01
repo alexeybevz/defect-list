@@ -6,6 +6,8 @@
         Replace,
         Delete,
         BomHeaderChanged,
-        ReplaceName
+        ReplaceName,
+        ReplaceQty,
+        Split
     }
 }

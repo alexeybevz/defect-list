@@ -6,17 +6,27 @@
         xmlns:local="clr-namespace:DefectListWpfControl.DefectList.Views"
         xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
         xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons"
+        xmlns:stores="clr-namespace:DefectListWpfControl.DefectList.Stores"
         mc:Ignorable="d"
         Title="Создание МК" Height="500" Width="900" WindowStartupLocation="CenterScreen" WindowState="Maximized" d:DataContext="{d:DesignInstance d:Type=viewModels:ConsolidateBomItemsViewModel}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
+        <StackPanel Grid.Row="0"
+                    Visibility="{Binding Source={x:Static stores:PermissionsStore.IsCanOtkCreateRouteMapsUser}, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <CheckBox Content="Объединить строки по номенклатуре"
+                      Margin="10"
+                      Cursor="Hand"
+                      IsChecked="{Binding IsConsolidateBomItemsByName}"
+                      IsEnabled="{Binding IsConsolidateBomItemsByNameEnabled}"/>
+        </StackPanel>
+        <FrameworkElement Grid.Row="1" x:Name="ProxyElement" Visibility="Collapsed"/>
         <DataGrid
             x:Name="ConsolidatedBomItemsDataGrid"
-            Grid.Row="0"
+            Grid.Row="1"
             ItemsSource="{Binding Rows}"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
@@ -72,6 +82,6 @@
                 <DataGridTextColumn Header="Закрыта от ввода работ" Binding="{Binding IsWorkNeedName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" Style="{StaticResource PrimaryButton}" Width="120" Margin="0 5" FontSize="14" Content="Создать" Command="{Binding CreateRouteChartsCommand}"/>
+        <Button Grid.Row="2" Style="{StaticResource PrimaryButton}" Width="120" Margin="0 5" FontSize="14" Content="Создать" Command="{Binding CreateRouteChartsCommand}"/>
     </Grid>
 </Window>

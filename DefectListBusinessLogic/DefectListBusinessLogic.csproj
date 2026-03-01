@@ -102,6 +102,7 @@
     <Compile Include="Commands\UpdateBomHeaderCommand.cs" />
     <Compile Include="Commands\UpdateBomItemIdInMapToRouteChartCommand.cs" />
     <Compile Include="Commands\UpdateBomItemNameCommand.cs" />
+    <Compile Include="Commands\UpdateBomItemQtyCommand.cs" />
     <Compile Include="Commands\UpdateDefectToDecisionMapCommand.cs" />
     <Compile Include="Commands\UpdateStateBomHeaderCommand.cs" />
     <Compile Include="Extensions.cs" />

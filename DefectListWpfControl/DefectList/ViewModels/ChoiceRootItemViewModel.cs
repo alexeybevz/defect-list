@@ -114,13 +114,13 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _rootItemsStore.RootItemDeleted += RootItemsStoreOnRootItemDeleted;
         }
 
-        protected override void Dispose()
+        protected override void ExecuteDispose()
         {
             _rootItemsStore.RootItemLoaded -= RootItemsStoreOnRootItemLoaded;
             _rootItemsStore.RootItemAdded -= RootItemsStoreOnRootItemAdded;
             _rootItemsStore.RootItemDeleted -= RootItemsStoreOnRootItemDeleted;
 
-            base.Dispose();
+            base.ExecuteDispose();
         }
 
         private void RootItemsStoreOnRootItemLoaded()

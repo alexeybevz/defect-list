@@ -49,6 +49,27 @@ namespace DefectListBusinessLogic.Fakes
                 },
                 new AsupBomComponentDto()
                 {
+                    uzels = "ДСЕ1",
+                    uzel = "ДСЕ1",
+                    Uzel_Product_Id = 1,
+                    Uzel_Code_LSF82 = 1,
+                    UzelCodeSL = "1",
+
+                    detals = "ДСЕ5",
+                    detal = "ДСЕ5",
+                    detalInitial = "ДСЕ5",
+                    imadetal = "ДСЕ5",
+                    Detal_Product_Id = 5,
+                    Detal_Code_LSF82 = 5,
+                    DetalCodeSL = "5",
+                    typ = "покуп",
+                    plan_kol = 3,
+                    units = "шт",
+
+                    StructureNumber = "1.1.1"
+                },
+                new AsupBomComponentDto()
+                {
                     uzels = "ИЗДЕЛИЕРЕМОНТ",
                     uzel = "ИЗДЕЛИЕ_РЕМОНТ",
                     Uzel_Product_Id = 0,
@@ -84,7 +105,7 @@ namespace DefectListBusinessLogic.Fakes
                     Detal_Code_LSF82 = 3,
                     DetalCodeSL = "3",
                     typ = "дет",
-                    plan_kol = 1,
+                    plan_kol = 2,
                     units = "шт",
 
                     StructureNumber = "1.2.1"
@@ -105,31 +126,31 @@ namespace DefectListBusinessLogic.Fakes
                     Detal_Code_LSF82 = 4,
                     DetalCodeSL = "4",
                     typ = "дет",
-                    plan_kol = 1,
+                    plan_kol = 2,
                     units = "шт",
 
                     StructureNumber = "1.2.2"
                 },
                 new AsupBomComponentDto()
                 {
-                    uzels = "ДСЕ1",
-                    uzel = "ДСЕ1",
-                    Uzel_Product_Id = 1,
-                    Uzel_Code_LSF82 = 1,
-                    UzelCodeSL = "1",
+                    uzels = "ДСЕ2",
+                    uzel = "ДСЕ2",
+                    Uzel_Product_Id = 2,
+                    Uzel_Code_LSF82 = 2,
+                    UzelCodeSL = "2",
 
-                    detals = "ДСЕ5",
-                    detal = "ДСЕ5",
-                    detalInitial = "ДСЕ5",
-                    imadetal = "ДСЕ5",
-                    Detal_Product_Id = 5,
-                    Detal_Code_LSF82 = 5,
-                    DetalCodeSL = "5",
-                    typ = "покуп",
-                    plan_kol = 3,
-                    units = "шт",
+                    detals = "ДСЕ6",
+                    detal = "ДСЕ6",
+                    detalInitial = "ДСЕ6",
+                    imadetal = "ДСЕ6",
+                    Detal_Product_Id = 6,
+                    Detal_Code_LSF82 = 6,
+                    DetalCodeSL = "6",
+                    typ = "матер",
+                    plan_kol = (float)4.5,
+                    units = "м",
 
-                    StructureNumber = "1.1.1"
+                    StructureNumber = "1.2.3"
                 },
             };
 

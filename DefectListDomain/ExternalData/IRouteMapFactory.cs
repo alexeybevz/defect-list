@@ -7,7 +7,7 @@ namespace DefectListDomain.ExternalData
     {
         void AddTasksOnCreateRouteMaps(List<RouteMapIntegrationTaskDto> tasks);
         List<RouteMapIntegrationTaskDto> AskHandledTasks(string sessionGuid);
-        void RunMarKartaExeToHandleTasksOnCreate(string sessionGuid);
+        void RunMarKartaExeToHandleTasksOnCreate(string sessionGuid, string login);
         void RunMarKartaExeToHandleTasksOnDelete(string sessionGuid);
         void RunMarKartaExeToHandleTasksOnReturnKolotryvParentChild(string sessionGuid);
         void RunMarKartaExeToHandleTasksOnWriteOffKolotryv(string sessionGuid);

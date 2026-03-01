@@ -58,6 +58,7 @@ namespace DefectListDemoWpfApp
             Bind<IGetAllBomItemsFilterToReportQuery>().To<GetAllBomItemsFilterToReportQuery>().InTransientScope();
             Bind<ISaveBomItemCommand>().To<SaveBomItemCommand>().InTransientScope();
             Bind<IUpdateBomItemNameCommand>().To<UpdateBomItemNameCommand>().InTransientScope();
+            Bind<IUpdateBomItemQtyCommand>().To<UpdateBomItemQtyCommand>().InTransientScope();
             Bind<IExpandBomItemNodeCommand>().To<ExpandBomItemNodeCommand>().InTransientScope();
             Bind<ICollapseBomItemNodeCommand>().To<CollapseBomItemNodeCommand>().InTransientScope();
             Bind<IDeleteBomItemCommand>().To<DeleteBomItemCommand>().InTransientScope();

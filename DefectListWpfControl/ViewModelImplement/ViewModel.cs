@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DefectListWpfControl.ViewModelImplement
 {
-    public abstract class ViewModel : ObservableObject, IDataErrorInfo
+    public abstract class ViewModel : ObservableObject, IDataErrorInfo, IDisposable
     {
         public string this[string columnName] => OnValidate(columnName);
 
@@ -38,6 +38,11 @@ namespace DefectListWpfControl.ViewModelImplement
             return null;
         }
 
-        protected virtual void Dispose() {}
+        public void Dispose()
+        {
+            ExecuteDispose();
+        }
+
+        protected virtual void ExecuteDispose() { }
     }
 }

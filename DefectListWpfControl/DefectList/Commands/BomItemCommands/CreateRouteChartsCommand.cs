@@ -59,7 +59,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
             var tasks = CreateTasks(sessionGuid, selectedRows);
 
             _routeMapFactory.AddTasksOnCreateRouteMaps(tasks);
-            _routeMapFactory.RunMarKartaExeToHandleTasksOnCreate(sessionGuid);
+            _routeMapFactory.RunMarKartaExeToHandleTasksOnCreate(sessionGuid, _user.Name);
 
             var handledTasks = _routeMapFactory.AskHandledTasks(sessionGuid);
 
@@ -82,7 +82,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                             BomItemId = bi.Id,
                             MkartaId = x.CreatedRouteMapId,
                             RouteChart_Number = x.CreatedRouteMap,
-                            QtyLaunched = bi.QtyMnf,
+                            QtyLaunched = (decimal)bi.QtyMnf,
                             ProductId = obj.ProductId,
                             Detal = obj.TargetDetal,
                             CreatedBy = _user.Name
@@ -132,7 +132,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                     ProductId = x.ProductId,
                     Detals = x.TargetDetals,
                     Detal = x.TargetDetal,
-                    Qty = (float)x.QtyForLaunch,
+                    Qty = x.QtyForLaunch,
                     PmcontrUserName = _user.CN,
                     Status = 0,
                     IsPrint = x.IsPrint,

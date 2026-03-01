@@ -59,7 +59,7 @@ namespace DefectListBusinessLogic.Commands
                     throw new InvalidOperationException($"Дефектовочная ведомость с заказом '{bomHeader.Orders}' уже существует");
 
                 if (e.Message.Contains("IX_BomHeader_SerialNumber"))
-                    throw new InvalidOperationException($"Дефектовочная ведомость с серийным номером '{bomHeader.SerialNumber}' уже существует");
+                    throw new InvalidOperationException($"Дефектовочная ведомость с серийным номером '{bomHeader.SerialNumber}' уже существует в рамках договора '{bomHeader.Contract}'");
 
                 if (e.Message.Contains("FK_BomHeader_RootItem"))
                     throw new InvalidOperationException($"Указанное ремонтное изделие '{bomHeader.RootItem.Izdel}' отсутствует в справочнике. Выполнение данной операции прервано.");

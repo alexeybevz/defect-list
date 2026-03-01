@@ -93,7 +93,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _selectedDefectToDecisionMapStore.SelectedBomHeaderChanged += SelectedDefectToDecisionMapStoreOnSelectedBomHeaderChanged;
         }
 
-        protected override void Dispose()
+        protected override void ExecuteDispose()
         {
             _defectToDecisionMapsStore.DefectToDecisionMapsLoaded -= DefectToDecisionMapsStoreOnDefectToDecisionMapsLoaded;
             _defectToDecisionMapsStore.DefectToDecisionMapAdded -= DefectToDecisionMapsStoreOnDefectToDecisionMapAdded;
@@ -101,7 +101,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _defectToDecisionMapsStore.DefectToDecisionMapDeleted -= DefectToDecisionMapsStoreOnDefectToDecisionMapDeleted;
             _selectedDefectToDecisionMapStore.SelectedBomHeaderChanged -= SelectedDefectToDecisionMapStoreOnSelectedBomHeaderChanged;
 
-            base.Dispose();
+            base.ExecuteDispose();
         }
 
         public static DefectToDecisionMapsViewModel LoadViewModel(DefectToDecisionMapsStore defectToDecisionMapsStore, SelectedDefectToDecisionMapStore selectedDefectToDecisionMapStore)

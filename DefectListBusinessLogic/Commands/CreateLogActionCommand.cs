@@ -55,8 +55,10 @@ namespace DefectListBusinessLogic.Commands
             { ActionType.Add, "BomItemAdd" },
             { ActionType.Replace, "BomItemReplace" },
             { ActionType.ReplaceName, "BomItemReplaceName" },
+            { ActionType.ReplaceQty, "BomItemReplaceQty" },
             { ActionType.Delete, "BomItemDelete" },
             { ActionType.BomHeaderChanged, "BomHeaderChanged" },
+            { ActionType.Split, "BomItemSplit"}
         };
     }
 }

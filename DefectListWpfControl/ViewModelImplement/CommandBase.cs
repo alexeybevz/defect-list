@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace DefectListWpfControl.ViewModelImplement
 {
-    public abstract class CommandBase : ICommand
+    public abstract class CommandBase : ICommand, IDisposable
     {
         public event EventHandler CanExecuteChanged;
 
@@ -18,5 +18,12 @@ namespace DefectListWpfControl.ViewModelImplement
         {
             CanExecuteChanged?.Invoke(this, new EventArgs());
         }
+
+        public void Dispose()
+        {
+            ExecuteDispose();
+        }
+
+        protected virtual void ExecuteDispose() { }
     }
 }
