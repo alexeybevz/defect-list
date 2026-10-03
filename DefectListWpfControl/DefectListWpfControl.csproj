@@ -96,6 +96,7 @@
     <Compile Include="DefectList\Commands\BomHeaderCommands\LoadBomItemsToBomHeaderCommand.cs" />
     <Compile Include="DefectList\Commands\BomHeaderCommands\OpenAddBomHeaderFormBasedOnSelectedItemCommand.cs" />
     <Compile Include="DefectList\Commands\BomHeaderCommands\OpenAddBomHeaderFormCommand.cs" />
+    <Compile Include="DefectList\Commands\BomHeaderCommands\OpenChangesFinalDecisionReportFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomHeaderCommands\OpenChoiceRootItemFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomHeaderCommands\OpenEditBomHeaderFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomHeaderCommands\OpenFilterSettingsCommand.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="DefectList\Commands\BomItemCommands\CollapseBomItemCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\CreateRouteChartCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\CreateRouteChartsCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\DefectSelectionChangedCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\DeleteBomItemCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\ExpandBomItemCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\FillBomItemsWithRequiredReplaceCommand.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="DefectList\Commands\BomItemCommands\OpenSplitBomItemFormCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveCommandBase.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsAndMoveNextCommand.cs" />
+    <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnAssemblyCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnAssemblyWithNotFilledRowsCommand.cs" />
     <Compile Include="DefectList\Commands\BomItemCommands\SaveDefectPropsOnSelectedBomItemsCommand.cs" />
@@ -142,10 +145,31 @@
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\LoadDefectToDecisionMapsCommand.cs" />
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\OpenAddDefectToDecisionMapCommand.cs" />
     <Compile Include="DefectList\Commands\DefectToDecisionMapCommands\OpenEditDefectToDecisionMapCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\OpenFormSketchViewCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\OpenMeasurementMapEditFormCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\ExportMeasurementMapCommand.cs" />
     <Compile Include="DefectList\Commands\LoadProductsCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\CreateMeasurementMapCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\LoadMeasurementMapCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\OpenMeasurementMapReadOnlyFormCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapCommands\SaveMeasurementMapItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\ArchiveMeasurementMapDictionaryCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\CreateLookupItemCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\CreateMeasurementMapDictionaryCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\CreateMeasurementMapDictionaryVersionCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\DeleteDictionaryItemCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\LoadLookupItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\LoadMeasurementMapDictionaryItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\LoadMeasurementMapDictionaryListCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\OpenCreateDictionaryItemCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\OpenEditDictionaryItemCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\OpenMeasurementMapDictionaryItemsCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\OpenMeasurementMapDictionaryListWindowCommand.cs" />
+    <Compile Include="DefectList\Commands\MeasurementMapDictionaryCommands\SaveLookupItemCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\AdditionalMaterialsReportCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\ChangesFinalDecisionReportCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\DefectListItemsChangesReportCommand.cs" />
+    <Compile Include="DefectList\Commands\ReportCommands\ExportCreatedRouteMapsCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListReclamationToPdfCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListToExcelCommand.cs" />
     <Compile Include="DefectList\Commands\ReportCommands\ExportDefectListToPdfCommand.cs" />
@@ -160,8 +184,11 @@
     <Compile Include="DefectList\Commands\RootItemCommands\LoadRootItemsCommand.cs" />
     <Compile Include="DefectList\Commons\BomItemFieldPermissionToIsReadOnlyConverter.cs" />
     <Compile Include="DefectList\Commons\BomItemFieldPermissionToVisibilityConverter.cs" />
+    <Compile Include="DefectList\Commons\ComboBoxHelper.cs" />
     <Compile Include="DefectList\Commons\DataGridTextSearch.cs" />
+    <Compile Include="DefectList\Commons\EngineeringTextRenderer.cs" />
     <Compile Include="DefectList\Commons\FloatNumberValueConverter.cs" />
+    <Compile Include="DefectList\Commons\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="DefectList\Commons\IsRequiredSubmitValueConverter.cs" />
     <Compile Include="DefectList\Commons\IsSubmittedValueConverter.cs" />
     <Compile Include="DefectList\Commons\SearchValueConverter.cs" />
@@ -174,12 +201,14 @@
     <Compile Include="DefectList\Components\BomItemsFilterByDetalTypComponent.xaml.cs">
       <DependentUpon>BomItemsFilterByDetalTypComponent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefectList\Commons\BooleanToYesNoConverter.cs" />
     <Compile Include="DefectList\Components\DataLoadingSpinner.xaml.cs">
       <DependentUpon>DataLoadingSpinner.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefectList\Components\DefectToDecisionMapDetailsForm.xaml.cs">
       <DependentUpon>DefectToDecisionMapDetailsForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefectList\Factories\MeasurementMapDictionaryListWindowFactory.cs" />
     <Compile Include="DefectList\Stores\BomHeadersStore.cs" />
     <Compile Include="DefectList\Stores\BomHeaderSubscribersStore.cs" />
     <Compile Include="DefectList\Stores\BomItemFieldPermissionToRoleStore.cs" />
@@ -187,6 +216,9 @@
     <Compile Include="DefectList\Stores\BomItemsFiltersStore.cs" />
     <Compile Include="DefectList\Stores\BomItemsStore.cs" />
     <Compile Include="DefectList\Stores\DefectToDecisionMapsStore.cs" />
+    <Compile Include="DefectList\Stores\LookupStore.cs" />
+    <Compile Include="DefectList\Stores\MeasurementMapDictionaryStore.cs" />
+    <Compile Include="DefectList\Stores\MeasurementMapStore.cs" />
     <Compile Include="DefectList\Stores\OpenedBomHeadersStore.cs" />
     <Compile Include="DefectList\Stores\PermissionsStore.cs" />
     <Compile Include="DefectList\Stores\ProductsStore.cs" />
@@ -202,6 +234,7 @@
     <Compile Include="DefectList\ViewModels\BomHeaderViewModel.cs" />
     <Compile Include="DefectList\ViewModels\BomItemsFilterByDetalTypViewModel.cs" />
     <Compile Include="DefectList\ViewModels\BomItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\ChangesFinalDecisionReportViewModel.cs" />
     <Compile Include="DefectList\ViewModels\ChoiceOrdersViewModel.cs" />
     <Compile Include="DefectList\ViewModels\ChoiceProductViewModel.cs" />
     <Compile Include="DefectList\ViewModels\ChoiceRootItemViewModel.cs" />
@@ -216,7 +249,18 @@
     <Compile Include="DefectList\ViewModels\DefectToDecisionMapViewModel.cs" />
     <Compile Include="DefectList\ViewModels\EditBomHeaderViewModel.cs" />
     <Compile Include="DefectList\ViewModels\EditDefectToDecisionMapViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\LookupDictionaryViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\LookupItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapDictionaryItemEditViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapDictionaryItemsViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapDictionaryItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapDictionaryListViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapDictionaryViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapReadOnlyViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\MeasurementMapViewModel.cs" />
     <Compile Include="DefectList\ViewModels\ProductItemViewModel.cs" />
+    <Compile Include="DefectList\ViewModels\RepairMethodAlternativesViewModel.cs" />
     <Compile Include="DefectList\ViewModels\RootItemViewModel.cs" />
     <Compile Include="DefectList\ViewModels\SelectItemViewModel.cs" />
     <Compile Include="DefectList\ViewModels\SplitBomItemViewModel.cs" />
@@ -228,6 +272,9 @@
     </Compile>
     <Compile Include="DefectList\Views\AddRootItemWindow.xaml.cs">
       <DependentUpon>AddRootItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\ChangesFinalDecisionReportWindow.xaml.cs">
+      <DependentUpon>ChangesFinalDecisionReportWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefectList\Views\ChoiceOrdersWindow.xaml.cs">
       <DependentUpon>ChoiceOrdersWindow.xaml</DependentUpon>
@@ -256,11 +303,35 @@
     <Compile Include="DefectList\Views\EditDefectToDecisionMapView.xaml.cs">
       <DependentUpon>EditDefectToDecisionMapView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefectList\Views\LookupDictionaryWindow.xaml.cs">
+      <DependentUpon>LookupDictionaryWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DefectList\Views\MapDefectToDecisionWindow.xaml.cs">
       <DependentUpon>MapDefectToDecisionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefectList\Views\MeasurementMapDictionaryItemEditWindow.xaml.cs">
+      <DependentUpon>MeasurementMapDictionaryItemEditWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\MeasurementMapDictionaryItemsWindow.xaml.cs">
+      <DependentUpon>MeasurementMapDictionaryItemsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\MeasurementMapDictionaryListWindow.xaml.cs">
+      <DependentUpon>MeasurementMapDictionaryListWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\MeasurementMapReadOnlyWindow.xaml.cs">
+      <DependentUpon>MeasurementMapReadOnlyWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\MeasurementMapWindow.xaml.cs">
+      <DependentUpon>MeasurementMapWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\RepairMethodAlternativesWindow.xaml.cs">
+      <DependentUpon>RepairMethodAlternativesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DefectList\Views\SelectItemWindow.xaml.cs">
       <DependentUpon>SelectItemWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DefectList\Views\SketchViewerWindow.xaml.cs">
+      <DependentUpon>SketchViewerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefectList\Views\SplitBomItemWindow.xaml.cs">
       <DependentUpon>SplitBomItemWindow.xaml</DependentUpon>
@@ -288,6 +359,7 @@
     <Compile Include="ViewModelImplement\CommandBase.cs" />
     <Compile Include="ViewModelImplement\DelegateCommand.cs" />
     <Compile Include="ViewModelImplement\InputBindingsManager.cs" />
+    <Compile Include="ViewModelImplement\LoadingStateViewModel.cs" />
     <Compile Include="ViewModelImplement\ObservableObject.cs" />
     <Compile Include="ViewModelImplement\ProgressBarHelper.cs" />
     <Compile Include="ViewModelImplement\ViewModel.cs" />
@@ -336,6 +408,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DefectList\Views\ChangesFinalDecisionReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DefectList\Views\ChoiceOrdersWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -372,13 +448,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DefectList\Views\LookupDictionaryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DefectList\Views\MapDefectToDecisionWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DefectList\Views\MeasurementMapDictionaryItemEditWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefectList\Views\MeasurementMapDictionaryItemsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefectList\Views\MeasurementMapDictionaryListWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefectList\Views\MeasurementMapReadOnlyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefectList\Views\MeasurementMapWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DefectList\Views\RepairMethodAlternativesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DefectList\Views\SelectItemWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DefectList\Views\SketchViewerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DefectList\Views\SplitBomItemWindow.xaml">
       <SubType>Designer</SubType>

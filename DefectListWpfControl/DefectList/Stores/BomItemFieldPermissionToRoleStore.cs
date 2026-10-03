@@ -27,6 +27,9 @@ namespace DefectListWpfControl.DefectList.Stores
                 new FieldPermission() { FieldName = "ResearchResult", FieldLabel = "Результаты изучения", CanRead = true, CanEdit = false },
                 new FieldPermission() { FieldName = "SaveButtons", FieldLabel = "Кнопки сохранения", CanRead = false, CanEdit = false },
                 new FieldPermission() { FieldName = "CreateOneRouteChartCommandButton", FieldLabel = "Создать и распечатать МК", CanRead = false, CanEdit = false },
+                new FieldPermission() { FieldName = "CreateMeasurementMapCommand", FieldLabel = "Создание карты измерения", CanRead = false, CanEdit = false },
+                new FieldPermission() { FieldName = "OpenEditFormMeasurementMapCommand", FieldLabel = "Заполнение карты измерения", CanRead = false, CanEdit = false },
+                new FieldPermission() { FieldName = "OpenReadOnlyFormMeasurementMapCommand", FieldLabel = "Просмотр карты измерения", CanRead = true, CanEdit = false },
             }.GroupBy(x => x.FieldName).ToDictionary(k => k.Key, v => v.FirstOrDefault());
 
             WriteFieldsPermissionSet = new List<FieldPermission>()
@@ -49,6 +52,9 @@ namespace DefectListWpfControl.DefectList.Stores
                 new FieldPermission() { FieldName = "ResearchResult", FieldLabel = "Результаты изучения", CanRead = true, CanEdit = true },
                 new FieldPermission() { FieldName = "SaveButtons", FieldLabel = "Кнопки сохранения", CanRead = true, CanEdit = true },
                 new FieldPermission() { FieldName = "CreateOneRouteChartCommandButton", FieldLabel = "Создать и распечатать МК", CanRead = true, CanEdit = true },
+                new FieldPermission() { FieldName = "CreateMeasurementMapCommand", FieldLabel = "Создание карты измерения", CanRead = true, CanEdit = true },
+                new FieldPermission() { FieldName = "OpenEditFormMeasurementMapCommand", FieldLabel = "Заполнение карты измерения", CanRead = true, CanEdit = true },
+                new FieldPermission() { FieldName = "OpenReadOnlyFormMeasurementMapCommand", FieldLabel = "Просмотр карты измерения", CanRead = true, CanEdit = true },
             }.GroupBy(x => x.FieldName).ToDictionary(k => k.Key, v => v.FirstOrDefault());
 
             AdminFieldsPermissionSet = new List<FieldPermission>(WriteFieldsPermissionSet.Select(x => x.Value).ToList())

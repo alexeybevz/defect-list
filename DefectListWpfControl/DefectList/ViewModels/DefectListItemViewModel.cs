@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DefectListBusinessLogic;
 using DefectListDomain.Commands;
-using DefectListDomain.ExternalData;
 using DefectListDomain.Models;
 using DefectListDomain.Services;
 using DefectListWpfControl.DefectList.Commands.BomItemCommands;
@@ -35,6 +34,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
         private readonly BomItemsStore _bomItemsStore;
         private readonly DefectToDecisionMapsStore _defectToDecisionMapsStore;
         private readonly TehprocHeadersStore _tehprocHeadersStore;
+        private readonly MeasurementMapStore _measurementMapStore;
 
         #region MainProperties
         public string Title => $"Деф. вед. № {BomHeader.BomId} / {BomHeader.SerialNumber} / {BomHeader.RootItem.Izdel} / {BomHeader.Contract}";
@@ -44,6 +44,11 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public ICollectionView BomItemsView => _bomItemsView;
         public ObservableCollection<BomItemLog> BomItemLogs => _selectedBomItemStore?.BomItemLogs;
         public ObservableCollection<MapBomItemToRouteChart> MapBomItemToRouteCharts => _selectedBomItemStore?.MapBomItemToRouteCharts;
+        public ObservableCollection<MeasurementMapItemLog> MeasurementMapItemLogs => _selectedBomItemStore?.MeasurementMapItemLogs;
+        public MeasurementMapViewModel MeasurementMapViewModel { get; }
+        public MeasurementMapReadOnlyViewModel MeasurementMapReadOnlyViewModel { get; }
+
+        public event Action SelectedBomItemViewModelChanged;
 
         public BomItemViewModel SelectedBomItemViewModel
         {
@@ -56,6 +61,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             {
                 _selectedBomItemStore.SelectedBomItem = value?.BomItem;
                 NotifyPropertyChanged(nameof(SelectedBomItemViewModel));
+                SelectedBomItemViewModelChanged?.Invoke();
             }
         }
 
@@ -256,6 +262,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public List<string> IsSubmittedLabels => BomItemsConstantsStore.IsSubmittedDict.Values.Select(x => x).ToList();
         public List<string> FilteredColumns => BomItemsConstantsStore.FilteredColumns.Keys.Select(x => x).ToList();
 
+        public bool IsVisibleMeasurementMap => _selectedBomItemStore.MeasurementMapDictionary != null || _measurementMapStore.HasMeasurementMap;
+
         private string _selectedFilteredColumn;
         public string SelectedFilteredColumn
         {
@@ -312,10 +320,12 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public ICommand OpenMapDefectToDecisionEditFormCommand { get; }
         public ICommand FillBomItemsWithRequiredReplaceCommand { get; }
         public ICommand FillFinalDecisionBasedOnPmControlCommand { get; }
+        public DefectSelectionChangedCommand DefectSelectionChangedCommand { get; }
 
         public LoadBomItemsCommand LoadBomItemsCommand { get; }
         public LoadBomItemCommand LoadBomItemCommand { get; }
 
+        public AsyncCommandBase SaveDefectPropsCommand { get; }
         public AsyncCommandBase SaveDefectPropsAndMoveNextCommand { get; }
         public AsyncCommandBase SaveDefectPropsOnAssemblyCommand { get; }
         public AsyncCommandBase SaveDefectPropsOnSelectedBomItemsCommand { get; }
@@ -326,9 +336,6 @@ namespace DefectListWpfControl.DefectList.ViewModels
         #region Constructor
 
         private DefectListItemViewModel(
-            IGetAllPlanOperationDtoQuery getAllPlanOperationDtoQuery,
-            IGetAllAuxiliaryMaterialDtoQuery getAllAuxiliaryMaterialDtoQuery,
-            IGetAllOgmetMatlDtoQuery getAllOgmetMatlDtoQuery,
             BomHeadersStore bomHeadersStore,
             SelectedBomItemStore selectedBomItemStore,
             BomItemsStore bomItemsStore,
@@ -337,7 +344,9 @@ namespace DefectListWpfControl.DefectList.ViewModels
             ProductsStore productsStore,
             TehprocHeadersStore tehprocHeadersStore,
             ISaveBomItemCommand saveBomItemCommand,
-            IBomItemsValidator bomItemsValidator)
+            IBomItemsValidator bomItemsValidator,
+            MeasurementMapStore measurementMapStore,
+            IMeasurementMapItemPresenterService measurementMapItemPresenterService)
         {
             _bomItemViewModels = new ObservableCollection<BomItemViewModel>();
             _bomItemsView = CollectionViewSource.GetDefaultView(_bomItemViewModels);
@@ -346,12 +355,15 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomItemsStore = bomItemsStore;
             _defectToDecisionMapsStore = defectToDecisionMapsStore;
             _tehprocHeadersStore = tehprocHeadersStore;
+            _measurementMapStore = measurementMapStore;
             _message = _defaultMessage;
 
             UserIdentity = (Thread.CurrentPrincipal.Identity as CustomIdentity);
             BomItemsFilterByDetalTypViewModel = new BomItemsFilterByDetalTypViewModel(this);
             Detals = new ObservableCollection<string>(new List<string>());
             PossibleDecisions = new ObservableCollection<string>(new List<string>());
+            MeasurementMapViewModel = new MeasurementMapViewModel(this, _measurementMapStore, _selectedBomItemStore);
+            MeasurementMapReadOnlyViewModel = new MeasurementMapReadOnlyViewModel(this, _measurementMapStore, _selectedBomItemStore, measurementMapItemPresenterService);
 
             SetReadOnlyFieldsPermissions();
 
@@ -364,13 +376,13 @@ namespace DefectListWpfControl.DefectList.ViewModels
             ExportDefectListWithInitialDecisionToPdfCommand = new ExportDefectListToPdfCommand(this, _bomItemsStore, false);
             ExportAssemblyWithFinalDecisionToPdfCommand = new ExportDefectListToPdfCommand(this, _bomItemsStore, true, FilterByStructureNumber());
             ExportAssemblyWithInitialDecisionToPdfCommand = new ExportDefectListToPdfCommand(this, _bomItemsStore, false, FilterByStructureNumber());
-            ExportDefectListToExcelCommand = new ExportDefectListToExcelCommand(this, _bomItemsStore, getAllPlanOperationDtoQuery);
+            ExportDefectListToExcelCommand = new ExportDefectListToExcelCommand(this, _bomItemsStore);
             ExportDefectListReclamationToPdfCommand = new ExportDefectListReclamationToPdfCommand(this, _bomItemsStore, model => model.IsSelected);
             ExportAssemblyReclamationToPdfCommand = new ExportDefectListReclamationToPdfCommand(this, _bomItemsStore, FilterByStructureNumber());
             PurchaseItemsReportCommand = new PurchaseItemsReportCommand(this, _bomItemsStore, bomHeadersStore);
             ScrapItemsReportCommand = new ScrapItemsReportCommand(this, _bomItemsStore);
             DefectListItemsChangesReportCommand = new DefectListItemsChangesReportCommand(this, _bomItemsStore);
-            AdditionalMaterialsReportCommand = new AdditionalMaterialsReportCommand(this, _bomItemsStore, getAllAuxiliaryMaterialDtoQuery, getAllOgmetMatlDtoQuery);
+            AdditionalMaterialsReportCommand = new AdditionalMaterialsReportCommand(this, _bomItemsStore);
 
             OpenAddBomItemFormCommand = new OpenAddBomItemFormCommand(this, _selectedBomItemStore, productsStore, _bomItemsStore);
             OpenReplaceBomItemFormCommand = new OpenReplaceBomItemFormCommand(this, _selectedBomItemStore, productsStore, _bomItemsStore);
@@ -395,10 +407,12 @@ namespace DefectListWpfControl.DefectList.ViewModels
             OpenMapDefectToDecisionEditFormCommand = new OpenMapDefectToDecisionEditFormCommand(this, defectToDecisionMapsStore, selectedDefectToDecisionMapStore);
             FillBomItemsWithRequiredReplaceCommand = new FillBomItemsWithRequiredReplaceCommand(this, bomItemsStore, saveBomItemCommand, bomItemsValidator);
             FillFinalDecisionBasedOnPmControlCommand = new FillFinalDecisionBasedOnPmControlCommand(this, bomItemsStore, bomHeadersStore, saveBomItemCommand, bomItemsValidator);
+            DefectSelectionChangedCommand = new DefectSelectionChangedCommand(this);
 
             LoadBomItemsCommand = new LoadBomItemsCommand(this, _bomItemsStore, defectToDecisionMapsStore, tehprocHeadersStore);
             LoadBomItemCommand = new LoadBomItemCommand(this, _bomItemsStore, _selectedBomItemStore, tehprocHeadersStore);
 
+            SaveDefectPropsCommand = new SaveDefectPropsCommand(this, bomItemsStore, saveBomItemCommand, bomItemsValidator);
             SaveDefectPropsAndMoveNextCommand = new SaveDefectPropsAndMoveNextCommand(this, bomItemsStore, saveBomItemCommand, bomItemsValidator);
             SaveDefectPropsOnAssemblyCommand = new SaveDefectPropsOnAssemblyCommand(this, bomItemsStore, saveBomItemCommand, bomItemsValidator);
             SaveDefectPropsOnSelectedBomItemsCommand = new SaveDefectPropsOnSelectedBomItemsCommand(this, bomItemsStore, saveBomItemCommand, bomItemsValidator);
@@ -413,13 +427,16 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomItemsStore.BomItemsDeleted += BomItemsStoreOnBomItemsEdited;
             _bomItemsStore.BomItemsSplitted += BomItemsStoreOnBomItemsEdited;
             _bomItemsView.CollectionChanged += BomItemsViewOnCollectionChanged;
-            _selectedBomItemStore.SelectedBomItemChanged += SelectedBomItemStoreOnSelectedBomItemChanged;
+            SelectedBomItemViewModelChanged += OnSelectedBomItemViewModelChanged;
+            _measurementMapStore.MeasurementMapCreated += MeasurementMapStoreOnMeasurementMapCreated;
+        }
+
+        private async void MeasurementMapStoreOnMeasurementMapCreated(MeasurementMap measurementMap)
+        {
+            await _selectedBomItemStore.LoadDataOnSelectedBomItemChanged();
         }
 
         public static DefectListItemViewModel LoadViewModel(
-            IGetAllPlanOperationDtoQuery getAllPlanOperationDtoQuery,
-            IGetAllAuxiliaryMaterialDtoQuery getAllAuxiliaryMaterialDtoQuery,
-            IGetAllOgmetMatlDtoQuery getAllOgmetMatlDtoQuery,
             BomHeadersStore bomHeadersStore,
             SelectedBomItemStore selectedBomItemStore,
             BomItemsStore bomItemsStore,
@@ -428,12 +445,11 @@ namespace DefectListWpfControl.DefectList.ViewModels
             ProductsStore productsStore,
             TehprocHeadersStore tehprocHeadersStore,
             ISaveBomItemCommand saveBomItemCommand,
-            IBomItemsValidator bomItemsValidator)
+            IBomItemsValidator bomItemsValidator,
+            MeasurementMapStore measurementMapStore,
+            IMeasurementMapItemPresenterService measurementMapItemPresenterService)
         {
             var viewModel = new DefectListItemViewModel(
-                getAllPlanOperationDtoQuery,
-                getAllAuxiliaryMaterialDtoQuery,
-                getAllOgmetMatlDtoQuery,
                 bomHeadersStore,
                 selectedBomItemStore,
                 bomItemsStore,
@@ -442,7 +458,9 @@ namespace DefectListWpfControl.DefectList.ViewModels
                 productsStore,
                 tehprocHeadersStore,
                 saveBomItemCommand,
-                bomItemsValidator);
+                bomItemsValidator,
+                measurementMapStore,
+                measurementMapItemPresenterService);
             viewModel.LoadBomItemsCommand?.Execute();
             return viewModel;
         }
@@ -456,6 +474,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
             _bomItemsStore.BomItemsNameReplaced -= BomItemsStoreOnBomItemsEdited;
             _bomItemsStore.BomItemsDeleted -= BomItemsStoreOnBomItemsEdited;
             _bomItemsView.CollectionChanged -= BomItemsViewOnCollectionChanged;
+            SelectedBomItemViewModelChanged -= OnSelectedBomItemViewModelChanged;
+            _measurementMapStore.MeasurementMapCreated -= MeasurementMapStoreOnMeasurementMapCreated;
 
             base.ExecuteDispose();
         }
@@ -474,46 +494,61 @@ namespace DefectListWpfControl.DefectList.ViewModels
 
         private void BomItemsStoreOnBomItemsLoaded()
         {
-            var selectedBomItemId = SelectedBomItemViewModel?.Id ?? 0;
-
-            // После выполнения строки в SelectedDefectListItem присваивается null (поведение WPF по умолчанию)
-            _bomItemViewModels.Clear();
-
-            foreach (var bomItem in _bomItemsStore.BomItems.IsShowed())
+            try
             {
-                var bomItemViewModel = new BomItemViewModel(bomItem, _defectToDecisionMapsStore, _tehprocHeadersStore, this);
-                bomItemViewModel.PropertyChanged += BomItemModelOnPropertyChanged;
-                bomItemViewModel.DecisionChanged += BomItemDecisionChanged;
-                bomItemViewModel.FinalDecisionChanged += BomItemFinalDecisionChanged;
+                var selectedBomItemId = SelectedBomItemViewModel?.Id ?? 0;
 
-                _bomItemViewModels.Add(bomItemViewModel);
+                // После выполнения строки в SelectedDefectListItem присваивается null (поведение WPF по умолчанию)
+                _bomItemViewModels.Clear();
+
+                foreach (var bomItem in _bomItemsStore.BomItems.IsShowed())
+                {
+                    var bomItemViewModel = new BomItemViewModel(bomItem, _defectToDecisionMapsStore, _tehprocHeadersStore, this);
+                    bomItemViewModel.PropertyChanged += BomItemModelOnPropertyChanged;
+                    bomItemViewModel.DecisionChanged += BomItemDecisionChanged;
+                    bomItemViewModel.FinalDecisionChanged += BomItemFinalDecisionChanged;
+
+                    _bomItemViewModels.Add(bomItemViewModel);
+                }
+
+                _bomItemsView = CollectionViewSource.GetDefaultView(_bomItemViewModels);
+                _bomItemsView.Filter = OnBomItemsFiltered;
+
+                var currentSearchString = SearchString;
+                var currentFilterString = FilterString;
+
+                Detals.Clear();
+                var detals = _bomItemViewModels.Select(x => x.Detal).Distinct().OrderBy(x => x).ToList();
+                detals.ForEach(x => Detals.Add(x));
+
+                SearchString = currentSearchString;
+                FilterString = currentFilterString;
+
+                SelectedBomItemViewModel = _bomItemViewModels.FirstOrDefault(x =>
+                    x.Id == selectedBomItemId) ?? _bomItemViewModels.FirstOrDefault();
             }
-
-            _bomItemsView = CollectionViewSource.GetDefaultView(_bomItemViewModels);
-            _bomItemsView.Filter = OnBomItemsFiltered;
-
-            var currentSearchString = SearchString;
-            var currentFilterString = FilterString;
-
-            Detals.Clear();
-            var detals = _bomItemViewModels.Select(x => x.Detal).Distinct().OrderBy(x => x).ToList();
-            detals.ForEach(x => Detals.Add(x));
-
-            SearchString = currentSearchString;
-            FilterString = currentFilterString;
-
-            SelectedBomItemViewModel = _bomItemViewModels.FirstOrDefault(x =>
-                x.Id == selectedBomItemId) ?? _bomItemViewModels.FirstOrDefault();
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private void BomItemsStoreOnBomItemsLoadedById(BomItem bomItem)
         {
-            var obj = _bomItemViewModels.FirstOrDefault(x => x.Id == bomItem.Id);
-            if (obj != null)
+            try
             {
-                obj.Update(bomItem);
-                SelectedBomItemViewModel = obj;
+                var obj = _bomItemViewModels.FirstOrDefault(x => x.Id == bomItem.Id);
+                if (obj != null)
+                {
+                    obj.Update(bomItem);
+                    SelectedBomItemViewModel = obj;
+                }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            
         }
 
         private void DefectToDecisionMapsStoreOnDefectToDecisionMapsLoaded()
@@ -521,7 +556,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             var defectToDecisionMaps = _defectToDecisionMapsStore
                 .DefectToDecisionMaps
                 .ToList()
-                .Select(x => new DefectToDecisionMapCheckBoxViewModel(x, MapDefectToDecisionChanged))
+                .Select(x => new DefectToDecisionMapCheckBoxViewModel(x, DefectSelectionChangedCommand.Handle))
                 .ToList();
             DefectToDecisionMaps = CollectionViewSource.GetDefaultView(new ObservableCollection<DefectToDecisionMapCheckBoxViewModel>(defectToDecisionMaps));
             DefectToDecisionMaps.GroupDescriptions?.Add(new PropertyGroupDescription(nameof(DefectToDecisionMapCheckBoxViewModel.Name)));
@@ -532,8 +567,14 @@ namespace DefectListWpfControl.DefectList.ViewModels
             possibleDecisions.ForEach(x => PossibleDecisions.Add(x));
         }
 
-        private void SelectedBomItemStoreOnSelectedBomItemChanged()
+        private async void OnSelectedBomItemViewModelChanged()
         {
+            await _selectedBomItemStore.LoadDataOnSelectedBomItemChanged();
+
+            await MeasurementMapViewModel.LoadMapCommand.ExecuteAsync();
+            await _selectedBomItemStore.LoadMeasurementMapDictionaryOnSelectedBomItemChanged(SelectedBomItemViewModel?.Code_LSF82, BomHeader.RootItem.Id, _measurementMapStore.HasMeasurementMap);
+            NotifyPropertyChanged(nameof(IsVisibleMeasurementMap));
+
             InfoMessage = _defaultMessage;
             SelectedPossibleDefect = null;
             DefectToDecisionMaps?.OfType<DefectToDecisionMapCheckBoxViewModel>()?.Where(x => x.IsSelected).ToList().ForEach(x => x.ResetSelected());
@@ -649,68 +690,6 @@ namespace DefectListWpfControl.DefectList.ViewModels
             SaveDefectPropsOnAssemblyCommand?.OnCanExecuteChanged();
             SaveDefectPropsOnAssemblyWithNotFilledRowsCommand?.OnCanExecuteChanged();
             SaveDefectPropsOnSelectedBomItemsCommand?.OnCanExecuteChanged();
-        }
-
-        public bool MapDefectToDecisionChanged(DefectToDecisionMapCheckBoxViewModel item, bool newValueIsSelected)
-        {
-            if (SelectedBomItemViewModel == null)
-                return false;
-
-            var isEmptyField = string.IsNullOrEmpty(SelectedBomItemViewModel.Defect);
-            var items = DefectToDecisionMaps.OfType<DefectToDecisionMapCheckBoxViewModel>().Where(x => x.IsSelected).ToList();
-            string defect = item.Item.Defect;
-            bool result = newValueIsSelected;
-
-            if (newValueIsSelected)
-            {
-                // Запрет на выделение элемента
-                var uniqueIsAllowCombine = items.Select(x => x.Item.IsAllowCombine).Distinct().ToList();
-
-                if (uniqueIsAllowCombine.Count == 1 &&
-                    (uniqueIsAllowCombine.First() != item.Item.IsAllowCombine || (uniqueIsAllowCombine.First() == false && item.Item.IsAllowCombine == false)))
-                    result = false;
-
-                if (result)
-                {
-                    SelectedBomItemViewModel.Defect += isEmptyField ? defect : $", {defect}";
-
-                    if (isEmptyField || !items.Any())
-                    {
-                        SelectedBomItemViewModel.Decision = item.Item.Decision;
-                    }
-                    else
-                    {
-                        SelectedBomItemViewModel.Decision =
-                            items.Select(x => x.Item.Decision).Distinct().FirstOrDefault();
-                    }
-                }
-            }
-            else if (!isEmptyField)
-            {
-                if (SelectedBomItemViewModel.Defect.StartsWith(defect) && SelectedBomItemViewModel.Defect == defect)
-                {
-                    SelectedBomItemViewModel.Defect = null;
-                    SelectedBomItemViewModel.Decision = null;
-                    SelectedBomItemViewModel.QtyRestore = 0;
-                    SelectedBomItemViewModel.QtyReplace = 0;
-                }
-                else
-                {
-                    if (SelectedBomItemViewModel.Defect.StartsWith(defect) && SelectedBomItemViewModel.Defect != defect)
-                    {
-                        SelectedBomItemViewModel.Defect = SelectedBomItemViewModel.Defect.Remove(0, defect.Length + 2);
-                    }
-                    else
-                    {
-                        int pos = SelectedBomItemViewModel.Defect.IndexOf(defect);
-                        if (pos >= 0)
-                            SelectedBomItemViewModel.Defect =
-                                SelectedBomItemViewModel.Defect.Remove(pos - 2, defect.Length + 2);
-                    }
-                }
-            }
-
-            return result;
         }
         #endregion
 

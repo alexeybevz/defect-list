@@ -47,15 +47,26 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                <DataGridTextColumn Header="Созданная МК" Binding="{Binding CreatedRouteMap, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Результат создания МК в АСУП" Binding="{Binding Comment, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="190"/>
+                <DataGridTextColumn Header="Созданная МК в АСУП" Binding="{Binding CreatedRouteMap, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                 <DataGridTextColumn Header="Обозначение" Binding="{Binding Detal, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
                 <DataGridTextColumn Header="Наименование" Binding="{Binding DetalIma, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
                 <DataGridTextColumn Header="Тип" Binding="{Binding DetalTyp, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                 <DataGridTextColumn Header="Решение" Binding="{Binding NormalizeDecision, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                 <DataGridTextColumn Header="Кол-во (план)" Binding="{Binding QtyMnf, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                 <DataGridTextColumn Header="Кол-во (запущено)" Binding="{Binding QtyLaunched, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                <DataGridTextColumn Header="Кол-во для запуска" Binding="{Binding QtyForLaunch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTemplateColumn Header="Кол-во для запуска">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding QtyForLaunch}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding QtyForLaunch, UpdateSourceTrigger=LostFocus}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Обозначение для запуска МК в АСУП" Binding="{Binding TargetDetal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" IsReadOnly="{Binding DataContext.IsReadOnlyComponent, Source={x:Reference ProxyElement}}"/>
                 <DataGridTextColumn Header="Наличие обозначения для запуска МК в АСУП" Binding="{Binding IsExistsTargetDetalName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                 <DataGridTemplateColumn Header="Запуск на подразделение в Контроле" Visibility="{Binding DataContext.IsEnabledComponent, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}">
@@ -80,8 +91,33 @@
                                     Width="150"
                                     Visibility="{Binding DataContext.IsReadOnlyComponent, Source={x:Reference ProxyElement}, Converter={StaticResource WindowBooleanToVisibilityConverter}}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Закрыта от ввода работ" Binding="{Binding IsWorkNeedName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <DataGridTextColumn Header="Общий комментарий МК для передачи в ПМ Контроль"
+                                    Binding="{Binding PartyComment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    IsReadOnly="{Binding DataContext.IsReadOnlyComponent, Source={x:Reference ProxyElement}}"
+                                    Width="320" />
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="2" Style="{StaticResource PrimaryButton}" Width="120" Margin="0 5" FontSize="14" Content="Создать" Command="{Binding CreateRouteChartsCommand}"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource PrimaryButton}"
+                    Width="120"
+                    Margin="0 5"
+                    FontSize="14"
+                    Content="Создать"
+                    Command="{Binding CreateRouteChartsCommand}" />
+            <Button Grid.Column="1" 
+                    Style="{StaticResource SecondaryButton}"
+                    Width="Auto"
+                    Margin="5"
+                    FontSize="14"
+                    Content="Экспорт созданных МК (excel)"
+                    Command="{Binding ExportCreatedRouteMapsCommand}" />
+        </Grid>
     </Grid>
 </Window>

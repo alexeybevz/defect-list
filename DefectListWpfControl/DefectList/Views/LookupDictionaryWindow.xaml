@@ -1,0 +1,168 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.LookupDictionaryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="600"
+        Width="700"
+        WindowStartupLocation="CenterOwner"
+        d:DataContext="{d:DesignInstance d:Type=viewModels:LookupDictionaryViewModel}">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Индикатор загрузки / ошибка -->
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Margin="0 0 0 8">
+            <TextBlock Text="Загрузка..."
+                       Visibility="{Binding LoadingStateViewModel.IsLoading,
+                           Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Foreground="Gray"
+                       FontStyle="Italic" />
+            <TextBlock Text="{Binding LoadingStateViewModel.ErrorMessage}"
+                       Visibility="{Binding LoadingStateViewModel.HasErrorMessage,
+                           Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Style="{StaticResource ErrorMessage}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Панель добавления нового элемента -->
+        <Grid Grid.Row="1"
+              Margin="0 0 0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0"
+                     Text="{Binding NewItemName, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center"
+                     Margin="0 0 8 0"
+                     Height="28"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     MinHeight="60">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter"
+                                Modifiers="Control"
+                                Command="{Binding CreateItemCommand}" />
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Column="1"
+                    Content="Добавить"
+                    Command="{Binding CreateItemCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Padding="16 4" />
+        </Grid>
+
+        <!-- Таблица элементов справочника -->
+        <DataGrid Grid.Row="2"
+                  x:Name="DataGridItems"
+                  ItemsSource="{Binding ItemsView}"
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
+                  BorderBrush="#ccc"
+                  CopyingRowClipboardContent="DataGridItems_OnCopyingRowClipboardContent">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <!-- Неактивные записи — серые -->
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsActive}"
+                                     Value="False">
+                            <Setter Property="Foreground"
+                                    Value="Gray" />
+                            <Setter Property="FontStyle"
+                                    Value="Italic" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id"
+                                    Binding="{Binding Id}"
+                                    Width="50"
+                                    IsReadOnly="True"
+                                    x:Name="dataGridColumnId"/>
+                <DataGridTemplateColumn Header="Наименование"
+                                        Width="*"
+                                        x:Name="dataGridColumnName">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock commons:EngineeringTextBehavior.Text="{Binding Name}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"
+                                       Margin="4 0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto"/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Используется"
+                                        Width="100"
+                                        IsReadOnly="True"
+                                        x:Name="dataGridColumnIsUsed">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding IsUsed, Converter={StaticResource BooleanToYesNoConverter}}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Активна"
+                                        Width="80"
+                                        IsReadOnly="True"
+                                        x:Name="dataGridColumnIsActive">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding IsActive, Converter={StaticResource BooleanToYesNoConverter}}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Нижняя панель: подсказка + кнопка Сохранить -->
+        <Grid Grid.Row="3"
+              Margin="0 10 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Text="{Binding SelectedItem.SaveHint}"
+                       TextWrapping="Wrap"
+                       Foreground="DimGray"
+                       FontStyle="Italic"
+                       VerticalAlignment="Center"
+                       Margin="0 0 12 0" />
+            <Button Grid.Column="1"
+                    Content="Сохранить изменение"
+                    Command="{Binding SaveItemCommand}"
+                    Style="{StaticResource PrimaryButton}"
+                    Padding="16 6" />
+        </Grid>
+    </Grid>
+</Window>

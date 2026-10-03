@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using DefectListBusinessLogic.Report;
-using ReporterDomain.Services.CreateReportService;
+using DefectListDomain.CreatingReports;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.DefectList.Views;
@@ -32,11 +31,8 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
             var viewModel = ((SelectItemViewModel)selectNewItemWindow.DataContext);
             viewModel.NewBomItemSelected += async (newBomItem, product) =>
             {
-                IReportDirectory reportDirectory = new ReportDirectory(_userName);
                 try
                 {
-                    reportDirectory.Create();
-
                     if (product == null)
                         product = await _productsStore.GetProductByDetals(SpecifKeyCreator.CreateKey(newBomItem.Detal));
                     if (product == null)
@@ -51,19 +47,15 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
                         return;
                     }
 
-                    var getItemInfoByAllProductsReport = new GetItemInfoByAllProductsReport();
-                    getItemInfoByAllProductsReport.Create(bomHeaders, bomItems, reportDirectory.PathReportDirectory);
+                    var report = DefectListIocKernel.Get<IGetItemInfoByAllProductsReport>();
+                    var isReportCreated = await report.CreateAsync(bomHeaders, bomItems, _userName);
 
-                    MessageBox.Show("Отчет сформирован.");
-                    reportDirectory.Open();
+                    if (isReportCreated)
+                        MessageBox.Show("Отчет сформирован.");
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
-                }
-                finally
-                {
-                    reportDirectory.DeleteIfEmpty();
                 }
             };
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 
@@ -8,23 +10,30 @@ namespace DefectListBusinessLogic.Report
 {
     public class GetItemInfoByAllProductsReport
     {
-        public void Create(IEnumerable<BomHeader> bomHeaders, IEnumerable<IBomItem> bomItems, string pathToReportDirectory)
+        public async Task<bool> CreateAsync(IEnumerable<IBomHeader> bomHeaders, IEnumerable<IBomItem> bomItems, string pathToReportDirectory)
         {
-            using (XLWorkbook workbook = new XLWorkbook())
+            return await Task.Run(() =>
             {
-                workbook.Style.Font.FontName = "Arial";
-                workbook.Style.Font.FontSize = 10;
-                var ws = workbook.Worksheets.Add("Инфо о ДСЕ");
+                using (XLWorkbook workbook = new XLWorkbook())
+                {
+                    workbook.Style.Font.FontName = "Arial";
+                    workbook.Style.Font.FontSize = 10;
+                    var ws = workbook.Worksheets.Add("Инфо о ДСЕ");
 
-                CreateHeader(ws);
-                CreateBody(ws, bomHeaders, bomItems);
-                PostFormatSheet(ws);
+                    CreateHeader(ws);
+                    CreateBody(ws, bomHeaders, bomItems);
+                    PostFormatSheet(ws);
 
-                workbook.SaveAs(pathToReportDirectory + $@"\Анализ номенклатуры от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
-            }
+                    var path = Path.Combine(pathToReportDirectory,
+                        $"Анализ номенклатуры от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
+                    workbook.SaveAs(path);
+
+                    return true;
+                }
+            });
         }
 
-        private void CreateBody(IXLWorksheet ws, IEnumerable<BomHeader> bomHeaders, IEnumerable<IBomItem> bomItems)
+        private void CreateBody(IXLWorksheet ws, IEnumerable<IBomHeader> bomHeaders, IEnumerable<IBomItem> bomItems)
         {
             var bomHeadersDict = bomHeaders.ToDictionary(x => x.BomId);
             var row = 2;

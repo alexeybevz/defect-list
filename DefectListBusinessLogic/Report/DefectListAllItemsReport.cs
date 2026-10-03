@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 using DefectListDomain.ExternalData;
@@ -40,83 +42,91 @@ namespace DefectListBusinessLogic.Report
             _getAllPlanOperationDtoQuery = getAllPlanOperationDtoQuery;
         }
 
-        public void Create(BomHeader bomHeader, IEnumerable<BomItem> data, string pathToReportDirectory)
+        public async Task<bool> CreateAsync(IBomHeader bomHeader, IEnumerable<BomItem> data, string pathToReportDirectory)
         {
-            using (XLWorkbook workbook = new XLWorkbook())
+            return await Task.Run(() =>
             {
-                workbook.Style.Font.FontName = "Arial";
-                workbook.Style.Font.FontSize = 10;
-                IXLWorksheet worksheet = workbook.Worksheets.Add("Дефектовочная ведомость");
-                CreateTableName(worksheet, bomHeader);
-                CreateTableHeader(worksheet);
-
-                int i = 4;
-                foreach (BomItem item in data)
+                using (XLWorkbook workbook = new XLWorkbook())
                 {
-                    i = i + 1;
-                    int j = 1;
-                    worksheet.Cell(i, j++).SetValue(item.StructureNumber);
-                    worksheet.Cell(i, j++).SetValue(item.Detal);
-                    worksheet.Cell(i, j++).SetValue(item.DetalIma);
-                    worksheet.Cell(i, j++).SetValue(item.DetalTyp);
-                    worksheet.Cell(i, j++).SetValue(item.SerialNumber);
-                    worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyMnf, 2));
-                    worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyRestore, 2));
-                    worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyReplace, 2));
-                    worksheet.Cell(i, j++).SetValue(item.DetalUm);
-                    worksheet.Cell(i, j++).SetValue(item.Defect);
-                    worksheet.Cell(i, j++).SetValue(item.Decision);
-                    worksheet.Cell(i, j++).SetValue(item.FinalDecision);
-                    worksheet.Cell(i, j++).SetValue(item.TechnologicalProcessUsed);
-                    worksheet.Cell(i, j++).SetValue(item.IsRequiredSubmitText);
-                    worksheet.Cell(i, j++).SetValue(item.IsSubmittedText);
-                    worksheet.Cell(i, j++).SetValue(item.CommentDef);
+                    workbook.Style.Font.FontName = "Arial";
+                    workbook.Style.Font.FontSize = 10;
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("Дефектовочная ведомость");
+                    CreateTableName(worksheet, bomHeader);
+                    CreateTableHeader(worksheet);
 
-                   if (!_getAllPlanOperationDtoQuery.IsTehnologicheskayaSborka(item.Detals))
+                    int i = 4;
+                    foreach (BomItem item in data)
                     {
-                        try
+                        i = i + 1;
+                        int j = 1;
+                        worksheet.Cell(i, j++).SetValue(item.StructureNumber);
+                        worksheet.Cell(i, j++).SetValue(item.Detal);
+                        worksheet.Cell(i, j++).SetValue(item.DetalIma);
+                        worksheet.Cell(i, j++).SetValue(item.DetalTyp);
+                        worksheet.Cell(i, j++).SetValue(item.SerialNumber);
+                        worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyMnf, 2));
+                        worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyRestore, 2));
+                        worksheet.Cell(i, j++).SetValue(Math.Round(item.QtyReplace, 2));
+                        worksheet.Cell(i, j++).SetValue(item.DetalUm);
+                        worksheet.Cell(i, j++).SetValue(item.Defect);
+                        worksheet.Cell(i, j++).SetValue(item.Decision);
+                        worksheet.Cell(i, j++).SetValue(item.FinalDecision);
+                        worksheet.Cell(i, j++).SetValue(item.TechnologicalProcessUsed);
+                        worksheet.Cell(i, j++).SetValue(item.IsRequiredSubmitText);
+                        worksheet.Cell(i, j++).SetValue(item.IsSubmittedText);
+                        worksheet.Cell(i, j++).SetValue(item.CommentDef);
+
+                        if (!_getAllPlanOperationDtoQuery.IsTehnologicheskayaSborka(item.Detals))
                         {
-                            var planOpersRestore = _getAllPlanOperationDtoQuery.AskPlanOperations(item.Detals + "Р");
-                            var planOpersReplace = _getAllPlanOperationDtoQuery.AskPlanOperations(item.Detals);
-
-                            if (item.QtyRestore > 0 && planOpersRestore != null)
+                            try
                             {
-                                worksheet.Cell(i, j++).SetValue(Math.Round(planOpersRestore.Sum(x => x.Tpz_on_one_det), 3));
-                                worksheet.Cell(i, j++).SetValue(Math.Round(planOpersRestore.Sum(x => x.Top_on_one_det * item.QtyRestore), 3));
+                                var planOpersRestore = _getAllPlanOperationDtoQuery.AskPlanOperations(item.Detals + "Р");
+                                var planOpersReplace = _getAllPlanOperationDtoQuery.AskPlanOperations(item.Detals);
+
+                                if (item.QtyRestore > 0 && planOpersRestore != null)
+                                {
+                                    worksheet.Cell(i, j++).SetValue(Math.Round(planOpersRestore.Sum(x => x.Tpz_on_one_det), 3));
+                                    worksheet.Cell(i, j++).SetValue(Math.Round(planOpersRestore.Sum(x => x.Top_on_one_det * item.QtyRestore), 3));
+                                }
+                                else
+                                    j += 2;
+
+                                if (item.QtyReplace > 0 && planOpersReplace != null)
+                                {
+                                    worksheet.Cell(i, j++).SetValue(Math.Round(planOpersReplace.Sum(x => x.Tpz_on_one_det), 3));
+                                    worksheet.Cell(i, j++).SetValue(Math.Round(planOpersReplace.Sum(x => x.Top_on_one_det * item.QtyReplace), 3));
+                                }
                             }
-                            else
-                                j += 2;
-
-                            if (item.QtyReplace > 0 && planOpersReplace != null)
+                            catch (Exception e)
                             {
-                                worksheet.Cell(i, j++).SetValue(Math.Round(planOpersReplace.Sum(x => x.Tpz_on_one_det), 3));
-                                worksheet.Cell(i, j++).SetValue(Math.Round(planOpersReplace.Sum(x => x.Top_on_one_det * item.QtyReplace), 3));
+                                var it = item.Id;
+                                Console.WriteLine(e);
+                                throw;
                             }
                         }
-                        catch (Exception e)
+
+                        if (item.DetalTyp == "издел" || item.DetalTyp == "сб.ед")
                         {
-                            var it = item.Id;
-                            Console.WriteLine(e);
-                            throw;
+                            var range = worksheet.Range(worksheet.Cell(i, 1), worksheet.Cell(i, 4));
+                            range.Style.Font.Bold = true;
+                            range.Style.Font.Underline = XLFontUnderlineValues.Single;
                         }
                     }
 
-                    if (item.DetalTyp == "издел" || item.DetalTyp == "сб.ед")
-                    {
-                        var range = worksheet.Range(worksheet.Cell(i, 1), worksheet.Cell(i, 4));
-                        range.Style.Font.Bold = true;
-                        range.Style.Font.Underline = XLFontUnderlineValues.Single;
-                    }
+                    AddCellStyle(worksheet, i);
+
+                    IXLSheetView view = worksheet.SheetView;
+
+                    var path = Path.Combine(pathToReportDirectory,
+                        $@"Дефектовочная ведомость по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
+                    workbook.SaveAs(path);
+
+                    return true;
                 }
-
-                AddCellStyle(worksheet, i);
-
-                IXLSheetView view = worksheet.SheetView;
-                workbook.SaveAs(pathToReportDirectory + $@"\Дефектовочная ведомость по {bomHeader.RootItem.Izdel } № { bomHeader.SerialNumber } от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
-            }
+            });
         }
 
-        private void CreateTableName(IXLWorksheet worksheet, BomHeader bomHeader)
+        private void CreateTableName(IXLWorksheet worksheet, IBomHeader bomHeader)
         {
             int i = 1;
             string[] arrayStrings =

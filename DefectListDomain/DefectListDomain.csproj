@@ -56,32 +56,63 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\IArchiveMeasurementMapDictionaryCommand.cs" />
     <Compile Include="Commands\ICollapseBomItemNodeCommand.cs" />
+    <Compile Include="Commands\ICopyMeasurementMapDictionaryCommand.cs" />
     <Compile Include="Commands\ICreateBomHeaderCommand.cs" />
     <Compile Include="Commands\ICreateBomItemCommand.cs" />
     <Compile Include="Commands\ICreateBomItemDocCommand.cs" />
     <Compile Include="Commands\ICreateBomItemLogCommand.cs" />
     <Compile Include="Commands\ICreateDefectToDecisionMapCommand.cs" />
     <Compile Include="Commands\ICreateLogActionCommand.cs" />
+    <Compile Include="Commands\ICreateLookupItemCommand.cs" />
     <Compile Include="Commands\ICreateMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\ICreateMeasurementMapCommand.cs" />
+    <Compile Include="Commands\ICreateMeasurementMapDictionaryCommand.cs" />
+    <Compile Include="Commands\ICreateMeasurementMapDictionaryItemCommand.cs" />
+    <Compile Include="Commands\ICreateMeasurementMapDictionaryVersionCommand.cs" />
+    <Compile Include="Commands\ICreateNotificationEventSubscriberCommand.cs" />
     <Compile Include="Commands\ICreateRootItemCommand.cs" />
     <Compile Include="Commands\IDeleteBomHeaderCommand.cs" />
     <Compile Include="Commands\IDeleteBomItemCommand.cs" />
     <Compile Include="Commands\IDeleteDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\IDeleteMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\IDeleteMeasurementMapDictionaryItemCommand.cs" />
+    <Compile Include="Commands\IDeleteNotificationEventSubscriberCommand.cs" />
     <Compile Include="Commands\IDeleteRootItemCommand.cs" />
     <Compile Include="Commands\IExpandBomItemNodeCommand.cs" />
     <Compile Include="Commands\ILoadBomItemsToBomHeaderCommand.cs" />
+    <Compile Include="Commands\INotificationDispatchMarkFailedCommand.cs" />
+    <Compile Include="Commands\INotificationDispatchMarkSentCommand.cs" />
+    <Compile Include="Commands\IReportGenerationLogCommand.cs" />
     <Compile Include="Commands\ISaveBomItemCommand.cs" />
+    <Compile Include="Commands\ISaveLookupItemCommand.cs" />
+    <Compile Include="Commands\ISaveMeasurementMapItemsCommand.cs" />
     <Compile Include="Commands\ISubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\INotificationDispatchTryInsertPendingCommand.cs" />
     <Compile Include="Commands\IUnSubscribeUserOnBomHeaderCommand.cs" />
     <Compile Include="Commands\IUpdateBomHeaderCommand.cs" />
     <Compile Include="Commands\IUpdateBomItemIdInMapToRouteChartCommand.cs" />
     <Compile Include="Commands\IUpdateBomItemNameCommand.cs" />
     <Compile Include="Commands\IUpdateBomItemQtyCommand.cs" />
     <Compile Include="Commands\IUpdateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\IUpdateMeasurementMapDictionaryItemCommand.cs" />
     <Compile Include="Commands\IUpdateStateBomHeaderCommand.cs" />
+    <Compile Include="CreatingReports\IDefectListAllItemsReport.cs" />
+    <Compile Include="CreatingReports\IAuxiliaryMaterialsReport.cs" />
+    <Compile Include="CreatingReports\IChangesFinalDecisionReport.cs" />
+    <Compile Include="CreatingReports\IDefectListItemsChangesReport.cs" />
+    <Compile Include="CreatingReports\IDefectListItemsReclamationReport.cs" />
+    <Compile Include="CreatingReports\IDefectListItemsReport.cs" />
+    <Compile Include="CreatingReports\IDefectListPurchaseItemsReport.cs" />
+    <Compile Include="CreatingReports\IDefectListScrapItemsReport.cs" />
+    <Compile Include="CreatingReports\IExportCreatedRouteMapsReport.cs" />
+    <Compile Include="CreatingReports\IGetItemInfoByAllProductsReport.cs" />
+    <Compile Include="CreatingReports\IMeasurementMapReport.cs" />
+    <Compile Include="CreatingReports\ISummaryByOrdersReport.cs" />
     <Compile Include="Dtos\AsupBomComponentDto.cs" />
     <Compile Include="Dtos\AuxiliaryMaterialDto.cs" />
+    <Compile Include="Dtos\RouteMapDto.cs" />
     <Compile Include="Dtos\OgmetMatlDto.cs" />
     <Compile Include="Dtos\PlanOperationDto.cs" />
     <Compile Include="Dtos\ProductDto.cs" />
@@ -90,12 +121,18 @@
     <Compile Include="Dtos\TehprocHeaderDto.cs" />
     <Compile Include="Dtos\WpDto.cs" />
     <Compile Include="EventArgs\ErrorEventArgs.cs" />
+    <Compile Include="Exceptions\ConcurrencyConflictException.cs" />
+    <Compile Include="Exceptions\MeasurementMapAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\MeasurementMapDictionaryBindingConflictException.cs" />
+    <Compile Include="Exceptions\UniqueConstraintViolationException.cs" />
     <Compile Include="ExternalData\IAsupBomContextFactory.cs" />
+    <Compile Include="ExternalData\IGetAllDistinctShopEntriesQuery.cs" />
     <Compile Include="ExternalData\IGetAllIsExpensiveClassifierQuery.cs" />
     <Compile Include="ExternalData\IGetAllOgmetMatlDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllPlanOperationDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllProductDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllRouteChartsTrackInfoQuery.cs" />
+    <Compile Include="ExternalData\IGetAllRouteMapDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllTehprocHeaderDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllWpDtoQuery.cs" />
     <Compile Include="ExternalData\IGetAllAuxiliaryMaterialDtoQuery.cs" />
@@ -107,12 +144,29 @@
     <Compile Include="Models\BomItem.cs" />
     <Compile Include="Models\BomItemLog.cs" />
     <Compile Include="Models\BomItemLogAction.cs" />
+    <Compile Include="Models\EngineeringTextFragment.cs" />
     <Compile Include="Models\FinalDecisionChanging.cs" />
     <Compile Include="Models\GroupDefect.cs" />
     <Compile Include="Models\LogActionType.cs" />
     <Compile Include="Models\LogRecord.cs" />
+    <Compile Include="Models\LookupItem.cs" />
+    <Compile Include="Models\LookupItemKind.cs" />
     <Compile Include="Models\MapBomItemToRouteChart.cs" />
     <Compile Include="Models\MapDefectToDecision.cs" />
+    <Compile Include="Models\MeasurementMap.cs" />
+    <Compile Include="Models\MeasurementMapDictionary.cs" />
+    <Compile Include="Models\MeasurementMapDictionaryBinding.cs" />
+    <Compile Include="Models\MeasurementMapDictionaryItem.cs" />
+    <Compile Include="Models\MeasurementMapItem.cs" />
+    <Compile Include="Models\MeasurementMapItemDisplayModel.cs" />
+    <Compile Include="Models\MeasurementMapItemLog.cs" />
+    <Compile Include="Models\MeasurementMapItemType.cs" />
+    <Compile Include="Models\MeasurementsMapTypeForm.cs" />
+    <Compile Include="Models\NotificationDispatch.cs" />
+    <Compile Include="Models\NotificationEventSubscriber.cs" />
+    <Compile Include="Models\NotificationEventType.cs" />
+    <Compile Include="Models\RecommendedRepairMethodAlternative.cs" />
+    <Compile Include="Models\ReportExecutionResult.cs" />
     <Compile Include="Models\RootItem.cs" />
     <Compile Include="Models\RouteChartTrackInfo.cs" />
     <Compile Include="Models\SerialEntry.cs" />
@@ -129,8 +183,17 @@
     <Compile Include="Queries\IGetAllGroupDefectsQuery.cs" />
     <Compile Include="Queries\IGetAllLogActionsQuery.cs" />
     <Compile Include="Queries\IGetAllMapsBomItemToRouteChartsQuery.cs" />
+    <Compile Include="Queries\IGetAllMeasurementMapDictionariesQuery.cs" />
+    <Compile Include="Queries\IGetAllMeasurementMapItemLogsQuery.cs" />
+    <Compile Include="Queries\IGetAllNotificationEventSubscribersQuery.cs" />
     <Compile Include="Queries\IGetAllRootItemsQuery.cs" />
     <Compile Include="Queries\IGetAllStateDetalsQuery.cs" />
+    <Compile Include="Queries\IGetAllNotificationDispatchesQuery.cs" />
+    <Compile Include="Queries\IGetLookupItemsQuery.cs" />
+    <Compile Include="Queries\IGetMeasurementMapByBomItemIdQuery.cs" />
+    <Compile Include="Queries\IGetMeasurementMapDictionaryByCodeQuery.cs" />
+    <Compile Include="Queries\IGetMeasurementMapDictionaryByIdQuery.cs" />
+    <Compile Include="Queries\IGetMeasurementsMapTypeFormsQuery.cs" />
     <Compile Include="ReportParameters\DefectListItemsRptParm.cs" />
     <Compile Include="Reports\DefectListItems.cs">
       <DependentUpon>DefectListItems.rpt</DependentUpon>
@@ -144,11 +207,19 @@
       <SubType>Component</SubType>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Services\IMeasurementMapItemPresenterService.cs" />
+    <Compile Include="Services\IReportExecutionLogger.cs" />
+    <Compile Include="Services\NotificationDispatchesService\IBomItemsBzrChangesDailyDigestBuilder.cs" />
     <Compile Include="Services\IBomItemsCloner.cs" />
     <Compile Include="Services\IBomItemsEditor.cs" />
     <Compile Include="Services\IBomItemsLoader.cs" />
     <Compile Include="Services\IBomItemsValidator.cs" />
+    <Compile Include="Services\NotificationDispatchesService\INotificationHandler.cs" />
+    <Compile Include="Services\NotificationDispatchesService\INotificationHandlerResolver.cs" />
+    <Compile Include="Services\NotificationDispatchesService\IUserBomHeaderSubscriptionDigestBuilder.cs" />
+    <Compile Include="Services\NotificationDispatchesService\IDefectListEmailService.cs" />
     <Compile Include="Services\IGetBomViewService.cs" />
+    <Compile Include="Services\NotificationDispatchesService\INotificationDispatchesService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
@@ -163,6 +234,7 @@
       <LastGenOutput>DefectListItemsReclamation.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

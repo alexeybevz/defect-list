@@ -2,12 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using ReporterDomain.Services.CreateReportService;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.ViewModelImplement;
-using DefectListBusinessLogic.Report;
-using DefectListDomain.ExternalData;
+using DefectListDomain.CreatingReports;
 
 namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 {
@@ -15,23 +13,17 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
     {
         private readonly DefectListItemViewModel _bomItemViewModel;
         private readonly BomItemsStore _bomItemsStore;
-        private readonly IGetAllPlanOperationDtoQuery _getAllPlanOperationDtoQuery;
 
-        public ExportDefectListToExcelCommand(DefectListItemViewModel bomItemViewModel, BomItemsStore bomItemsStore, IGetAllPlanOperationDtoQuery getAllPlanOperationDtoQuery)
+        public ExportDefectListToExcelCommand(DefectListItemViewModel bomItemViewModel, BomItemsStore bomItemsStore)
         {
             _bomItemViewModel = bomItemViewModel;
             _bomItemsStore = bomItemsStore;
-            _getAllPlanOperationDtoQuery = getAllPlanOperationDtoQuery;
         }
 
         public override async Task ExecuteAsync(object parameter = null)
         {
-            IReportDirectory reportDirectory = new ReportDirectory(_bomItemViewModel.UserIdentity.Name);
-
             try
             {
-                reportDirectory.Create();
-
                 var bomItems = (await _bomItemsStore.GetBomItemIsShowedView(_bomItemViewModel.BomHeader.BomId)).ToList();
                 if (!bomItems.Any())
                 {
@@ -39,19 +31,15 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
                     return;
                 }
 
-                var reportBuilder = new DefectListAllItemsReport(_getAllPlanOperationDtoQuery);
-                reportBuilder.Create(_bomItemViewModel.BomHeader, bomItems, reportDirectory.PathReportDirectory);
+                var reportBuilder = DefectListIocKernel.Get<IDefectListAllItemsReport>();
+                var isReportCreated = await reportBuilder.CreateAsync(_bomItemViewModel.BomHeader, bomItems, _bomItemViewModel.UserIdentity.Name);
 
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                reportDirectory.DeleteIfEmpty();
             }
         }
     }

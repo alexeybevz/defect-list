@@ -7,5 +7,6 @@ namespace DefectListDomain.Queries
     public interface IGetAllBomHeaderSubscribersQuery
     {
         Task<IEnumerable<BomHeaderSubscriber>> Execute();
+        Task<IEnumerable<BomHeaderSubscriber>> Execute(int userId);
     }
 }

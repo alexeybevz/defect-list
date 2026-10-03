@@ -18,7 +18,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
 
         protected override async Task SaveAsync(object parameter)
         {
-            await UpdateDefectPropsAndMoveNext(false);
+            await UpdateDefectPropsAndMoveNext(false, true);
         }
     }
 }

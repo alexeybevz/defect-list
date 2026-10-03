@@ -238,7 +238,6 @@ namespace DefectListWpfControl.DefectList.ViewModels
         }
 
         private int _productId;
-
         public int ProductId
         {
             get { return _productId; }
@@ -252,9 +251,31 @@ namespace DefectListWpfControl.DefectList.ViewModels
             }
         }
 
+        private int _codeLsf82;
+        public int CodeLsf82
+        {
+            get { return _codeLsf82; }
+            set
+            {
+                _codeLsf82 = value;
+                NotifyPropertyChanged(nameof(CodeLsf82));
+            }
+        }
+
         public bool IsExistsTargetDetal => ProductId > 0;
         public string IsExistsTargetDetalName => IsExistsTargetDetal ? "Да" : "Нет";
 
         public IEnumerable<IBomItem> BomItems { get; set; }
+
+        private string _partyComment;
+        public string PartyComment
+        {
+            get { return _partyComment; }
+            set
+            {
+                _partyComment = value?.Length > 200 ? value.Substring(0, 200) : value;
+                NotifyPropertyChanged(nameof(PartyComment));
+            }
+        }
     }
 }

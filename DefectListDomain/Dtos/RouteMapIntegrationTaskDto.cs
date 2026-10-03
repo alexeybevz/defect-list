@@ -29,5 +29,7 @@ namespace DefectListDomain.Dtos
         public string TypeTask { get; set; }
         public string DocType { get; set; }
         public int DocId { get; set; }
+        public string PartyComment { get; set; }
+        public string SerialNumber { get; set; }
     }
 }

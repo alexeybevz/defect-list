@@ -16,5 +16,9 @@ namespace DefectListBusinessLogic.Queries
 
         public async Task<IEnumerable<BomHeaderSubscriber>> Execute() => 
                 (await DbConnection.QueryAsync<BomHeaderSubscriber>(Query)).ToList();
+
+        public async Task<IEnumerable<BomHeaderSubscriber>> Execute(int userId) =>
+            (await DbConnection.QueryAsync<BomHeaderSubscriber>(
+                Query + " WHERE UserId = @UserId", new {userId})).ToList();
     }
 }

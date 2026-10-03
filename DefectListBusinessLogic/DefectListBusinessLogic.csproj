@@ -66,13 +66,15 @@
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FirebirdSql.Data.FirebirdClient">
-      <HintPath>..\ReporterBusinessLogic\bin\Debug\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    <Reference Include="FirebirdSql.Data.FirebirdClient, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\FirebirdSql.Data.FirebirdClient.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,37 +83,57 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ArchiveMeasurementMapDictionaryCommand.cs" />
     <Compile Include="Commands\CollapseBomItemNodeCommand.cs" />
+    <Compile Include="Commands\CopyMeasurementMapDictionaryCommand.cs" />
     <Compile Include="Commands\CreateBomHeaderCommand.cs" />
     <Compile Include="Commands\CreateBomItemCommand.cs" />
     <Compile Include="Commands\CreateBomItemDocCommand.cs" />
     <Compile Include="Commands\CreateBomItemLogCommand.cs" />
     <Compile Include="Commands\CreateDefectToDecisionMapCommand.cs" />
     <Compile Include="Commands\CreateLogActionCommand.cs" />
+    <Compile Include="Commands\CreateLookupItemCommand.cs" />
     <Compile Include="Commands\CreateMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\CreateMeasurementMapCommand.cs" />
+    <Compile Include="Commands\CreateMeasurementMapDictionaryCommand.cs" />
+    <Compile Include="Commands\CreateMeasurementMapDictionaryItemCommand.cs" />
+    <Compile Include="Commands\CreateMeasurementMapDictionaryVersionCommand.cs" />
+    <Compile Include="Commands\CreateNotificationEventSubscriberCommand.cs" />
     <Compile Include="Commands\CreateRootItemCommand.cs" />
     <Compile Include="Commands\DeleteBomHeaderCommand.cs" />
     <Compile Include="Commands\DeleteBomItemCommand.cs" />
     <Compile Include="Commands\DeleteDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\DeleteMapBomItemToRouteChartCommand.cs" />
+    <Compile Include="Commands\DeleteMeasurementMapDictionaryItemCommand.cs" />
+    <Compile Include="Commands\DeleteNotificationEventSubscriberCommand.cs" />
     <Compile Include="Commands\DeleteRootItemCommand.cs" />
     <Compile Include="Commands\ExpandBomItemNodeCommand.cs" />
     <Compile Include="Commands\LoadBomItemsToBomHeaderCommand.cs" />
+    <Compile Include="Commands\NotificationDispatchMarkFailedCommand.cs" />
+    <Compile Include="Commands\NotificationDispatchMarkSentCommand.cs" />
+    <Compile Include="Commands\ReportGenerationLogCommand.cs" />
     <Compile Include="Commands\SaveBomItemCommand.cs" />
+    <Compile Include="Commands\SaveLookupItemCommand.cs" />
+    <Compile Include="Commands\SaveMeasurementMapItemsCommand.cs" />
     <Compile Include="Commands\SubscribeUserOnBomHeaderCommand.cs" />
+    <Compile Include="Commands\NotificationDispatchTryInsertPendingCommand.cs" />
     <Compile Include="Commands\UnSubscribeUserOnBomHeaderCommand.cs" />
     <Compile Include="Commands\UpdateBomHeaderCommand.cs" />
     <Compile Include="Commands\UpdateBomItemIdInMapToRouteChartCommand.cs" />
     <Compile Include="Commands\UpdateBomItemNameCommand.cs" />
     <Compile Include="Commands\UpdateBomItemQtyCommand.cs" />
     <Compile Include="Commands\UpdateDefectToDecisionMapCommand.cs" />
+    <Compile Include="Commands\UpdateMeasurementMapDictionaryItemCommand.cs" />
     <Compile Include="Commands\UpdateStateBomHeaderCommand.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Fakes\FakeAsupBomContextFactory.cs" />
+    <Compile Include="Fakes\FakeGetAllDistinctShopEntriesQuery.cs" />
     <Compile Include="Fakes\FakeGetAllIsExpensiveClassifierQuery.cs" />
     <Compile Include="Fakes\FakeGetAllOgmetMatlDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllPlanOperationDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllProductDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllRouteChartsTrackInfoQuery.cs" />
+    <Compile Include="Fakes\FakeGetAllRouteMapDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllTehprocHeaderDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllWpDtoQuery.cs" />
     <Compile Include="Fakes\FakeGetAllAuxiliaryMaterialDtoQuery.cs" />
@@ -124,33 +146,69 @@
     <Compile Include="Queries\GetAllBomItemsWithSerialNumbersQuery.cs" />
     <Compile Include="Queries\GetAllDecisionsQuery.cs" />
     <Compile Include="Queries\GetAllDefectToDecisionMapsQuery.cs" />
+    <Compile Include="Queries\GetAllDistinctShopEntriesQuery.cs" />
     <Compile Include="Queries\GetAllGroupDefectsQuery.cs" />
     <Compile Include="Queries\GetAllLogActionsQuery.cs" />
     <Compile Include="Queries\GetAllMapsBomItemToRouteChartsQuery.cs" />
+    <Compile Include="Queries\GetAllMeasurementMapDictionariesQuery.cs" />
+    <Compile Include="Queries\GetAllMeasurementMapItemLogsQuery.cs" />
+    <Compile Include="Queries\GetAllNotificationDispatchesQuery.cs" />
+    <Compile Include="Queries\GetAllNotificationEventSubscribersQuery.cs" />
     <Compile Include="Queries\GetAllRootItemsQuery.cs" />
     <Compile Include="Queries\GetAllStateDetalsQuery.cs" />
+    <Compile Include="Queries\GetLookupItemsQuery.cs" />
+    <Compile Include="Queries\GetMeasurementMapByBomItemIdQuery.cs" />
+    <Compile Include="Queries\GetMeasurementMapDictionaryByCodeQuery.cs" />
+    <Compile Include="Queries\GetMeasurementMapDictionaryByIdQuery.cs" />
+    <Compile Include="Queries\GetMeasurementsMapTypeFormsQuery.cs" />
     <Compile Include="Report\AuxiliaryMaterialsReport.cs" />
+    <Compile Include="Report\AuxiliaryMaterialsReportLoggingDecorator.cs" />
     <Compile Include="Report\ChangesFinalDecisionReport.cs" />
+    <Compile Include="Report\ChangesFinalDecisionReportLoggingDecorator.cs" />
     <Compile Include="Report\DataSetReport.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSetReport.xsd</DependentUpon>
     </Compile>
     <Compile Include="Report\DefectListAllItemsReport.cs" />
+    <Compile Include="Report\DefectListAllItemsReportLoggingDecorator.cs" />
     <Compile Include="Report\DefectListItemsChangesReport.cs" />
+    <Compile Include="Report\DefectListItemsChangesReportLoggingDecorator.cs" />
+    <Compile Include="Report\DefectListItemsReclamationReportLoggingDecorator.cs" />
     <Compile Include="Report\DefectListItemsReclamationRptBuilder.cs" />
+    <Compile Include="Report\DefectListItemsReportLoggingDecorator.cs" />
     <Compile Include="Report\DefectListItemsRptBuilder.cs" />
     <Compile Include="Report\DefectListItemsRptParmBuilder.cs" />
     <Compile Include="Report\DefectListPurchaseItemsReport.cs" />
+    <Compile Include="Report\DefectListPurchaseItemsReportLoggingDecorator.cs" />
     <Compile Include="Report\DefectListScrapItemsReport.cs" />
+    <Compile Include="Report\DefectListScrapItemsReportLoggingDecorator.cs" />
+    <Compile Include="Report\ExportCreatedRouteMapsReport.cs" />
+    <Compile Include="Report\ExportCreatedRouteMapsReportLoggingDecorator.cs" />
     <Compile Include="Report\GetItemInfoByAllProductsReport.cs" />
+    <Compile Include="Report\GetItemInfoByAllProductsReportLoggingDecorator.cs" />
+    <Compile Include="Report\MeasurementMapReportLoggingDecorator.cs" />
+    <Compile Include="Report\ReportLoggingDecorator.cs" />
+    <Compile Include="Report\MeasurementMapReport.cs" />
     <Compile Include="Report\SummaryByOrdersReport.cs" />
+    <Compile Include="Report\SummaryByOrdersReportLoggingDecorator.cs" />
+    <Compile Include="Services\EngineeringTextExcelRenderer.cs" />
+    <Compile Include="Services\EngineeringTextParser.cs" />
+    <Compile Include="Services\MeasurementMapItemPresenterService.cs" />
+    <Compile Include="Services\NotificationDispatchesService\BomItemsBzrChangesDailyDigestHandler.cs" />
+    <Compile Include="Services\NotificationDispatchesService\HashBuilder.cs" />
+    <Compile Include="Services\NotificationDispatchesService\NotificationHandlerResolver.cs" />
+    <Compile Include="Services\NotificationDispatchesService\UserBomHeaderSubscriptionDigestHandler.cs" />
+    <Compile Include="Services\NotificationDispatchesService\UserBomHeaderSubscriptionDigestBuilder.cs" />
+    <Compile Include="Services\NotificationDispatchesService\BomItemsBzrChangesDailyDigestBuilder.cs" />
     <Compile Include="Services\BomItemsCloner.cs" />
     <Compile Include="Services\BomItemsEditor.cs" />
     <Compile Include="Services\BomItemsLoader.cs" />
     <Compile Include="Services\BomItemsValidator.cs" />
     <Compile Include="Services\GetBomViewService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\NotificationDispatchesService\NotificationDispatchesService.cs" />
+    <Compile Include="Services\ReportExecutionLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Report\DataSetReport.xsc">

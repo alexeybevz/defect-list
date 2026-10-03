@@ -41,11 +41,11 @@ namespace DefectListBusinessLogic.Queries
             }
         }
 
-        public async Task<IEnumerable<FinalDecisionChanging>> FinalDecisionChangings(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<FinalDecisionChanging>> FinalDecisionChangings(DateTime startDate, DateTime endDate, string detalTyp)
         {
             using (var db = await CreateOpenConnectionAsync())
             {
-                return (await db.QueryAsync<FinalDecisionChanging>(GetQueryFinalDecisionChangings(), new { startDate, endDate = endDate.AddDays(1).Date })).ToList();
+                return (await db.QueryAsync<FinalDecisionChanging>(GetQueryFinalDecisionChangings(), new { startDate, endDate = endDate.AddDays(1).Date, detalTyp })).ToList();
             }
         }
 
@@ -64,6 +64,7 @@ namespace DefectListBusinessLogic.Queries
 	                      , bi.DetalTyp
 	                      , bi.QtyMnf
 	                      , bi.DetalUm
+	                      , bi.ProductID  
 	                      , d.FinalDecision
 	                      , b.FinalDecision AS NextFinalDecision
 	                      , STUFF( (select ', ' + RouteChart_Number from MapBomItemToRouteChart m where m.BomItemId = d.BomItemId for xml path ('')), 1, 2, '') AS Nomgodurs
@@ -77,6 +78,7 @@ namespace DefectListBusinessLogic.Queries
                       left join Users u on u.Login = b.CreatedBy
                       where d.FinalDecision is not null and b.FinalDecision is not null and ISNULL(d.FinalDecision,'') != ISNULL(b.FinalDecision,'')
                         and d.CreateDate between @startDate and @endDate
+                        and (@detalTyp IS NULL OR bi.DetalTyp = @detalTyp)
                       order by b.CreateDate desc";
         }
     }

@@ -50,7 +50,8 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                 foreach (var item in bomItems)
                 {
                     _bomItemViewModel.SelectedBomItemViewModel = item;
-                    _bomItemViewModel.MapDefectToDecisionChanged(targetMapDefectToDecision, true);
+                    _bomItemViewModel.SelectedBomItemViewModel.Defect = targetMapDefectToDecision.Item.Defect;
+                    _bomItemViewModel.SelectedBomItemViewModel.Decision = targetMapDefectToDecision.Item.Decision;
                     await UpdateDefectProps(item);
                 }
 

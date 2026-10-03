@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 
@@ -9,24 +10,31 @@ namespace DefectListBusinessLogic.Report
 {
     public class ChangesFinalDecisionReport
     {
-        public void Create(IReadOnlyCollection<FinalDecisionChanging> data, string pathToFileReport)
+        public async Task<bool> CreateAsync(
+            IReadOnlyCollection<FinalDecisionChanging> data,
+            IReadOnlyDictionary<int, string> productsDistinctShopEntries,
+            string pathToReportDirectory)
         {
-            if (!data.Any())
+            return await Task.Run(() =>
             {
-                MessageBox.Show("Нет данных для формирования отчета");
-                return;
-            }
+                if (!data.Any())
+                    throw new InvalidDataException("Нет данных для формирования отчета");
 
-            using (var wb = new XLWorkbook())
-            {
-                var ws = wb.AddWorksheet("Данные");
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.AddWorksheet("Данные");
 
-                CreateHeader(ws);
-                CreateBody(ws, data);
-                PostFormat(ws);
+                    CreateHeader(ws);
+                    CreateBody(ws, data, productsDistinctShopEntries);
+                    PostFormat(ws);
 
-                wb.SaveAs(pathToFileReport);
-            }
+                    var path = Path.Combine(pathToReportDirectory,
+                        $"Журнал изменения окончательного решения от {DateTime.Now:yyyy-MM-dd HH-mm-ss}.xlsx");
+                    wb.SaveAs(path);
+                }
+
+                return true;
+            });
         }
 
         private void CreateHeader(IXLWorksheet ws)
@@ -46,12 +54,16 @@ namespace DefectListBusinessLogic.Report
                 "Маршрутные карты",
                 "Дата изменения",
                 "Изменено пользователем",
+                "Расцеховка по технологическому маршруту",
             };
 
             headers.Select((x, ind) => new KeyValuePair<string, int>(x, ind)).ForEach(x => ws.Cell(1, x.Value + 1).SetValue(x.Key));
         }
 
-        private void CreateBody(IXLWorksheet ws, IEnumerable<FinalDecisionChanging> data)
+        private void CreateBody(
+            IXLWorksheet ws,
+            IEnumerable<FinalDecisionChanging> data,
+            IReadOnlyDictionary<int, string> productsDistinctShopEntries)
         {
             var row = 2;
 
@@ -71,6 +83,11 @@ namespace DefectListBusinessLogic.Report
                 ws.Cell(row, col++).SetValue(d.Nomgodurs);
                 ws.Cell(row, col++).SetValue(d.CreateDate);
                 ws.Cell(row, col++).SetValue(d.CreatedByName);
+
+                string distinctShopEntries;
+                productsDistinctShopEntries.TryGetValue(d.ProductId, out distinctShopEntries);
+
+                ws.Cell(row, col++).SetValue(distinctShopEntries);
 
                 row++;
             }

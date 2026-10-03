@@ -8,5 +8,6 @@ namespace DefectListDomain.Queries
     {
         Task<IEnumerable<MapBomItemToRouteChart>> Execute();
         Task<IEnumerable<MapBomItemToRouteChart>> ExecuteByBomItemId(int id);
+        Task<IEnumerable<MapBomItemToRouteChart>> ExecuteByParentRouteChartNumber(string parentRouteChartNumber);
     }
 }

@@ -71,7 +71,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                    (_bomItemViewModel.SelectedBomItemViewModel?.IsValid ?? false);
         }
 
-        protected async Task UpdateDefectPropsAndMoveNext(bool isApplyOnAssembly, Func<IBomItemModel, bool> filterBomItems = null)
+        protected async Task UpdateDefectPropsAndMoveNext(bool isApplyOnAssembly, bool isMoveNext, Func<IBomItemModel, bool> filterBomItems = null)
         {
             if (_bomItemViewModel.SelectedBomItemViewModel == null)
                 return;
@@ -104,7 +104,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                     _bomItemViewModel.BomItemsView.MoveCurrentTo(newObject);
             }
 
-            if (saveResult)
+            if (saveResult && isMoveNext)
                 _bomItemViewModel.BomItemsView.MoveCurrentToNext();
         }
 
@@ -128,40 +128,14 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
 
             foreach (var bomItemModel in bomItems)
             {
-                string defectState;
-                switch (bomItemState)
-                {
-                    case BomItemState.Restore:
-                        defectState = "Ремонт";
-                        break;
-                    case BomItemState.Replace:
-                        defectState = "Замена";
-                        break;
-                    case BomItemState.Good:
-                        defectState = "Годная";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
                 _bomItemViewModel.SelectedBomItemViewModel = (BomItemViewModel)bomItemModel;
                 _bomItemViewModel.SelectedBomItemViewModel.QtyRestore = 0;
                 _bomItemViewModel.SelectedBomItemViewModel.QtyReplace = 0;
-                _bomItemViewModel.SelectedBomItemViewModel.Defect = string.Empty;
-                _bomItemViewModel.SelectedBomItemViewModel.Decision = string.Empty;
                 _bomItemViewModel.SelectedBomItemViewModel.FinalDecision = string.Empty;
                 _bomItemViewModel.SelectedBomItemViewModel.TechnologicalProcessUsed = string.Empty;
-                _bomItemViewModel.SelectedBomItemViewModel.ResearchAction = string.Empty;
-                _bomItemViewModel.SelectedBomItemViewModel.ResearchResult = string.Empty;
 
-                _bomItemViewModel.MapDefectToDecisionChanged(new DefectToDecisionMapCheckBoxViewModel(new MapDefectToDecision()
-                {
-                    Defect = tempDefect,
-                    Decision = tempDecision,
-                    StateDetals = new StateDetals() { StateDetalsName = defectState },
-                }, _bomItemViewModel.MapDefectToDecisionChanged),
-                    true);
-
+                _bomItemViewModel.SelectedBomItemViewModel.Defect = tempDefect;
+                _bomItemViewModel.SelectedBomItemViewModel.Decision = tempDecision;
                 _bomItemViewModel.SelectedBomItemViewModel.ResearchAction = tempResearchAction;
                 _bomItemViewModel.SelectedBomItemViewModel.ResearchResult = tempResearchResult;
 
@@ -169,7 +143,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                     _bomItemViewModel.BomItemsView.MoveCurrentToNext();
             }
 
-            return false;
+            return true;
         }
 
         protected async Task<bool> UpdateDefectProps(BomItemViewModel defectListItem)

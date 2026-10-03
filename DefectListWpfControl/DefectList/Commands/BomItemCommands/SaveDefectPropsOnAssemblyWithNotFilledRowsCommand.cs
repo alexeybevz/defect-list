@@ -21,7 +21,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
 
         protected override async Task SaveAsync(object parameter)
         {
-            await UpdateDefectPropsAndMoveNext(true, _bomItemViewModel.FilterByStructureNumberWithNotFilledRows());
+            await UpdateDefectPropsAndMoveNext(true, true, _bomItemViewModel.FilterByStructureNumberWithNotFilledRows());
         }
     }
 }

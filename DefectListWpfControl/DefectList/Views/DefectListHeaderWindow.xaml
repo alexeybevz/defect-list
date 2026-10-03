@@ -53,8 +53,13 @@
                 </MenuItem>
                 <MenuItem Header="Отчеты" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <MenuItem Header="Сводный отчет по ведомостям (excel)" Command="{Binding SummaryByOrdersReportCommand}"/>
-                    <MenuItem Header="Журнал изменения окончательного решения (excel)" Command="{Binding ChangesFinalDecisionReportCommand}"/>
+                    <MenuItem Header="Журнал изменения окончательного решения (excel)"
+                              Command="{Binding OpenChangesFinalDecisionReportFormCommand}"/>
                     <MenuItem Header="Анализ номенклатуры (excel)" Command="{Binding GetItemInfoByAllProductsReportCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Справочники"
+                          Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <MenuItem Header="Шаблоны карт измерения (КИ)" Command="{Binding OpenMeasurementMapDictionaryListWindowCommand}" />
                 </MenuItem>
             </Menu>
         </Grid>
@@ -196,6 +201,22 @@
                               SelectionMode="Single"
                               SelectionUnit="FullRow"
                               CopyingRowClipboardContent="DefectListHeadersDataGrid_CopyingRowClipboardContent">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StateInfo.IsApproved}"
+                                                 Value="True">
+                                        <Setter Property="Foreground"
+                                                Value="Gray" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding StateInfo.IsClosed}"
+                                                 Value="True">
+                                        <Setter Property="Foreground"
+                                                Value="Gray" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding BomId}" Width="60"/>
                             <DataGridTextColumn Header="Заказ" Binding="{Binding Orders}" Width="150"/>

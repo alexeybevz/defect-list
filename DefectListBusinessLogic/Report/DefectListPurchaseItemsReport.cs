@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 
@@ -8,45 +10,52 @@ namespace DefectListBusinessLogic.Report
 {
     public class DefectListPurchaseItemsReport
     {
-        public void Create(BomHeader bomHeader, IReadOnlyCollection<BomItem> data, string pathToReportDirectory)
+        public async Task<bool> CreateAsync(IBomHeader bomHeader, IReadOnlyCollection<BomItem> data, string pathToReportDirectory)
         {
-            using (XLWorkbook workbook = new XLWorkbook())
+            return await Task.Run(() =>
             {
-                workbook.Style.Font.FontName = "Times New Roman";
-                workbook.Style.Font.FontSize = 14;
-                IXLWorksheet worksheet = workbook.Worksheets.Add("Отчет ПКИ для ОМТС");
-                CreateTableName(worksheet, bomHeader);
-                CreateTableHeader(worksheet);
-
-                int i = 4;
-                foreach (BomItem item in data.OrderBy(x => x.Detal))
+                using (XLWorkbook workbook = new XLWorkbook())
                 {
-                    i = i + 1;
-                    worksheet.Cell(i, 1).SetValue(item.Detal);
-                    worksheet.Cell(i, 2).SetValue(item.DetalIma);
-                    worksheet.Cell(i, 3).SetValue(Math.Round(item.QtyMnf, 2));
-                    worksheet.Cell(i, 4).SetValue(item.DetalUm);
-                    worksheet.Cell(i, 5).Value = $@"Установленный дефект: {item.Defect}{(string.IsNullOrEmpty(item.Defect) ? "" : ".")}
+                    workbook.Style.Font.FontName = "Times New Roman";
+                    workbook.Style.Font.FontSize = 14;
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("Отчет ПКИ для ОМТС");
+                    CreateTableName(worksheet, bomHeader);
+                    CreateTableHeader(worksheet);
+
+                    int i = 4;
+                    foreach (BomItem item in data.OrderBy(x => x.Detal))
+                    {
+                        i = i + 1;
+                        worksheet.Cell(i, 1).SetValue(item.Detal);
+                        worksheet.Cell(i, 2).SetValue(item.DetalIma);
+                        worksheet.Cell(i, 3).SetValue(Math.Round(item.QtyMnf, 2));
+                        worksheet.Cell(i, 4).SetValue(item.DetalUm);
+                        worksheet.Cell(i, 5).Value = $@"Установленный дефект: {item.Defect}{(string.IsNullOrEmpty(item.Defect) ? "" : ".")}
 Решение по устранению: {item.Decision}";
 
-                    for (int j = 1; j <= 2; j++)
-                    {
-                        worksheet.Cell(i, j).Style.Font.Bold = true;
-                        worksheet.Cell(i, j).Style.Font.Underline = XLFontUnderlineValues.Single;
+                        for (int j = 1; j <= 2; j++)
+                        {
+                            worksheet.Cell(i, j).Style.Font.Bold = true;
+                            worksheet.Cell(i, j).Style.Font.Underline = XLFontUnderlineValues.Single;
+                        }
                     }
+
+                    AddCellStyle(worksheet, i);
+                    AddFootnote(worksheet, i);
+
+                    IXLSheetView view = worksheet.SheetView;
+                    view.ZoomScale = 75;
+
+                    var path = Path.Combine(pathToReportDirectory,
+                        $@"Отчет ПКИ для ОМТС по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
+                    workbook.SaveAs(path);
+
+                    return true;
                 }
-                
-                AddCellStyle(worksheet, i);
-                AddFootnote(worksheet, i);
-
-                IXLSheetView view = worksheet.SheetView;
-                view.ZoomScale = 75;
-
-                workbook.SaveAs(pathToReportDirectory + $@"\Отчет ПКИ для ОМТС по {bomHeader.RootItem.Izdel } № { bomHeader.SerialNumber } от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
-            }
+            });
         }
 
-        private void CreateTableName(IXLWorksheet  worksheet, BomHeader bomHeader)
+        private void CreateTableName(IXLWorksheet  worksheet, IBomHeader bomHeader)
         {
             int i = 1;
             string[] arrayStrings =

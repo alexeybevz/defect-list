@@ -45,7 +45,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
         public override bool CanExecute(object parameter = null)
         {
             return base.CanExecute(parameter) &&
-                   PermissionsStore.IsSuperUser &&
+                   PermissionsStore.IsWriteAccessUser &&
                    (_defectListItemViewModel.BomHeader.StateInfo.IsWip || _defectListItemViewModel.BomHeader.StateInfo.IsWaitApproved);
         }
     }

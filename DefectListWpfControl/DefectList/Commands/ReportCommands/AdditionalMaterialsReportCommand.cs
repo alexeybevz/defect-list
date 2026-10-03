@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using DefectListBusinessLogic.Report;
-using DefectListDomain.ExternalData;
-using ReporterDomain.Services.CreateReportService;
+using DefectListDomain.CreatingReports;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.ViewModelImplement;
@@ -15,39 +13,28 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
     {
         private readonly DefectListItemViewModel _bomItemViewModel;
         private readonly BomItemsStore _bomItemsStore;
-        private readonly IGetAllAuxiliaryMaterialDtoQuery _getAllAuxiliaryMaterialDtoQuery;
-        private readonly IGetAllOgmetMatlDtoQuery _getAllOgmetMatlDtoQuery;
 
-        public AdditionalMaterialsReportCommand(DefectListItemViewModel bomItemViewModel, BomItemsStore bomItemsStore, IGetAllAuxiliaryMaterialDtoQuery getAllAuxiliaryMaterialDtoQuery, IGetAllOgmetMatlDtoQuery getAllOgmetMatlDtoQuery)
+        public AdditionalMaterialsReportCommand(DefectListItemViewModel bomItemViewModel, BomItemsStore bomItemsStore)
         {
             _bomItemViewModel = bomItemViewModel;
             _bomItemsStore = bomItemsStore;
-            _getAllAuxiliaryMaterialDtoQuery = getAllAuxiliaryMaterialDtoQuery;
-            _getAllOgmetMatlDtoQuery = getAllOgmetMatlDtoQuery;
         }
 
         public override async Task ExecuteAsync(object parameter = null)
         {
-            IReportDirectory reportDirectory = new ReportDirectory(_bomItemViewModel.UserIdentity.Name);
             try
             {
-                reportDirectory.Create();
-
                 var bomItems = (await _bomItemsStore.GetBomItemIsShowedView(_bomItemViewModel.BomHeader.BomId)).ToList();
 
-                var reportBuilder = new AdditionalMaterialsReport(_getAllAuxiliaryMaterialDtoQuery, _getAllOgmetMatlDtoQuery);
-                reportBuilder.Create(_bomItemViewModel.BomHeader, bomItems, reportDirectory.PathReportDirectory);
+                var reportBuilder = DefectListIocKernel.Get<IAuxiliaryMaterialsReport>();
+                var isReportCreated = await reportBuilder.CreateAsync(_bomItemViewModel.BomHeader, bomItems, _bomItemViewModel.UserIdentity.Name);
 
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                reportDirectory.DeleteIfEmpty();
             }
         }
     }

@@ -157,9 +157,9 @@ namespace DefectListWpfControl.DefectList.Stores
             return await _getAllBomItemsByBomHeaderQuery.ExecuteById(bomItemId);
         }
 
-        public async Task<IEnumerable<FinalDecisionChanging>> GetFinalDecisionChangings(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<FinalDecisionChanging>> GetFinalDecisionChangings(DateTime startDate, DateTime endDate, string detalTyp)
         {
-            return await _getAllBomItemLogsQuery.FinalDecisionChangings(startDate, endDate);
+            return await _getAllBomItemLogsQuery.FinalDecisionChangings(startDate, endDate, detalTyp);
         }
     }
 }

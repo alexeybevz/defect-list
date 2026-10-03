@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 
@@ -7,36 +9,44 @@ namespace DefectListBusinessLogic.Report
 {
     public class DefectListScrapItemsReport
     {
-        public void Create(BomHeader bomHeader, IReadOnlyCollection<BomItem> data, string pathToReportDirectory)
+        public async Task<bool> CreateAsync(IBomHeader bomHeader, IReadOnlyCollection<BomItem> data, string pathToReportDirectory)
         {
-            using (XLWorkbook workbook = new XLWorkbook())
+            return await Task.Run(() =>
             {
-                workbook.Style.Font.FontName = "Times New Roman";
-                workbook.Style.Font.FontSize = 14;
-                IXLWorksheet worksheet = workbook.Worksheets.Add("Отчет о браке");
-                CreateTableName(worksheet, bomHeader);
-                CreateTableHeader(worksheet);
-
-                int i = 5;
-                foreach (BomItem item in data)
+                using (XLWorkbook workbook = new XLWorkbook())
                 {
-                    i = i + 1;
-                    worksheet.Cell(i, 1).SetValue(item.Detal);
-                    worksheet.Cell(i, 2).SetValue(item.DetalIma);
-                    worksheet.Cell(i, 3).SetValue(item.DetalTyp);
-                    worksheet.Cell(i, 4).SetValue(Math.Round(item.QtyReplace, 2));
-                    worksheet.Cell(i, 5).SetValue(item.DetalUm);
-                    worksheet.Cell(i, 6).Value = item.Defect;
+                    workbook.Style.Font.FontName = "Times New Roman";
+                    workbook.Style.Font.FontSize = 14;
+                    IXLWorksheet worksheet = workbook.Worksheets.Add("Отчет о браке");
+                    CreateTableName(worksheet, bomHeader);
+                    CreateTableHeader(worksheet);
+
+                    int i = 5;
+                    foreach (BomItem item in data)
+                    {
+                        i = i + 1;
+                        worksheet.Cell(i, 1).SetValue(item.Detal);
+                        worksheet.Cell(i, 2).SetValue(item.DetalIma);
+                        worksheet.Cell(i, 3).SetValue(item.DetalTyp);
+                        worksheet.Cell(i, 4).SetValue(Math.Round(item.QtyReplace, 2));
+                        worksheet.Cell(i, 5).SetValue(item.DetalUm);
+                        worksheet.Cell(i, 6).Value = item.Defect;
+                    }
+
+                    AddCellStyle(worksheet, i);
+
+                    CreateTableFooter(worksheet, i);
+
+                    IXLSheetView view = worksheet.SheetView;
+                    view.ZoomScale = 80;
+
+                    var path = Path.Combine(pathToReportDirectory,
+                        $@"Отчет о браке ДСЕ по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
+                    workbook.SaveAs(path);
+
+                    return true;
                 }
-
-                AddCellStyle(worksheet, i);
-
-                CreateTableFooter(worksheet, i);
-
-                IXLSheetView view = worksheet.SheetView;
-                view.ZoomScale = 80;
-                workbook.SaveAs(pathToReportDirectory + $@"\Отчет о браке ДСЕ по {bomHeader.RootItem.Izdel } № { bomHeader.SerialNumber } от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
-            }
+            });
         }
 
         private void CreateTableFooter(IXLWorksheet worksheet, int lastRowNumber)
@@ -45,7 +55,7 @@ namespace DefectListBusinessLogic.Report
             worksheet.Cell(lastRowNumber + 5, 4).Value = "Представитель ОТК     ______________________________";
         }
 
-        private void CreateTableName(IXLWorksheet worksheet, BomHeader bomHeader)
+        private void CreateTableName(IXLWorksheet worksheet, IBomHeader bomHeader)
         {
             int i = 1;
             string[] arrayStrings =

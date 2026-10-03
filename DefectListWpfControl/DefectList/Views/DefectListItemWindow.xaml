@@ -509,6 +509,95 @@
                         </DataGrid>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Карта измерения" Visibility="{Binding Path=IsVisibleAction, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Margin="10">
+                        <DataGrid x:Name="dataGridMeasurementMapItemLogs"
+                                  ItemsSource="{Binding MeasurementMapItemLogs}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  SelectionMode="Single"
+                                  CanUserAddRows="False"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  Grid.ColumnSpan="2"
+                                  CopyingRowClipboardContent="DataGridMeasurementMapItemLogs_OnCopyingRowClipboardContent"
+                                  SelectionUnit="FullRow"
+                                  BorderBrush="#ccc">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Действие"
+                                                    Binding="{Binding ActionName}"
+                                                    Width="50" />
+                                <DataGridTextColumn Header="№"
+                                                    Binding="{Binding CustomNumeration}"
+                                                    Width="50" />
+                                <DataGridTemplateColumn Header="Возможный дефект"
+                                                        Width="160"
+                                                        x:Name="dataGridColumnPossibleDefectName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock commons:EngineeringTextBehavior.Text="{Binding PossibleDefectName}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Margin="4 0" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Номинальное значение"
+                                                        Width="160"
+                                                        x:Name="dataGridColumnNominalValueName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock commons:EngineeringTextBehavior.Text="{Binding NominalValueName}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Margin="4 0" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Измеренное значение"
+                                                        Width="160"
+                                                        x:Name="dataGridColumnActualValue">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock commons:EngineeringTextBehavior.Text="{Binding ActualValue}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Margin="4 0" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Рекомендуемый метод ремонта"
+                                                    Binding="{Binding ActualRecommendedRepairMethodName}"
+                                                    Width="190"
+                                                    x:Name="dataGridColumnActualRecommendedRepairMethodName"/>
+                                <DataGridTextColumn Header="Отметка о выполнении работ по устранению дефекта"
+                                                    Binding="{Binding MarkOfWorkCompletion}"
+                                                    Width="250" />
+                                <DataGridTextColumn Header="Пользователь, установивший отметку о выполнении работ"
+                                                    Binding="{Binding MarkOfWorkCompletionByName}"
+                                                    Width="150" />
+                                <DataGridTemplateColumn Header="Требование после ремонта"
+                                                        Width="250"
+                                                        x:Name="dataGridColumnRequirementPostRepairName">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock commons:EngineeringTextBehavior.Text="{Binding RequirementPostRepairName}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Margin="4 0" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Действие выполнил пользователь"
+                                                    Binding="{Binding CreatedByName}"
+                                                    Width="150" />
+                                <DataGridTextColumn Header="Дата изменения"
+                                                    Binding="{Binding CreateDate, StringFormat=\{0:dd.MM.yyyy HH:mm:ss\}}"
+                                                    Width="150"
+                                                    x:Name="dataGridColumnCreateDate"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

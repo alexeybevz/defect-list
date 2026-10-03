@@ -9,6 +9,7 @@ namespace DefectListDomain.Models
         public string RouteChart_Number { get; set; }
         public string Detal { get; set; }
         public int ProductId { get; set; }
+        public int CodeLsf82 { get; set; }
         public decimal QtyLaunched { get; set; }
         public DateTime CreateDate { get; set; }
         public string CreatedBy { get; set; }

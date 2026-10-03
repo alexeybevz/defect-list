@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Windows;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 
@@ -9,25 +10,33 @@ namespace DefectListBusinessLogic.Report
 {
     public class DefectListItemsChangesReport
     {
-        public void Create(IBomHeader bomHeader, IReadOnlyCollection<BomItem> bomItems, IReadOnlyCollection<BomItemLog> bomItemsLogs, string pathToReport)
+        public async Task<bool> CreateAsync(
+            IBomHeader bomHeader,
+            IReadOnlyCollection<BomItem> bomItems,
+            IReadOnlyCollection<BomItemLog> bomItemsLogs,
+            string pathToReportDirectory)
         {
-            if (!bomItemsLogs.Any())
+            return await Task.Run(() =>
             {
-                MessageBox.Show("Нет данных для формирования отчета");
-                return;
-            }
+                if (!bomItemsLogs.Any())
+                    throw new InvalidDataException("Нет данных для формирования отчета");
 
-            using (var wb = new XLWorkbook())
-            {
-                var ws = wb.AddWorksheet("Данные");
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.AddWorksheet("Данные");
 
-                CreateHeader(ws);
-                CreateBody(bomItems, bomItemsLogs, ws);
-                PostFormat(ws);
+                    CreateHeader(ws);
+                    CreateBody(bomItems, bomItemsLogs, ws);
+                    PostFormat(ws);
 
-                wb.SaveAs(pathToReport +
-                          $@"\Журнал изменений по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} от {DateTime.Now:yyyy-MM-dd HH-mm-ss}.xlsx");
-            }
+                    var path = Path.Combine(pathToReportDirectory,
+                        $@"Журнал изменений по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} от {DateTime.Now:yyyy-MM-dd HH-mm-ss}.xlsx");
+
+                    wb.SaveAs(path);
+
+                    return true;
+                }
+            });
         }
 
         private void PostFormat(IXLWorksheet ws)

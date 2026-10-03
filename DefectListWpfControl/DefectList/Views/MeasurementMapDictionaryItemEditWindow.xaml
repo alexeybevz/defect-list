@@ -1,0 +1,236 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.MeasurementMapDictionaryItemEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        xmlns:models="clr-namespace:DefectListDomain.Models;assembly=DefectListDomain"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="530"
+        Width="580"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        d:DataContext="{d:DesignInstance d:Type=viewModels:MeasurementMapDictionaryItemEditViewModel}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Ошибка -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding LoadingStateViewModel.ErrorMessage}"
+                   Visibility="{Binding LoadingStateViewModel.HasErrorMessage,
+                       Converter={StaticResource BooleanToVisibilityConverter}}"
+                   Style="{StaticResource ErrorMessage}"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 8" />
+
+        <!-- Поля формы -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="185" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="VerticalAlignment"
+                            Value="Center" />
+                    <Setter Property="Margin"
+                            Value="0 4" />
+                </Style>
+                <Style TargetType="ComboBox">
+                    <Setter Property="Margin"
+                            Value="0 4" />
+                    <Setter Property="Height"
+                            Value="26" />
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Margin"
+                            Value="0 4" />
+                    <Setter Property="Height"
+                            Value="26" />
+                    <Setter Property="VerticalContentAlignment"
+                            Value="Center" />
+                </Style>
+            </Grid.Resources>
+
+            <!-- Нумерация -->
+            <Label Grid.Row="0"
+                   Grid.Column="0"
+                   Content="Нумерация (№):" />
+            <TextBox Grid.Row="0"
+                     Grid.Column="1"
+                     Text="{Binding CustomNumeration, UpdateSourceTrigger=PropertyChanged}" />
+
+            <!-- Порядок -->
+            <Label Grid.Row="1"
+                   Grid.Column="0"
+                   Content="Порядок сортировки:" />
+            <TextBox Grid.Row="1"
+                     Grid.Column="1"
+                     Text="{Binding SortOrder, UpdateSourceTrigger=PropertyChanged}" />
+
+            <!-- Тип строки -->
+            <Label Grid.Row="2"
+                   Grid.Column="0"
+                   Content="Тип строки:" />
+            <ComboBox Grid.Row="2"
+                      Grid.Column="1"
+                      ItemsSource="{Binding ItemTypeOptions}"
+                      DisplayMemberPath="DisplayName"
+                      SelectedValuePath="Value"
+                      SelectedValue="{Binding SelectedItemType}" />
+
+            <!-- Возможный дефект -->
+            <Label Grid.Row="3"
+                   Grid.Column="0"
+                   Content="Возможный дефект:" />
+            <ComboBox Grid.Row="3"
+                      Grid.Column="1"
+                      ItemsSource="{Binding PossibleDefects}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedPossibleDefect}"
+                      IsEditable="True"/>
+
+            <!-- Номинальное значение -->
+            <Label Grid.Row="4"
+                   Grid.Column="0"
+                   Content="Номинальное значение:" />
+            <ComboBox Grid.Row="4"
+                      Grid.Column="1"
+                      ItemsSource="{Binding NominalValues}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedNominalValue}"
+                      IsEditable="True" />
+
+            <!-- Альтернативное значение — только для YesNo (ItemType = 2) -->
+            <Label Grid.Row="5"
+                   Grid.Column="0"
+                   Content="Альтерн. значение (Да/Нет):">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="VerticalAlignment"
+                                Value="Center" />
+                        <Setter Property="Margin"
+                                Value="0 4" />
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItemType}"
+                                         Value="{x:Static models:MeasurementMapItemType.YesNo}">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <ComboBox Grid.Row="5"
+                      Grid.Column="1"
+                      ItemsSource="{Binding NominalValues}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedAlternateNominalValue}"
+                      IsEditable="True">
+                <ComboBox.Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Margin"
+                                Value="0 4" />
+                        <Setter Property="Height"
+                                Value="26" />
+                        <Setter Property="Visibility"
+                                Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItemType}"
+                                         Value="{x:Static models:MeasurementMapItemType.YesNo}">
+                                <Setter Property="Visibility"
+                                        Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
+
+            <!-- Метод ремонта по умолчанию -->
+            <Label Grid.Row="6"
+                   Grid.Column="0"
+                   Content="Метод ремонта (по умолч.):" />
+            <ComboBox Grid.Row="6"
+                      Grid.Column="1"
+                      ItemsSource="{Binding RecommendedRepairMethods}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedRecommendedRepairMethod}"
+                      IsEditable="True" />
+
+            <!-- Требование после ремонта -->
+            <Label Grid.Row="7"
+                   Grid.Column="0"
+                   Content="Требование после ремонта:" />
+            <ComboBox Grid.Row="7"
+                      Grid.Column="1"
+                      ItemsSource="{Binding RequirementPostRepairs}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding SelectedRequirementPostRepair}"
+                      IsEditable="True" />
+        </Grid>
+
+        <!-- Кнопка выбора альтернатив метода ремонта -->
+        <Grid Grid.Row="2"
+              Margin="0 10 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="185" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                   Text="Альтерн. методы ремонта:"
+                   VerticalAlignment="Center"
+                   TextWrapping="Wrap"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding AlternativesDisplay}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Foreground="DimGray"
+                       Margin="0 0 8 0" />
+            <Button Grid.Column="2"
+                    Content="Выбрать..."
+                    Command="{Binding OpenAlternativesCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Padding="12 4" />
+        </Grid>
+
+        <!-- Сохранение -->
+        <Grid Grid.Row="3"
+              Margin="0 14 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Text="Сохранение..."
+                       Visibility="{Binding LoadingStateViewModel.IsLoading,
+                           Converter={StaticResource BooleanToVisibilityConverter}}"
+                       VerticalAlignment="Center"
+                       Foreground="Gray"
+                       FontStyle="Italic" />
+            <Button Grid.Column="1"
+                    Content="Сохранить"
+                    Command="{Binding SaveCommand}"
+                    Style="{StaticResource PrimaryButton}"
+                    Padding="20 6" />
+        </Grid>
+    </Grid>
+</Window>

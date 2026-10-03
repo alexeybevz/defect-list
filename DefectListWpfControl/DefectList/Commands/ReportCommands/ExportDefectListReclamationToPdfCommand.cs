@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using DefectListBusinessLogic.Report;
+using DefectListDomain.CreatingReports;
 using DefectListDomain.Models;
 using DefectListDomain.ReportParameters;
 using DefectListDomain.Reports;
@@ -31,12 +32,8 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 
         public override async Task ExecuteAsync(object parameter = null)
         {
-            IReportDirectory reportDirectory = new ReportDirectory(_bomItemViewModel.UserIdentity.Name);
-
             try
             {
-                reportDirectory.Create();
-
                 var dbBomItems = await _bomItemsStore.GetBomItemIsShowedView(_bomItemViewModel.BomHeader.BomId);
 
                 var bomItemViewModels = _bomItemViewModel
@@ -51,7 +48,7 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 
                 var selectedBomItems = dbBomItems.Where(x => selectedBomItemViewModels.ContainsKey(x.Id)).ToList();
 
-                var reportParmBuilder = new DefectListItemsRptParmBuilder(new DefectListItemsRptParm()
+                var parm = new DefectListItemsRptParm()
                 {
                     BomId = _bomItemViewModel.BomHeader.BomId,
                     Izdel = _bomItemViewModel.BomHeader.RootItem.Izdel,
@@ -63,25 +60,22 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
                     IsUseFinalDecision = false,
                     DateOfPreparation = _bomItemViewModel.BomHeader.DateOfPreparation ?? DateTime.Now.Date,
                     BomItems = selectedBomItems
-                });
+                };
 
-                var reportBuilder = new DefectListItemsReclamationRptBuilder(reportParmBuilder);
-                var reportSender = new CrRptPdfSender<DefectListItemsReclamation>(reportDirectory.PathReportDirectory);
-                var reporter = new Reporter<DefectListItemsReclamation>(reportBuilder, reportSender);
+                var report = DefectListIocKernel.Get<IDefectListItemsReclamationReport>();
+                var isReportCreated = await report.CreateAsync(
+                    _bomItemViewModel.BomHeader,
+                    parm,
+                    _bomItemViewModel.UserIdentity.Name);
 
-                var countReports = reporter.SendReports();
                 _bomItemViewModel.LoadBomItemsCommand?.Execute();
-                MessageBox.Show($"Создано отчетов: {countReports}");
 
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                reportDirectory.DeleteIfEmpty();
             }
         }
 

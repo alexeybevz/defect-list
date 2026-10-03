@@ -10,6 +10,7 @@ using DefectListDomain.Models;
 using DefectListDomain.Queries;
 using DefectListWpfControl.DefectList.Commands.BomItemCommands;
 using DefectListWpfControl.DefectList.Commands.ConsolidateBomItemsCommands;
+using DefectListWpfControl.DefectList.Commands.ReportCommands;
 using DefectListWpfControl.ViewModelImplement;
 using DefectListWpfControl.DefectList.Stores;
 
@@ -24,6 +25,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public Dictionary<int, string> Depts { get; private set; }
 
         public ICommand CreateRouteChartsCommand { get; private set; }
+        public ICommand ExportCreatedRouteMapsCommand { get; private set; }
         public LoadConsolidateBomItemsCommand LoadConsolidateBomItemsCommand { get; private set; }
 
         private ConsolidateBomItemsViewModel() { }
@@ -35,19 +37,21 @@ namespace DefectListWpfControl.DefectList.ViewModels
             IGetAllProductDtoQuery getAllProductDtoQuery,
             IGetAllWpDtoQuery getAllWpDtoQuery,
             IGetAllMapsBomItemToRouteChartsQuery getAllMapsBomItemToRouteChartsQuery,
-            ICreateMapBomItemToRouteChartCommand createMapBomItemToRouteChartCommand)
+            ICreateMapBomItemToRouteChartCommand createMapBomItemToRouteChartCommand,
+            IGetAllRouteMapDtoQuery getAllRouteMapDtoQuery)
         {
             _getAllMapsBomItemToRouteChartsQuery = getAllMapsBomItemToRouteChartsQuery;
             BomHeader = bomHeader;
 
-            IsReadOnlyComponent = !PermissionsStore.IsCanPdoCreateRouteMapsUser;
-            IsEnabledComponent = PermissionsStore.IsCanPdoCreateRouteMapsUser;
+            IsReadOnlyComponent = false;
+            IsEnabledComponent = PermissionsStore.IsCanPdoCreateRouteMapsUser || PermissionsStore.IsCanOtkCreateRouteMapsUser;
 
             Depts = (await getAllWpDtoQuery.ExecuteAsync()).Where(x => x.Wp_Reporter_CreateRouteMap)
                 .ToDictionary(k => k.Wp_Id, v => v.Wp_Name);
 
             Rows = new ObservableCollection<ConsolidateBomItemViewModel>();
             CreateRouteChartsCommand = new CreateRouteChartsCommand(this, routeMapFactory, createMapBomItemToRouteChartCommand);
+            ExportCreatedRouteMapsCommand = new ExportCreatedRouteMapsCommand(this, getAllRouteMapDtoQuery);
             IsConsolidateBomItemsByName = !PermissionsStore.IsCanOtkCreateRouteMapsUser;
 
             LoadConsolidateBomItemsCommand = new LoadConsolidateBomItemsCommand(this, selectedBomItems, _getAllMapsBomItemToRouteChartsQuery, getAllProductDtoQuery);
@@ -71,7 +75,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
             IGetAllProductDtoQuery getAllProductDtoQuery,
             IGetAllWpDtoQuery getAllWpDtoQuery,
             IGetAllMapsBomItemToRouteChartsQuery getAllMapsBomItemToRouteChartsQuery,
-            ICreateMapBomItemToRouteChartCommand createMapBomItemToRouteChartCommand)
+            ICreateMapBomItemToRouteChartCommand createMapBomItemToRouteChartCommand,
+            IGetAllRouteMapDtoQuery getAllRouteMapDtoQuery)
         {
             var instanse = new ConsolidateBomItemsViewModel();
             await instanse.InitializeAsync(
@@ -81,7 +86,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
                 getAllProductDtoQuery,
                 getAllWpDtoQuery,
                 getAllMapsBomItemToRouteChartsQuery,
-                createMapBomItemToRouteChartCommand);
+                createMapBomItemToRouteChartCommand,
+                getAllRouteMapDtoQuery);
             return instanse;
         }
 

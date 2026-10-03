@@ -36,7 +36,8 @@ namespace DefectListWpfControl.DefectList.Views
                 DefectListIocKernel.Get<IGetAllProductDtoQuery>(),
                 DefectListIocKernel.Get<IGetAllWpDtoQuery>(),
                 DefectListIocKernel.Get<IGetAllMapsBomItemToRouteChartsQuery>(),
-                DefectListIocKernel.Get<ICreateMapBomItemToRouteChartCommand>());
+                DefectListIocKernel.Get<ICreateMapBomItemToRouteChartCommand>(),
+                DefectListIocKernel.Get<IGetAllRouteMapDtoQuery>());
             DataContext = viewModel;
         }
 

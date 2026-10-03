@@ -2,59 +2,73 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using DefectListBusinessLogic.Report;
+using DefectListDomain.CreatingReports;
+using DefectListWpfControl.DefectList.Commons;
 using DefectListWpfControl.DefectList.Stores;
-using ReporterDomain.Services.CreateReportService;
-using DefectListWpfControl.HelpersWindow;
 using DefectListWpfControl.ViewModelImplement;
+using DefectListWpfControl.DefectList.ViewModels;
 
 namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 {
     public class ChangesFinalDecisionReportCommand : AsyncCommandBase
     {
+        private readonly ChangesFinalDecisionReportViewModel _changesFinalDecisionReportViewModel;
         private readonly BomItemsStore _bomItemsStore;
+        private readonly ProductsStore _productsStore;
         private readonly string _userName;
 
-        public ChangesFinalDecisionReportCommand(BomItemsStore bomItemsStore, string userName)
+        public ChangesFinalDecisionReportCommand(
+            ChangesFinalDecisionReportViewModel changesFinalDecisionReportViewModel,
+            BomItemsStore bomItemsStore,
+            ProductsStore productsStore,
+            string userName)
         {
+            _changesFinalDecisionReportViewModel = changesFinalDecisionReportViewModel;
             _bomItemsStore = bomItemsStore;
+            _productsStore = productsStore;
             _userName = userName;
         }
 
         public override async Task ExecuteAsync(object parameter = null)
         {
+            _changesFinalDecisionReportViewModel.IsLoading = true;
+
             try
             {
-                var currentDate = DateTime.Now;
-                var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-                var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+                _changesFinalDecisionReportViewModel.ExecutingStatus =
+                    "Получение данных об изменениях решения в ДВ ...";
+                var data = (await _bomItemsStore.GetFinalDecisionChangings(
+                    _changesFinalDecisionReportViewModel.StartDate,
+                    _changesFinalDecisionReportViewModel.EndDate,
+                    ComboBoxHelper.ToFilterValue(_changesFinalDecisionReportViewModel.SelectedDetalTyp))).ToList();
 
-                var window = new ChoiceDateWindow(firstDayOfMonth, lastDayOfMonth);
-                var dialogResult = window.ShowDialog();
+                _changesFinalDecisionReportViewModel.ExecutingStatus = "Получение данных о расцеховке из АСУП ...";
+                var productsDistinctShopEntries = await _productsStore.GetAllDistinctShopEntries();
 
-                if (dialogResult.HasValue && !dialogResult.Value)
-                    return;
+                _changesFinalDecisionReportViewModel.ExecutingStatus = "Формирование excel файла ...";
 
-                var selectedStartDate = window.StartDate;
-                var selectedEndDate = window.EndDate;
-
-                IReportDirectory reportDirectory = new ReportDirectory(_userName);
-                reportDirectory.Create();
-
-                var pathToFile = reportDirectory.PathReportDirectory +
-                                 $@"\Журнал изменения окончательного решения от {DateTime.Now:yyyy-MM-dd HH-mm-ss}.xlsx";
-
-                var reportBuilder = DefectListIocKernel.Get<ChangesFinalDecisionReport>();
-                var data = (await _bomItemsStore.GetFinalDecisionChangings(selectedStartDate, selectedEndDate)).ToList();
-                reportBuilder.Create(data, pathToFile);
-
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                var reportBuilder = DefectListIocKernel.Get<IChangesFinalDecisionReport>();
+                var isReportCreated = await reportBuilder.CreateAsync(data, productsDistinctShopEntries, _userName);
+                if (isReportCreated)
+                {
+                    _changesFinalDecisionReportViewModel.IsLoading = false;
+                    MessageBox.Show("Отчет сформирован.");
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
+            finally
+            {
+                _changesFinalDecisionReportViewModel.IsLoading = false;
+                _changesFinalDecisionReportViewModel.ExecutingStatus = null;
+            }
+        }
+
+        public override bool CanExecute(object parameter = null)
+        {
+            return base.CanExecute(parameter) && !_changesFinalDecisionReportViewModel.IsLoading;
         }
     }
 }

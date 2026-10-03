@@ -73,6 +73,7 @@ CREATE TABLE MapBomItemToRouteChart (
 	CreateDate datetime NOT NULL,
 	CreatedBy nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
 	ProductId int,
+	CodeLsf82 int,
 	Detal nvarchar(50),
 	CONSTRAINT PK__MapBomIt__430C1DA37CFB18A8 PRIMARY KEY (BomItemId,RouteChart_Number)
 );
@@ -232,7 +233,7 @@ CREATE TABLE BomItem (
 	QtyRestore float NOT NULL,
 	QtyReplace float NOT NULL,
 	Comment nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
-	Defect nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+	Defect nvarchar(2000) COLLATE Cyrillic_General_CI_AS NULL,
 	Decision nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
 	CreateDate datetime NOT NULL,
 	CreatedBy nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
@@ -287,7 +288,7 @@ CREATE TABLE BomItemLog (
 	QtyRestore float NOT NULL,
 	QtyReplace float NOT NULL,
 	Comment nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
-	Defect nvarchar(1000) COLLATE Cyrillic_General_CI_AS NULL,
+	Defect nvarchar(2000) COLLATE Cyrillic_General_CI_AS NULL,
 	Decision nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
 	CommentDef nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
 	[Action] tinyint NOT NULL,
@@ -377,6 +378,7 @@ CREATE TABLE RepairMethodToItem (
 	ParentItem nvarchar(50) COLLATE Cyrillic_General_CI_AS NOT NULL,
 	ChildItem nvarchar(50) COLLATE Cyrillic_General_CI_AS NOT NULL,
 	RepairMethodId int NOT NULL,
+	CreateDate datetime NOT NULL DEFAULT(GETDATE()),
 	CONSTRAINT PK__RepairMe__3214EC075A1BF0BF PRIMARY KEY (Id),
 	CONSTRAINT FK__RepairMet__Repai__5CF85D6A FOREIGN KEY (RepairMethodId) REFERENCES RepairMethod(Id),
 	CONSTRAINT FK__RepairMet__RootI__5C043931 FOREIGN KEY (RootItemId) REFERENCES RootItem(Id)
@@ -587,6 +589,9 @@ SET IDENTITY_INSERT Users OFF
 
 INSERT INTO UserRoles (UserId, RoleId, CreateDate, RecordDate) VALUES(1, 1, getdate(), getdate());
 
+INSERT INTO BomHeader (Orders, SerialNumber, IzdelQty, StateDetalsId, Comment, DateOfSpecif, DateOfTehproc, DateOfMtrl, CreateDate, CreatedBy, RecordDate, UpdatedBy, Dic_Ordering_ID, Code_LSF82, RootItemId, Contract, ContractDateOpen, SerialNumberAfterRepair, State, DateOfPreparation, HeaderType)
+VALUES(N'тест', N'12345', 1, 1, NULL, '2026-07-02 00:00:00.000', '2026-07-02 00:00:00.000', '2026-07-02 00:00:00.000', getdate(), N'admin', getdate(), N'admin', NULL, NULL, 1, N'тест', '2026-07-02', N'12345', NULL, NULL, N'Ремонт');
+
 --
 
 ALTER TABLE dbo.BomHeader ADD  DEFAULT getdate() FOR CreateDate;
@@ -621,3 +626,572 @@ ALTER TABLE dbo.BomHeader ADD CONSTRAINT FK_BomHeader_RootItem FOREIGN KEY (Root
 
 --
 
+CREATE TABLE dbo.NotificationEventType (
+	Id int IDENTITY(1,1) NOT NULL,
+	Name nvarchar(150) COLLATE Cyrillic_General_CI_AS NOT NULL,
+	PRIMARY KEY (Id)
+);
+
+SET IDENTITY_INSERT Users ON
+
+INSERT INTO dbo.NotificationEventType (Name) VALUES ('UserBomHeaderSubscriptionDailyDigest');
+INSERT INTO dbo.NotificationEventType (Name) VALUES ('BomItemsBzrChangesDailyDigest');
+
+SET IDENTITY_INSERT Users OFF
+
+CREATE TABLE dbo.NotificationDispatches (
+	Id int IDENTITY(1,1) NOT NULL,
+	UserId int NOT NULL,
+	NotificationEventTypeId int NOT NULL,
+	PayloadHash varchar(64) NOT NULL,
+	Status nvarchar(10) COLLATE Cyrillic_General_CI_AS NOT NULL, -- Pending, Sent, Failed
+	Attempts int NOT NULL DEFAULT 0,
+	ScheduleAt datetime NOT NULL, -- Когда система поставила уведомление в очередь на отправку
+	SentAt datetime NULL, -- Когда реально ушло письмо
+	LastAttempAt datetime NULL, -- Когда была последняя попытка
+	Error nvarchar(max) COLLATE Cyrillic_General_CI_AS NULL,
+	PRIMARY KEY (Id)
+)
+
+ALTER TABLE dbo.NotificationDispatches ADD CONSTRAINT FK_NotificationDispatches_User FOREIGN KEY (UserId) REFERENCES dbo.Users(UserId);
+ALTER TABLE dbo.NotificationDispatches ADD CONSTRAINT FK_NotificationDispatches_NType FOREIGN KEY (NotificationEventTypeId) REFERENCES dbo.NotificationEventType(Id);
+
+CREATE UNIQUE INDEX UX_NotificationDispatches_PayloadHash ON NotificationDispatches(PayloadHash);
+
+CREATE TABLE dbo.NotificationEventSubscribers (
+	Id int IDENTITY(1,1) NOT NULL,
+	UserId int NOT NULL,
+	NotificationEventTypeId int NOT NULL,
+	IsEnabled tinyint NOT NULL DEFAULT 1,
+	CreatedAt datetime NOT NULL DEFAULT getdate(),
+	PRIMARY KEY (Id)
+);
+
+ALTER TABLE dbo.NotificationEventSubscribers ADD CONSTRAINT FK_NotificationEventSubscribers_User FOREIGN KEY (UserId) REFERENCES dbo.Users(UserId);
+ALTER TABLE dbo.NotificationEventSubscribers ADD CONSTRAINT FK_NotificationEventSubscribers_NType FOREIGN KEY (NotificationEventTypeId) REFERENCES dbo.NotificationEventType(Id);
+
+-- === Начало блока Карт Измерения (КИ)
+
+CREATE TABLE PossibleDefect (
+    Id   int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(300) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+    IsActive tinyint NOT NULL DEFAULT 1,
+    CONSTRAINT PK_PossibleDefect PRIMARY KEY (Id),
+    CONSTRAINT UQ_PossibleDefect_Name UNIQUE(Name)
+);
+
+CREATE TABLE NominalValue (
+    Id   int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(100) COLLATE Cyrillic_General_CI_AS NOT NULL,
+    IsActive tinyint NOT NULL DEFAULT 1,
+    CONSTRAINT PK_NominalValue PRIMARY KEY (Id),
+    CONSTRAINT UQ_NominalValue_Name UNIQUE(Name)
+);
+
+CREATE TABLE RecommendedRepairMethod (
+    Id   int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(300) COLLATE Cyrillic_General_CI_AS NOT NULL,
+    IsActive tinyint NOT NULL DEFAULT 1,
+    CONSTRAINT PK_RecommendedRepairMethod PRIMARY KEY (Id),
+    CONSTRAINT UQ_RecommendedRepairMethod_Name UNIQUE(Name)
+);
+
+-- Типы форм для печати (Форма 2, Форма 3а, ...)
+CREATE TABLE MeasurementsMapTypeForm (
+    Id   int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(50) COLLATE Cyrillic_General_CI_AS NOT NULL,
+    CONSTRAINT PK_MeasurementsMapTypeForm PRIMARY KEY (Id),
+    CONSTRAINT UQ_MeasurementsMapTypeForm_Name UNIQUE(Name)
+);
+
+CREATE TABLE RequirementPostRepair (
+    Id   int IDENTITY(1,1) NOT NULL,
+    Name nvarchar(300) COLLATE Cyrillic_General_CI_AS NOT NULL,
+    IsActive tinyint NOT NULL DEFAULT 1,
+    CONSTRAINT PK_RequirementPostRepair PRIMARY KEY (Id),
+    CONSTRAINT UQ_RequirementPostRepair_Name UNIQUE(Name)
+);
+
+-- ============================================================
+-- СПРАВОЧНИК КАРТЫ ИЗМЕРЕНИЙ
+-- Один справочник на тип номенклатуры (Code_LSF82)
+-- ============================================================
+
+CREATE TABLE MeasurementMapDictionary (
+    Id                        int IDENTITY(1,1) NOT NULL,
+	Name 					  nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+
+    -- Привязка к типу номенклатуры.
+    -- Code_LSF82 здесь не FK, потому что это внешний код из другой системы
+    -- (он живёт в BomItem.Code_LSF82, не в отдельной таблице номенклатуры).
+    Code_LSF82                int NOT NULL,
+
+    -- Шаблон формы для печати карты (Форма 2, Форма 3а, ...)
+    MeasurementsMapTypeFormId int NOT NULL,
+
+    SketchFilePath			  nvarchar(150) COLLATE Cyrillic_General_CI_AS NULL,
+
+    -- Версионирование
+    Version                   int NOT NULL DEFAULT 1,
+
+    -- IsActive = 0 означает, что справочник архивирован (не удалён физически).
+    IsActive                  tinyint NOT NULL DEFAULT 1,
+
+    Comment    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+    RecordDate datetime NOT NULL DEFAULT getdate(),
+    UpdatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapDictionary PRIMARY KEY (Id),
+    CONSTRAINT FK_MeasurementMapDictionary_Form
+        FOREIGN KEY (MeasurementsMapTypeFormId)
+        REFERENCES MeasurementsMapTypeForm (Id)
+);
+
+-- Уникальность: один активный справочник на номенклатуру.
+-- Если нужно допустить несколько версий активными одновременно — убрать.
+--CREATE UNIQUE INDEX UX_MeasurementMapDictionary_Code
+--    ON MeasurementMapDictionary (Code_LSF82)
+--    WHERE IsActive = 1;
+
+CREATE TABLE MeasurementMapDictionaryItem (
+    Id                         int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryId int NOT NULL,
+
+    -- Смысловая нумерация из документа: '1', '1а', '1б', '4в' и т.п.
+    -- Хранится как строка, отдельно от SortOrder.
+    CustomNumeration           nvarchar(10) COLLATE Cyrillic_General_CI_AS NULL,
+
+    -- Числовой порядок для сортировки (чтобы не зависеть от алфавитной сортировки строки).
+    SortOrder                  int NOT NULL,
+
+    PossibleDefectId           int NOT NULL,
+
+    NominalValueId             int NULL,
+    AlternateNominalValueId    int NULL,
+
+    RecommendedRepairMethodId  int NULL,
+
+    RequirementPostRepairId    int NULL,
+
+    ItemType                   tinyint NOT NULL DEFAULT 1,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+    RecordDate datetime NOT NULL DEFAULT getdate(),
+    UpdatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapDictionaryItem PRIMARY KEY (Id),
+    CONSTRAINT FK_MMDictionaryItem_Dictionary
+        FOREIGN KEY (MeasurementMapDictionaryId)
+        REFERENCES MeasurementMapDictionary (Id),
+    CONSTRAINT FK_MMDictionaryItem_Defect
+        FOREIGN KEY (PossibleDefectId)
+        REFERENCES PossibleDefect (Id),
+    CONSTRAINT FK_MMDictionaryItem_NominalValue
+        FOREIGN KEY (NominalValueId)
+        REFERENCES NominalValue (Id),
+    CONSTRAINT FK_MMDictionaryItem_AlternateNominalValue
+        FOREIGN KEY (AlternateNominalValueId)
+        REFERENCES NominalValue (Id),
+    CONSTRAINT FK_MMDictionaryItem_RepairMethod
+        FOREIGN KEY (RecommendedRepairMethodId)
+        REFERENCES RecommendedRepairMethod (Id),
+    CONSTRAINT FK_MMDictionaryItem_RequirementPostRepair
+        FOREIGN KEY (RequirementPostRepairId)
+        REFERENCES RequirementPostRepair (Id),
+    CONSTRAINT UQ_MeasurementMapDictionaryItem_PossibleDefect UNIQUE(MeasurementMapDictionaryId, PossibleDefectId)
+);
+
+CREATE INDEX IX_MMDictionaryItem_DictionaryId
+    ON MeasurementMapDictionaryItem (MeasurementMapDictionaryId);
+
+
+-- ============================================================
+-- ЛОГ СПРАВОЧНИКА (версионирование)
+-- Снимок делается при каждом UPDATE справочника или его строк.
+-- Action: 1 = Create, 2 = Update, 3 = Delete
+-- ============================================================
+
+CREATE TABLE MeasurementMapDictionaryLog (
+    Id                         int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryId int NOT NULL,
+    Action                     tinyint NOT NULL,
+
+    -- Снимок заголовка на момент изменения
+    Name 					   nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    Code_LSF82                 int NOT NULL,
+    MeasurementsMapTypeFormId  int NOT NULL,
+    Version                    int NOT NULL,
+    IsActive                   tinyint NOT NULL,
+    Comment                    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
+
+    BoundRootItems 			   nvarchar(1000) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapDictionaryLog PRIMARY KEY (Id)
+);
+
+CREATE TABLE MeasurementMapDictionaryItemLog (
+    Id                             int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryItemId int NOT NULL,
+    MeasurementMapDictionaryId     int NOT NULL,
+    Action                         tinyint NOT NULL,
+
+    -- Снимок строки на момент изменения
+    CustomNumeration               nvarchar(10) COLLATE Cyrillic_General_CI_AS NULL,
+    SortOrder                      int NOT NULL,
+    PossibleDefectId               int NULL,
+    PossibleDefectName             nvarchar(300) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
+    NominalValueId                 int NULL,
+    NominalValueName               nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    AlternateNominalValueId        int NULL,
+    AlternateNominalValueName      nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    RecommendedRepairMethodId      int NULL,
+    RecommendedRepairMethodName    nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+    RecommendedRepairMethodAlternativeNames nvarchar(3000) COLLATE Cyrillic_General_CI_AS NULL,
+    RequirementPostRepairId        int NULL,
+    RequirementPostRepairName      nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+
+    ItemType                       tinyint NOT NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapDictionaryItemLog PRIMARY KEY (Id)
+);
+
+
+-- ============================================================
+-- ЭКЗЕМПЛЯР КАРТЫ ИЗМЕРЕНИЙ
+-- Один экземпляр на строку ДВ (BomItemId).
+-- Строки копируются из справочника по Code_LSF82 при создании,
+-- после чего живут независимо (можно корректировать без изменения справочника).
+-- ============================================================
+
+CREATE TABLE MeasurementMap (
+    Id                         int IDENTITY(1,1) NOT NULL,
+
+    -- Привязка к строке ДВ (1:1)
+    BomItemId                  int NOT NULL,
+
+    -- Из какого справочника скопировано (для трассировки).
+    -- NULL не допускается: карта всегда создаётся на основе справочника.
+    MeasurementMapDictionaryId int NOT NULL,
+
+    -- Форма для печати: копируется из справочника, но может быть скорректирована.
+    MeasurementsMapTypeFormId  int NOT NULL,
+
+    -- Status: 1 = Draft (в работе), 2 = Completed (завершена)
+    Status                     tinyint NOT NULL DEFAULT 1,
+
+    Comment    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+    RecordDate datetime NOT NULL DEFAULT getdate(),
+    UpdatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMap PRIMARY KEY (Id),
+    CONSTRAINT FK_MeasurementMap_BomItem
+        FOREIGN KEY (BomItemId)
+        REFERENCES BomItem (Id),
+    CONSTRAINT FK_MeasurementMap_Dictionary
+        FOREIGN KEY (MeasurementMapDictionaryId)
+        REFERENCES MeasurementMapDictionary (Id),
+    CONSTRAINT FK_MeasurementMap_Form
+        FOREIGN KEY (MeasurementsMapTypeFormId)
+        REFERENCES MeasurementsMapTypeForm (Id)
+);
+
+-- Один экземпляр на строку ДВ
+CREATE UNIQUE INDEX UX_MeasurementMap_BomItemId
+    ON MeasurementMap (BomItemId);
+
+
+CREATE TABLE MeasurementMapItem (
+    Id                             int IDENTITY(1,1) NOT NULL,
+    MeasurementMapId               int NOT NULL,
+
+    -- Трассировка к строке справочника, из которой скопировано.
+    -- NULL допускается: пользователь может добавить строку вручную сверх справочника.
+    MeasurementMapDictionaryItemId int NULL,
+
+    -- Поля скопированы из справочника при создании и живут независимо.
+    -- Пользователь может скорректировать их для конкретного экземпляра.
+    CustomNumeration               nvarchar(10) COLLATE Cyrillic_General_CI_AS NULL,
+    SortOrder                      int NOT NULL,
+    PossibleDefectId               int NOT NULL,
+    NominalValueId                 int NULL,
+    AlternateNominalValueId        int NULL,
+    RecommendedRepairMethodId      int NULL,
+    RequirementPostRepairId        int NULL,
+
+    -- Фактические данные — вносит пользователь
+    ActualValue                    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,   -- фактическое значение
+    ActualValueRecordDate 		   datetime NULL, 		 -- дата изменения фактического значения
+    ActualRecommendedRepairMethodId int NULL,
+
+    -- Отметка о выполнении работ по устранению дефекта (Выполнено / Устранено)
+    MarkOfWorkCompletion           nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    MarkOfWorkCompletionBy         nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    ItemType                       tinyint NOT NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+    RecordDate datetime NOT NULL DEFAULT getdate(),
+    UpdatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+    RowVersion int NOT NULL DEFAULT 1,
+
+    CONSTRAINT PK_MeasurementMapItem PRIMARY KEY (Id),
+    CONSTRAINT FK_MeasurementMapItem_Map
+        FOREIGN KEY (MeasurementMapId)
+        REFERENCES MeasurementMap (Id),
+    CONSTRAINT FK_MeasurementMapItem_DictionaryItem
+        FOREIGN KEY (MeasurementMapDictionaryItemId)
+        REFERENCES MeasurementMapDictionaryItem (Id),
+    CONSTRAINT FK_MeasurementMapItem_Defect
+        FOREIGN KEY (PossibleDefectId)
+        REFERENCES PossibleDefect (Id),
+    CONSTRAINT FK_MeasurementMapItem_NominalValue
+        FOREIGN KEY (NominalValueId)
+        REFERENCES NominalValue (Id),
+    CONSTRAINT FK_MeasurementMapItem_AlternateNominalValue
+        FOREIGN KEY (AlternateNominalValueId)
+        REFERENCES NominalValue (Id),        
+    CONSTRAINT FK_MeasurementMapItem_RepairMethod
+        FOREIGN KEY (RecommendedRepairMethodId)
+        REFERENCES RecommendedRepairMethod (Id),
+    CONSTRAINT FK_MeasurementMapItem_ActualRepairMethod
+        FOREIGN KEY (ActualRecommendedRepairMethodId)
+        REFERENCES RecommendedRepairMethod (Id),        
+    CONSTRAINT FK_MeasurementMapItem_RequirementPostRepair
+        FOREIGN KEY (RequirementPostRepairId)
+        REFERENCES RequirementPostRepair (Id)        
+);
+
+CREATE INDEX IX_MeasurementMapItem_MapId
+    ON MeasurementMapItem (MeasurementMapId);
+
+
+-- ============================================================
+-- ЛОГ ЭКЗЕМПЛЯРА (версионирование)
+-- Снимок делается при каждом изменении карты или её строк.
+-- ============================================================
+
+CREATE TABLE MeasurementMapLog (
+    Id                         int IDENTITY(1,1) NOT NULL,
+    MeasurementMapId           int NOT NULL,
+    Action                     tinyint NOT NULL,
+
+    -- Снимок заголовка
+    BomItemId                  int NOT NULL,
+    MeasurementMapDictionaryId int NOT NULL,
+    MeasurementsMapTypeFormId  int NOT NULL,
+    Status                     tinyint NOT NULL,
+    Comment                    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapLog PRIMARY KEY (Id)
+);
+
+CREATE TABLE MeasurementMapItemLog (
+    Id                             int IDENTITY(1,1) NOT NULL,
+    MeasurementMapItemId           int NOT NULL,
+    MeasurementMapId               int NOT NULL,
+    Action                         tinyint NOT NULL,
+
+    -- Снимок строки
+    CustomNumeration               nvarchar(10) COLLATE Cyrillic_General_CI_AS NULL,
+    SortOrder                      int NOT NULL,
+    PossibleDefectId               int NULL,
+    PossibleDefectName             nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+    NominalValueId                 int NULL,
+    NominalValueName               nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    AlternateNominalValueId        int NULL,
+    AlternateNominalValueName      nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    RecommendedRepairMethodId      int NULL,
+    RecommendedRepairMethodName    nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+    RequirementPostRepairId        int NULL,
+    RequirementPostRepairName      nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+    ActualValue                    nvarchar(200) COLLATE Cyrillic_General_CI_AS NULL,
+    ActualRecommendedRepairMethodId int NULL,
+    ActualRecommendedRepairMethodName nvarchar(300) COLLATE Cyrillic_General_CI_AS NULL,
+    MarkOfWorkCompletion           nvarchar(100) COLLATE Cyrillic_General_CI_AS NULL,
+    MarkOfWorkCompletionBy         nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    ItemType                       tinyint NOT NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MeasurementMapItemLog PRIMARY KEY (Id)
+);
+
+CREATE TABLE MeasurementMapDictionarySketchFile (
+    Id int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryId int NOT NULL,
+    SketchFilePath nvarchar(500) COLLATE Cyrillic_General_CI_AS NULL,
+    PRIMARY KEY (Id),
+    CONSTRAINT FK_MeasurementMapDictionarySketchFile_DictId
+        FOREIGN KEY (MeasurementMapDictionaryId)
+        REFERENCES MeasurementMapDictionary (Id)
+);
+
+INSERT INTO PossibleDefect (Name) VALUES (N'Обрыв провода');
+INSERT INTO PossibleDefect (Name) VALUES (N'Деформация контактов КУ-50В, КУ19');
+INSERT INTO PossibleDefect (Name) VALUES (N'Трещины и сколы на изоляторе контакта КУ-19');
+INSERT INTO PossibleDefect (Name) VALUES (N'Незначительные механические повреждения, точечная коррозия на гайках и втулках');
+INSERT INTO PossibleDefect (Name) VALUES (N'Нарушение изоляции провода, сопротивление изоляции');
+INSERT INTO PossibleDefect (Name) VALUES (N'Проверка эл. прочности изоляции');
+INSERT INTO PossibleDefect (Name) VALUES (N'Обрыв прядей или проволок оплетки рукава, наличие механических повреждений, следов коррозий');
+INSERT INTO PossibleDefect (Name) VALUES (N'Нарушение четкости маркировки');
+INSERT INTO PossibleDefect (Name) VALUES (N'Истечение сроков службы контактов');
+INSERT INTO PossibleDefect (Name) VALUES (N'Отклонение допуска радиального биения на Ø 〖175〗_(−0,04)');
+
+INSERT INTO NominalValue (Name) VALUES (N'прозвонка');
+INSERT INTO NominalValue (Name) VALUES (N'нет');
+INSERT INTO NominalValue (Name) VALUES (N'не менее 1000 Мом');
+INSERT INTO NominalValue (Name) VALUES (N'пробоя нет');
+INSERT INTO NominalValue (Name) VALUES (N'да');
+INSERT INTO NominalValue (Name) VALUES (N'пробой есть');
+INSERT INTO NominalValue (Name) VALUES(N'〖32〗_(−0,16)
+↗0,04
+↗0,025');
+
+
+INSERT INTO RecommendedRepairMethod (Name) VALUES (N'Ремонт');
+INSERT INTO RecommendedRepairMethod (Name) VALUES (N'Замена провода');
+INSERT INTO RecommendedRepairMethod (Name) VALUES (N'Замена контактов');
+INSERT INTO RecommendedRepairMethod (Name) VALUES (N'Замена бирок');
+
+INSERT INTO MeasurementsMapTypeForm (Name) VALUES (N'Форма 2');
+INSERT INTO MeasurementsMapTypeForm (Name) VALUES (N'Форма 2в');
+INSERT INTO MeasurementsMapTypeForm (Name) VALUES (N'Форма 3');
+
+INSERT INTO MeasurementMapDictionary (Code_LSF82, MeasurementsMapTypeFormId, Version, IsActive, Comment) VALUES(3, 1, 1, 1, NULL);
+
+INSERT INTO MeasurementMapDictionaryItem (MeasurementMapDictionaryId, CustomNumeration, SortOrder, PossibleDefectId, NominalValueId, AlternateNominalValueId, ItemType, RecommendedRepairMethodId, RequirementPostRepairId)
+SELECT 1, N'1'	, 1	, 1	, 1, null	, 1, 2, NULL UNION ALL
+SELECT 1, N'2'	, 2	, 2	, 2, 5		, 2, 3, NULL UNION ALL
+SELECT 1, N'3'	, 3	, 3	, 2, 5		, 2, 3, NULL UNION ALL
+SELECT 1, N'4,5', 4	, 4	, 2, 5		, 2, 1, NULL UNION ALL
+SELECT 1, N'6'	, 5	, 5	, 3, null	, 3, 2, NULL UNION ALL
+SELECT 1, N'6'	, 6	, 6	, 4, 6		, 2, 2, NULL UNION ALL
+SELECT 1, N'7'	, 7	, 7	, 2, 5		, 2, 2, NULL UNION ALL
+SELECT 1, N'8'	, 8	, 8	, 2, 5		, 2, 4, NULL UNION ALL
+SELECT 1, N'9'	, 9	, 9	, 2, 5		, 2, 3, NULL UNION ALL
+SELECT 1, N'10'	, 10, 10, 7, null	, 3, 3, NULL;
+
+INSERT INTO RepairMethodToItem (RootItemId, ParentItem, ChildItem, RepairMethodId) VALUES (1, N'ДСЕ2', N'ДСЕ3', 1);
+
+-- ============================================================
+-- АЛЬТЕРНАТИВЫ РЕКОМЕНДУЕМОГО МЕТОДА РЕМОНТА
+--
+-- Для строки справочника карты (MeasurementMapDictionaryItem)
+-- задаётся набор допустимых значений RecommendedRepairMethod,
+-- из которых пользователь может выбирать при редактировании
+-- конкретного экземпляра карты измерения.
+--
+-- Дефолтное значение (MeasurementMapDictionaryItem.RecommendedRepairMethodId)
+-- НЕ удаляется и продолжает копироваться в MeasurementMapItem при создании карты,
+-- как и раньше. Эта таблица только РАСШИРЯЕТ список вариантов на выбор.
+--
+-- Важный инвариант: дефолтное значение должно входить в набор альтернатив,
+-- иначе пользователь, выбрав другое значение, не сможет вернуться к дефолту
+-- через выпадающий список. Это обеспечивается на уровне приложения
+-- (см. GetMeasurementMapDictionaryItemRepairMethodAlternativesQuery),
+-- а не CHECK-constraint-ом, чтобы не блокировать ручное заполнение админом
+-- в произвольном порядке.
+-- ============================================================
+
+CREATE TABLE MeasurementMapDictionaryItemRepairMethodAlternative (
+    Id                              int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryItemId  int NOT NULL,
+    RecommendedRepairMethodId       int NOT NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MMDictItemRepairMethodAlternative PRIMARY KEY (Id),
+    CONSTRAINT FK_MMDictItemRepairMethodAlt_DictItem
+        FOREIGN KEY (MeasurementMapDictionaryItemId)
+        REFERENCES MeasurementMapDictionaryItem (Id),
+    CONSTRAINT FK_MMDictItemRepairMethodAlt_Method
+        FOREIGN KEY (RecommendedRepairMethodId)
+        REFERENCES RecommendedRepairMethod (Id)
+);
+
+-- Одна и та же пара (строка справочника, метод) не должна повторяться
+CREATE UNIQUE INDEX UX_MMDictItemRepairMethodAlt_DictItem_Method
+    ON MeasurementMapDictionaryItemRepairMethodAlternative (MeasurementMapDictionaryItemId, RecommendedRepairMethodId);
+
+CREATE INDEX IX_MMDictItemRepairMethodAlt_DictItemId
+    ON MeasurementMapDictionaryItemRepairMethodAlternative (MeasurementMapDictionaryItemId);
+
+INSERT INTO MeasurementMapDictionaryItemRepairMethodAlternative (
+    MeasurementMapDictionaryItemId,
+    RecommendedRepairMethodId,
+    CreatedBy
+)
+VALUES
+    (1, 3, 'admin'),
+    (1, 2, 'admin'),
+    (1, 4, 'admin');
+
+-- ============================================================
+--    Таблица привязок справочника к изделиям
+--
+--    Code_LSF82 намеренно денормализован из MeasurementMapDictionary —
+--    это позволяет поставить уникальный индекс (RootItemId, Code_LSF82)
+--    прямо на таблице Binding без JOIN, что гарантирует инвариант:
+--    одна пара (изделие + номенклатура) → максимум один справочник.
+--
+--    Без денормализации индекс поставить невозможно (Code_LSF82
+--    находится в другой таблице), а проверка только на уровне
+--    приложения ненадёжна при конкурентном доступе.
+-- ============================================================
+CREATE TABLE MeasurementMapDictionaryBinding (
+    Id                         int IDENTITY(1,1) NOT NULL,
+    MeasurementMapDictionaryId int NOT NULL,
+    RootItemId                 int NOT NULL,
+
+    -- Денормализованный Code_LSF82 из MeasurementMapDictionary —
+    -- нужен для уникального индекса (RootItemId, Code_LSF82)
+    Code_LSF82                 int NOT NULL,
+
+    CreateDate datetime NOT NULL DEFAULT getdate(),
+    CreatedBy  nvarchar(50) COLLATE Cyrillic_General_CI_AS NULL,
+
+    CONSTRAINT PK_MMDictionaryBinding PRIMARY KEY (Id),
+    CONSTRAINT FK_MMDictionaryBinding_Dictionary
+        FOREIGN KEY (MeasurementMapDictionaryId)
+        REFERENCES MeasurementMapDictionary (Id),
+    CONSTRAINT FK_MMDictionaryBinding_RootItem
+        FOREIGN KEY (RootItemId)
+        REFERENCES RootItem (Id)
+);
+
+-- Уникальность: одна пара (изделие + номенклатура) → один справочник.
+-- Именно этот индекс является главным инвариантом системы привязок.
+CREATE UNIQUE INDEX UX_MMDictionaryBinding_Root_Code
+    ON MeasurementMapDictionaryBinding (RootItemId, Code_LSF82);
+
+-- Вспомогательный индекс для быстрой выборки привязок по справочнику
+-- (используется в AttachBindingsAsync при загрузке списка справочников)
+CREATE INDEX IX_MMDictionaryBinding_DictionaryId
+    ON MeasurementMapDictionaryBinding (MeasurementMapDictionaryId);
+
+INSERT INTO MeasurementMapDictionaryBinding
+    (MeasurementMapDictionaryId, RootItemId, Code_LSF82, CreatedBy)
+SELECT
+    d.Id,
+    1,              -- RootItemId = 1 (единственное изделие в тестовой БД)
+    d.Code_LSF82,
+    'admin'
+FROM MeasurementMapDictionary d;

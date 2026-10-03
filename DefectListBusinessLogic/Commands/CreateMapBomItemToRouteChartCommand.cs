@@ -11,8 +11,8 @@ namespace DefectListBusinessLogic.Commands
         public CreateMapBomItemToRouteChartCommand(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory) { }
 
         private const string Query = @"
-            INSERT INTO MapBomItemToRouteChart (BomItemId, MkartaId, RouteChart_Number, QtyLaunched, CreatedBy, ProductId, Detal)
-            VALUES (@BomItemId, @MkartaId, @RouteChart_Number, @QtyLaunched, @CreatedBy, @ProductId, @Detal)";
+            INSERT INTO MapBomItemToRouteChart (BomItemId, MkartaId, RouteChart_Number, QtyLaunched, CreatedBy, ProductId, Detal, CodeLsf82)
+            VALUES (@BomItemId, @MkartaId, @RouteChart_Number, @QtyLaunched, @CreatedBy, @ProductId, @Detal, @CodeLsf82)";
 
         public async Task Execute(MapBomItemToRouteChart mapBomItemToRouteChart) =>
             await DbConnection.ExecuteAsync(Query, mapBomItemToRouteChart);

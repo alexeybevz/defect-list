@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using DefectListBusinessLogic.Report;
-using ReporterDomain.Services.CreateReportService;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.ViewModelImplement;
 using System.Threading.Tasks;
 using System.Windows;
+using DefectListDomain.CreatingReports;
 using DefectListWpfControl.DefectList.Stores;
 
 namespace DefectListWpfControl.DefectList.Commands.ReportCommands
@@ -23,28 +22,21 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 
         public override async Task ExecuteAsync(object parameter = null)
         {
-            IReportDirectory reportDirectory = new ReportDirectory(_bomItemViewModel.UserIdentity.Name);
             try
             {
-                reportDirectory.Create();
-
                 var bomHeader = _bomItemViewModel.BomHeader;
                 var bomItems = await _bomItemsStore.GetBomItemIsShowedView(bomHeader.BomId);
                 var bomItemLogs = await _bomItemsStore.GetBomItemLogs(bomHeader.BomId);
 
-                var defectListItemsChangesReport = new DefectListItemsChangesReport();
-                defectListItemsChangesReport.Create(bomHeader, bomItems.ToList(), bomItemLogs.ToList(), reportDirectory.PathReportDirectory);
+                var report = DefectListIocKernel.Get<IDefectListItemsChangesReport>();
+                var isReportCreated = await report.CreateAsync(bomHeader, bomItems.ToList(), bomItemLogs.ToList(), _bomItemViewModel.UserIdentity.Name);
 
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                reportDirectory.DeleteIfEmpty();
             }
         }
     }

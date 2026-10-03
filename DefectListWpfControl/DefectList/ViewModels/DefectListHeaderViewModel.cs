@@ -12,6 +12,10 @@ using DefectListWpfControl.DefectList.Commands.ReportCommands;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.ViewModelImplement;
 using ReporterDomain.Auth;
+using DeleteBomHeaderCommand = DefectListWpfControl.DefectList.Commands.BomHeaderCommands.DeleteBomHeaderCommand;
+using LoadBomItemsToBomHeaderCommand = DefectListWpfControl.DefectList.Commands.BomHeaderCommands.LoadBomItemsToBomHeaderCommand;
+using DefectListWpfControl.DefectList.Commands.MeasurementMapDictionaryCommands;
+using DefectListWpfControl.DefectList.Factories;
 
 namespace DefectListWpfControl.DefectList.ViewModels
 {
@@ -126,7 +130,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public ICollectionView BomHeadersView => _bomHeadersView;
 
         public ICommand SummaryByOrdersReportCommand { get; }
-        public ICommand ChangesFinalDecisionReportCommand { get; }
+        public ICommand OpenChangesFinalDecisionReportFormCommand { get; }
         public ICommand GetItemInfoByAllProductsReportCommand { get; }
         public ICommand ClearBomHeadersFilterCommand { get; }
         public ICommand LoadBomHeadersCommand { get; }
@@ -139,6 +143,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
         public ICommand ExecuteDoubleClickOnBomHeaderCommand { get; }
         public ICommand FilterSettingsCommand { get; }
         public ICommand LoadBomItemsToBomHeaderCommand { get; }
+        public ICommand OpenMeasurementMapDictionaryListWindowCommand { get; }
 
         private DefectListHeaderViewModel(
             BomHeadersStore bomHeadersStore,
@@ -147,7 +152,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
             BomHeaderSubscribersStore bomHeaderSubscribersStore,
             RootItemsStore rootItemsStore,
             OpenedBomHeadersStore openedBomHeadersStore,
-            ProductsStore productsStore)
+            ProductsStore productsStore,
+            MeasurementMapDictionaryListWindowFactory measurementMapDictionaryListWindowFactory)
         {
             _bomHeaderSubscribersStore = bomHeaderSubscribersStore;
             _openedBomHeadersStore = openedBomHeadersStore;
@@ -159,7 +165,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
 
             var user = Thread.CurrentPrincipal.Identity as CustomIdentity;
             SummaryByOrdersReportCommand = new SummaryByOrdersReportCommand(bomHeadersStore, bomItemsStore, productsStore, user.Name);
-            ChangesFinalDecisionReportCommand = new ChangesFinalDecisionReportCommand(bomItemsStore, user.Name);
+            OpenChangesFinalDecisionReportFormCommand = new OpenChangesFinalDecisionReportFormCommand(bomItemsStore, productsStore, user.Name);
             GetItemInfoByAllProductsReportCommand = new GetItemInfoByAllProductsReportCommand(bomHeadersStore, bomItemsStore, productsStore, user.Name);
 
             LoadBomHeadersCommand = new LoadBomHeadersCommand(this, _bomHeadersStore);
@@ -174,6 +180,7 @@ namespace DefectListWpfControl.DefectList.ViewModels
             DeleteBomHeaderCommand = new DeleteBomHeaderCommand(_selectedBomHeaderStore, _bomHeadersStore);
             ExecuteDoubleClickOnBomHeaderCommand = new ExecuteDoubleClickOnBomHeaderCommand(_openedBomHeadersStore);
             FilterSettingsCommand = new OpenFilterSettingsCommand(this, _bomHeadersStore);
+            OpenMeasurementMapDictionaryListWindowCommand = new OpenMeasurementMapDictionaryListWindowCommand(measurementMapDictionaryListWindowFactory);
 
             _selectedBomHeaderStore.SelectedBomHeaderChanged += SelectedBomHeaderStore_SelectedBomHeaderChanged;
             _openedBomHeadersStore.RequestOnLoadBomHeaders += Request_LoadBomHeaders;
@@ -197,7 +204,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
             BomHeaderSubscribersStore bomHeaderSubscribersStore,
             RootItemsStore rootItemsStore,
             OpenedBomHeadersStore openedBomHeadersStore,
-            ProductsStore productsStore)
+            ProductsStore productsStore,
+            MeasurementMapDictionaryListWindowFactory measurementMapDictionaryListWindowFactory)
         {
             var viewModel = new DefectListHeaderViewModel(
                 bomHeadersStore,
@@ -206,7 +214,8 @@ namespace DefectListWpfControl.DefectList.ViewModels
                 bomHeaderSubscribersStore,
                 rootItemsStore,
                 openedBomHeadersStore,
-                productsStore);
+                productsStore,
+                measurementMapDictionaryListWindowFactory);
             viewModel.LoadBomHeadersCommand.Execute(null);
             return viewModel;
         }

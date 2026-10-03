@@ -126,10 +126,10 @@ namespace DefectListBusinessLogic.Fakes
                     ExtName = "ДСЕ3Р",
                     Type = "дет",
                     Um = "шт",
-                    Id = 6,
-                    ProductId = 6,
-                    CodeLsf82 = 6,
-                    CodeErp = "6",
+                    Id = 7,
+                    ProductId = 7,
+                    CodeLsf82 = 7,
+                    CodeErp = "7",
                     ProductModes = new List<ProductModeDto>() { new ProductModeDto() { Name = "Конструкторская спецификация" }}
                 },
                 new ProductDto()

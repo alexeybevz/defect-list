@@ -84,6 +84,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                             RouteChart_Number = x.CreatedRouteMap,
                             QtyLaunched = (decimal)bi.QtyMnf,
                             ProductId = obj.ProductId,
+                            CodeLsf82 = obj.CodeLsf82,
                             Detal = obj.TargetDetal,
                             CreatedBy = _user.Name
                         });
@@ -99,6 +100,7 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                         RouteChart_Number = x.CreatedRouteMap,
                         QtyLaunched = x.Qty,
                         ProductId = obj.ProductId,
+                        CodeLsf82 = obj.CodeLsf82,
                         Detal = obj.TargetDetal,
                         CreatedBy = _user.Name
                     });
@@ -138,6 +140,8 @@ namespace DefectListWpfControl.DefectList.Commands.BomItemCommands
                     IsPrint = x.IsPrint,
                     IsWorkNeed = x.IsWorkNeed,
                     TypeProg = "DEFECT_LIST",
+                    PartyComment = x.PartyComment,
+                    SerialNumber = string.Join(",", x.BomItems.Select(b => b.SerialNumber).ToList())
                 });
             }
 

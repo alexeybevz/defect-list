@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using DefectListBusinessLogic.Report;
+using DefectListDomain.CreatingReports;
 using DefectListDomain.Models;
-using ReporterDomain.Services.CreateReportService;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.Views;
 using DefectListWpfControl.ViewModelImplement;
@@ -60,14 +59,13 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 
                 var products = await _productsStore.GetAllDesignSpecifications();
 
-                IReportDirectory reportDirectory = new ReportDirectory(_userName);
-                reportDirectory.Create();
+                var productsDistinctShopEntries = await _productsStore.GetAllDistinctShopEntries();
 
-                var reportBuilder = new SummaryByOrdersReport();
-                reportBuilder.Create(bomHeaders, itemsAll, products, reportDirectory.PathReportDirectory);
+                var report = DefectListIocKernel.Get<ISummaryByOrdersReport>();
+                var isReportCreated = await report.CreateAsync(bomHeaders, itemsAll, products, productsDistinctShopEntries, _userName);
 
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using DefectListWpfControl;
+using DefectListWpfControl.DefectList.Views;
 using ReporterDomain.Auth;
 
 namespace DefectListDemoWpfApp
@@ -13,6 +14,8 @@ namespace DefectListDemoWpfApp
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
+
             //Create a custom principal with an anonymous identity at startup
             CustomPrincipal customPrincipal = new CustomPrincipal();
             AppDomain.CurrentDomain.SetThreadPrincipal(customPrincipal);
@@ -22,9 +25,9 @@ namespace DefectListDemoWpfApp
             DefectListIocKernel.Initialize(new DefectListNinjectModule());
 
             SetDebugCustomPrincipalIdentity(customPrincipal);
-            Application.Current.StartupUri = new Uri("MainWindow.xaml", UriKind.Relative);
 
-            base.OnStartup(e);
+            var window = DefectListIocKernel.Get<DefectListHeaderWindow>();
+            window.Show();
         }
 
         private static void SetDebugCustomPrincipalIdentity(CustomPrincipal customPrincipal)

@@ -86,7 +86,9 @@ namespace DefectListWpfControl.DefectList.Commands.ConsolidateBomItemsCommands
         {
             try
             {
-                vm.ProductId = (await _getAllProductDtoQuery.ExecuteByDetals(SpecifKeyCreator.CreateKey(detal)))?.Id ?? 0;
+                var product = await _getAllProductDtoQuery.ExecuteByDetals(SpecifKeyCreator.CreateKey(detal));
+                vm.ProductId = product?.Id ?? 0;
+                vm.CodeLsf82 = product?.CodeLsf82 ?? 0;
                 vm.TargetDetals = SpecifKeyCreator.CreateKey(detal);
                 vm.IsSelected = true;
             }

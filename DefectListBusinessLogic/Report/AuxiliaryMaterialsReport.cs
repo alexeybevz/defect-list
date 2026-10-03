@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DefectListDomain.Models;
 using DefectListDomain.ExternalData;
 
 namespace DefectListBusinessLogic.Report
 {
-    public class AdditionalMaterialsReport
+    public class AuxiliaryMaterialsReport
     {
         private readonly IGetAllAuxiliaryMaterialDtoQuery _getAllAuxiliaryMaterialDtoQuery;
         private readonly IGetAllOgmetMatlDtoQuery _getAllOgmetMatlDtoQuery;
 
-        public AdditionalMaterialsReport(
+        public AuxiliaryMaterialsReport(
             IGetAllAuxiliaryMaterialDtoQuery getAllAuxiliaryMaterialDtoQuery,
             IGetAllOgmetMatlDtoQuery getAllOgmetMatlDtoQuery)
         {
@@ -20,25 +22,32 @@ namespace DefectListBusinessLogic.Report
             _getAllOgmetMatlDtoQuery = getAllOgmetMatlDtoQuery;
         }
 
-        public void Create(IBomHeader bomHeader, IReadOnlyCollection<BomItem> bomItemsView, string pathToReport)
+        public async Task<bool> CreateAsync(IBomHeader bomHeader, IReadOnlyCollection<BomItem> bomItemsView, string pathToReportDirectory)
         {
-            var data = GetData(bomItemsView).ToList();
-
-            using (XLWorkbook workbook = new XLWorkbook())
+            return await Task.Run(() =>
             {
-                workbook.Style.Font.FontName = "Arial";
-                workbook.Style.Font.FontSize = 10;
-                var ws = workbook.Worksheets.Add("Суммарные данные");
-                var ws2 = workbook.Worksheets.Add("Суммарные данные по цехам");
-                var ws3 = workbook.Worksheets.Add("Расшифровка");
-                
+                var data = GetData(bomItemsView).ToList();
 
-                CreateWs(ws, data);
-                CreateWs2(ws2, data);
-                CreateWs3(ws3, data);
+                using (XLWorkbook workbook = new XLWorkbook())
+                {
+                    workbook.Style.Font.FontName = "Arial";
+                    workbook.Style.Font.FontSize = 10;
+                    var ws = workbook.Worksheets.Add("Суммарные данные");
+                    var ws2 = workbook.Worksheets.Add("Суммарные данные по цехам");
+                    var ws3 = workbook.Worksheets.Add("Расшифровка");
 
-                workbook.SaveAs(pathToReport + $@"\ДВ по {bomHeader.RootItem.Izdel } № { bomHeader.SerialNumber } Плановый расход вспом. матер. (прямые расходы) от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
-            }
+
+                    CreateWs(ws, data);
+                    CreateWs2(ws2, data);
+                    CreateWs3(ws3, data);
+
+                    var path = Path.Combine(pathToReportDirectory,
+                        $@"ДВ по {bomHeader.RootItem.Izdel} № {bomHeader.SerialNumber} Плановый расход вспом. матер. (прямые расходы) от {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.xlsx");
+                    workbook.SaveAs(path);
+
+                    return true;
+                }
+            });
         }
 
         private void CreateWs(IXLWorksheet ws, IEnumerable<MtrlP> data)

@@ -1,0 +1,306 @@
+﻿<Window x:Class="DefectListWpfControl.DefectList.Views.MeasurementMapDictionaryListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DefectListWpfControl.DefectList.ViewModels"
+        mc:Ignorable="d"
+        Title="Справочники карт измерений"
+        Height="700"
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance d:Type=viewModels:MeasurementMapDictionaryListViewModel}">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Ошибка / загрузка -->
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Margin="0 0 0 6">
+            <TextBlock Text="Загрузка..."
+                       Visibility="{Binding LoadingStateViewModel.IsLoading,
+                           Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Foreground="Gray"
+                       FontStyle="Italic" />
+            <TextBlock Text="{Binding LoadingStateViewModel.ErrorMessage}"
+                       Visibility="{Binding LoadingStateViewModel.HasErrorMessage,
+                           Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Style="{StaticResource ErrorMessage}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Кнопки открытия lookup-справочников -->
+        <GroupBox Grid.Row="1"
+                  Header="Справочники элементов"
+                  Padding="8 4"
+                  Margin="0 0 0 10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Возможные дефекты"
+                        Command="{Binding OpenPossibleDefectsCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="12 4"
+                        Margin="0 0 8 0" />
+                <Button Content="Номинальные значения"
+                        Command="{Binding OpenNominalValuesCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="12 4"
+                        Margin="0 0 8 0" />
+                <Button Content="Рекомендуемые методы ремонта"
+                        Command="{Binding OpenRepairMethodsCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="12 4"
+                        Margin="0 0 8 0" />
+                <Button Content="Требования после ремонта"
+                        Command="{Binding OpenRequirementsCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="12 4" />
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Панель фильтров -->
+        <Grid Grid.Row="2"
+              Margin="0 0 0 8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0"
+                   Content="Code_LSF82:"
+                   VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding FilterCodeLsf82, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center"
+                     Height="26" />
+            <Label Grid.Column="3"
+                   Content="Обозначение ДСЕ:"
+                   VerticalAlignment="Center" />
+            <TextBox Grid.Column="4"
+                     Text="{Binding FilterDetal, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center"
+                     Height="26" />
+            <CheckBox Grid.Column="6"
+                      Content="Показывать архивные"
+                      IsChecked="{Binding ShowArchived}"
+                      VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Таблица справочников -->
+        <DataGrid Grid.Row="3"
+                  x:Name="DataGridDictionaries"
+                  ItemsSource="{Binding ItemsView}"
+                  SelectedItem="{Binding SelectedDictionary, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
+                  IsReadOnly="True"
+                  BorderBrush="#ccc"
+                  MouseDoubleClick="DataGrid_OnMouseDoubleClick"
+                  CopyingRowClipboardContent="DataGridDictionaries_OnCopyingRowClipboardContent">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsActive}"
+                                     Value="False">
+                            <Setter Property="Foreground"
+                                    Value="Gray" />
+                            <Setter Property="FontStyle"
+                                    Value="Italic" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id"
+                                    Binding="{Binding Id}"
+                                    Width="50"
+                                    x:Name="dataGridColumnId" />
+                <DataGridTextColumn Header="Наименование"
+                                    Binding="{Binding Name}"
+                                    Width="200" />
+                <DataGridTextColumn Header="Code_LSF82"
+                                    Binding="{Binding Code_LSF82}"
+                                    Width="100"
+                                    x:Name="dataGridColumnCode_LSF82" />
+                <DataGridTextColumn Header="Обозначение ДСЕ"
+                                    Binding="{Binding Detal}"
+                                    Width="*"
+                                    x:Name="dataGridColumnDetal" />
+                <DataGridTextColumn Header="Привязка к изделиям"
+                                    Binding="{Binding BoundRootItemNames}"
+                                    Width="*" />
+                <DataGridTextColumn Header="Форма"
+                                    Binding="{Binding MeasurementsMapTypeFormName}"
+                                    Width="100"
+                                    x:Name="dataGridColumnMeasurementsMapTypeFormName" />
+                <DataGridTextColumn Header="Версия"
+                                    Binding="{Binding Version}"
+                                    Width="70"
+                                    x:Name="dataGridColumnVersion" />
+                <DataGridTemplateColumn Header="Активен"
+                                        Width="80"
+                                        x:Name="dataGridColumnIsActive">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding IsActive, Converter={StaticResource BooleanToYesNoConverter}}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Комментарий"
+                                    Binding="{Binding Comment}"
+                                    Width="150"
+                                    x:Name="dataGridColumnComment" />
+                <DataGridTextColumn Header="Создан"
+                                    Binding="{Binding CreatedBy}"
+                                    Width="120"
+                                    x:Name="dataGridColumnCreatedBy"/>
+                <DataGridTextColumn Header="Дата создания"
+                                    Binding="{Binding CreateDate, StringFormat=\{0:dd.MM.yyyy\}}"
+                                    Width="110"
+                                    x:Name="dataGridColumnCreatedDate"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Кнопки действий со справочником -->
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    Margin="0 10 0 10">
+            <Button Content="Открыть строки"
+                    Command="{Binding OpenItemsCommand}"
+                    Style="{StaticResource PrimaryButton}"
+                    Padding="14 5"
+                    Margin="0 0 8 0" />
+            <Button Content="Создать новую версию"
+                    Command="{Binding CreateVersionCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Padding="14 5"
+                    Margin="0 0 8 0" />
+            <Button Content="Архивировать"
+                    Command="{Binding ArchiveDictionaryCommand}"
+                    Style="{StaticResource SecondaryButton}"
+                    Padding="14 5" />
+        </StackPanel>
+
+        <!-- Создание нового справочника -->
+        <GroupBox Grid.Row="5"
+                  Header="Создать новый справочник"
+                  Padding="10 6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="100" />
+                </Grid.RowDefinitions>
+                <Label Grid.Column="0"
+                       Content="ДСЕ:"
+                       VerticalAlignment="Center" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding NewDictionaryDetal, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Height="26"
+                         IsEnabled="False"/>
+                <Button Grid.Column="2"
+                        Content="..."
+                        Command="{Binding OpenChoiceProductWindowCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="14 4"
+                        Margin="2 0 0 0" />
+                <Label Grid.Column="4"
+                       Content="Форма:"
+                       VerticalAlignment="Center" />
+                <ComboBox Grid.Column="5"
+                          ItemsSource="{Binding TypeForms}"
+                          SelectedValuePath="Id"
+                          DisplayMemberPath="Name"
+                          SelectedValue="{Binding NewDictionaryFormId}"
+                          Height="26" />
+
+                <Label Grid.Column="7"
+                       Content="Наименование:"
+                       VerticalAlignment="Center" />
+                <TextBox Grid.Column="8"
+                         Text="{Binding NewDictionaryName, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Height="26" />
+
+                <Label Grid.Column="10"
+                       Content="Взять строки карты с ID:"
+                       VerticalAlignment="Center" />
+                <TextBox Grid.Column="11"
+                         Text="{Binding CopyMeasurementMapDictionaryIdStr, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Height="26" />
+
+                <Button Grid.Column="13"
+                        Content="Создать"
+                        Command="{Binding CreateDictionaryCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Padding="14 4" />
+
+                <Label Grid.Column="7"
+                       Grid.Row="2"
+                       Content="Комментарий:"
+                       VerticalAlignment="Center" />
+                <TextBox Grid.Column="8"
+                         Grid.Row="2"
+                         Text="{Binding NewDictionaryComment, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Height="26" />
+
+                <ListBox Grid.Row="2"
+                         Grid.ColumnSpan="3"
+                         Width="250"
+                         ItemsSource="{Binding RootItems}"
+                         SelectionMode="Multiple"
+                         BorderBrush="#ccc">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsChecked}"
+                                      Content="{Binding Name}"
+                                      Padding="4 2" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <!-- Отключаем стандартную подсветку ListBox — выбор идёт через CheckBox -->
+                            <Setter Property="Focusable"
+                                    Value="False" />
+                            <Setter Property="HorizontalContentAlignment"
+                                    Value="Stretch" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

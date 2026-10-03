@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using DefectListBusinessLogic.Report;
-using ReporterDomain.Services.CreateReportService;
+using DefectListDomain.CreatingReports;
 using DefectListWpfControl.DefectList.Stores;
 using DefectListWpfControl.DefectList.ViewModels;
 using DefectListWpfControl.ViewModelImplement;
@@ -28,11 +27,8 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
 
         public override async Task ExecuteAsync(object parameter = null)
         {
-            IReportDirectory reportDirectory = new ReportDirectory(_bomItemViewModel.UserIdentity.Name);
             try
             {
-                reportDirectory.Create();
-
                 var filterBomItems = await _bomHeadersStore.GetAllBomItemsFilterToReport(_bomItemViewModel.BomHeader.RootItem.Id, "PurchaseItemsReport");
 
                 var bomItems = (await _bomItemsStore.GetBomItemIsShowedView(_bomItemViewModel.BomHeader.BomId)).ToList().Where(x => x.IsPki && filterBomItems.Contains(x.Detal.Trim())).ToList();
@@ -42,19 +38,15 @@ namespace DefectListWpfControl.DefectList.Commands.ReportCommands
                     return;
                 }
 
-                var reportBuilder = new DefectListPurchaseItemsReport();
-                reportBuilder.Create(_bomItemViewModel.BomHeader, bomItems, reportDirectory.PathReportDirectory);
+                var reportBuilder = DefectListIocKernel.Get<IDefectListPurchaseItemsReport>();
+                var isReportCreated = await reportBuilder.CreateAsync(_bomItemViewModel.BomHeader, bomItems, _bomItemViewModel.UserIdentity?.Name);
 
-                MessageBox.Show("Отчет сформирован.");
-                reportDirectory.Open();
+                if (isReportCreated)
+                    MessageBox.Show("Отчет сформирован.");
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                reportDirectory.DeleteIfEmpty();
             }
         }
     }

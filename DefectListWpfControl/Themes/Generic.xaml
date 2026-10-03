@@ -6,6 +6,8 @@
                     xmlns:commons="clr-namespace:DefectListWpfControl.DefectList.Commons">
     <commons:SearchValueConverter x:Key="SearchValueConverter" />
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <commons:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    <commons:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter" />
     <viewModelImplement:WindowBooleanToVisibilityConverter x:Key="WindowBooleanToVisibilityConverter" />
 
     <Style x:Key="PrimaryButton"

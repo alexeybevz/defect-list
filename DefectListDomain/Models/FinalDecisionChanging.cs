@@ -12,6 +12,7 @@ namespace DefectListDomain.Models
         public string DetalTyp { get; set; }
         public decimal QtyMnf { get; set; }
         public string DetalUm { get; set; }
+        public int ProductId { get; set; }
         public string FinalDecision { get; set; }
         public string NextFinalDecision { get; set; }
         public string Nomgodurs { get; set; }
